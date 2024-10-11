@@ -1,4 +1,4 @@
-name: Run Unit Tests for Specific Apps
+name: Run Unit Tests for all Apps
 
 on:
   pull_request:
