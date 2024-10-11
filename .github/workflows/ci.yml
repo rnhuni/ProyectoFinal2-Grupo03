@@ -1,0 +1,32 @@
+name: Run Unit Tests for Specific Apps
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'web-app/**'
+
+jobs:
+  test-web-app:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'web-app') || contains(github.event.commits.message, 'web-app')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd web-app
+          npm install
+
+      - name: Run Unit Tests for web-app
+        run: |
+          cd web-app
+          npm run test
