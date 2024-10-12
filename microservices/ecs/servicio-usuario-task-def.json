@@ -1,0 +1,52 @@
+{
+  "family": "TareaServicioUsuario",
+  "containerDefinitions": [
+      {
+          "name": "servicio-usuario",
+          "image": "203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-usuario:latest",
+          "cpu": 0,
+          "portMappings": [
+              {
+                  "name": "servicio-usuario-5000-tcp",
+                  "containerPort": 5000,
+                  "hostPort": 5000,
+                  "protocol": "tcp",
+                  "appProtocol": "http"
+              }
+          ],
+          "essential": true,
+          "environment": [],
+          "environmentFiles": [],
+          "mountPoints": [],
+          "volumesFrom": [],
+          "ulimits": [],
+          "logConfiguration": {
+              "logDriver": "awslogs",
+              "options": {
+                  "awslogs-group": "/ecs/TareaServicioUsuario",
+                  "mode": "non-blocking",
+                  "awslogs-create-group": "true",
+                  "max-buffer-size": "25m",
+                  "awslogs-region": "us-east-1",
+                  "awslogs-stream-prefix": "ecs"
+              },
+              "secretOptions": []
+          },
+          "systemControls": []
+      }
+  ],
+  "taskRoleArn": "arn:aws:iam::203918887101:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::203918887101:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+      "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "runtimePlatform": {
+      "cpuArchitecture": "X86_64",
+      "operatingSystemFamily": "LINUX"
+  }
+}
