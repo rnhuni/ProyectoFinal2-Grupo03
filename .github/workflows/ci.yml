@@ -103,7 +103,7 @@ jobs:
         id: render-servicio-sistema
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ./ecs/servicio-sistema-task-def.json
+          task-definition: ./microservices/ecs/servicio-sistema-task-def.json
           container-name: servicio-sistema
           image: ${{ steps.build-servicio-sistema.outputs.image }}
 
