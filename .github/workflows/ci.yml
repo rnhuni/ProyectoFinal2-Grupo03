@@ -114,4 +114,4 @@ jobs:
           task-definition: ${{ steps.render-servicio-sistema.outputs.task-definition }}
           service: ServicioSistema
           cluster: ServicioSistema
-          wait-for-service-stability: true
+          wait-for-service-stability: false
