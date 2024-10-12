@@ -50,6 +50,18 @@ jobs:
         working-directory: ./web-app
         run: npm run test -- --passWithNoTests
 
+      - name: Run SonarCloud Scan for web-app
+        working-directory: ./web-app
+        run: |
+          npx sonar-scanner \
+            -Dsonar.projectKey=your_sonar_project_key_web_app \
+            -Dsonar.organization=rnhuni \
+            -Dsonar.sources=./src \
+            -Dsonar.tests=./tests \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   test-and-deploy-servicio-sistema:
     if: needs.determine-changes.outputs.servicio_sistema_changed == 'true'
     runs-on: ubuntu-latest
@@ -72,6 +84,16 @@ jobs:
       - name: Run tests for ServicioSistema
         working-directory: ./microservices/ServicioSistema
         run: pytest tests/
+
+      - name: Run SonarCloud Scan for ServicioSistema
+        working-directory: ./microservices/ServicioSistema
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=your_sonar_project_key_servicio_sistema \
+            -Dsonar.organization=rnhuni \
+            -Dsonar.sources=.
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # Configure AWS deploy
       - name: Configure AWS credentials
