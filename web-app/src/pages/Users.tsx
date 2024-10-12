@@ -15,13 +15,12 @@ import {
   useDisclosure,
   HStack,
   Text,
-  Select,
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { EditUserModal } from "../components/Users/EditUserModal";
-import { CreateUserModal } from "../components/Users/CreateUserModal"; // Importamos el modal de Crear Usuario
-import { User } from "../interfaces/User"; // Asegúrate de importar tu interfaz User
+import { CreateUserModal } from "../components/Users/CreateUserModal";
+import { User } from "../interfaces/User";
 
 const Users = () => {
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
@@ -34,7 +33,7 @@ const Users = () => {
     isOpen: isCreateOpen,
     onOpen: onCreateOpen,
     onClose: onCreateClose,
-  } = useDisclosure(); // Control del modal de Crear Usuario
+  } = useDisclosure();
 
   const users: User[] = [
     {
@@ -59,7 +58,7 @@ const Users = () => {
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
-    onEditOpen(); // Abre el modal de editar
+    onEditOpen();
   };
 
   return (

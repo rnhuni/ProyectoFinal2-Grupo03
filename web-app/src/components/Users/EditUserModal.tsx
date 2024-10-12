@@ -71,6 +71,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
 
   const onSubmit = (data: FormData) => {
     console.log("Datos enviados:", data);
+    setShowPassword(false);
     onClose();
   };
 
