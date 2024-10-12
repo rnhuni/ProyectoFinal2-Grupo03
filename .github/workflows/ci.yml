@@ -27,4 +27,4 @@ jobs:
       - name: Run Unit Tests for web-app
         run: |
           cd web-app
-          npm run test -- --passWithNoTests
+          npm run test
