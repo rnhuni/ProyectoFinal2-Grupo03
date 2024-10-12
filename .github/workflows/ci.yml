@@ -31,6 +31,7 @@ jobs:
   test-web-app:
     if: needs.determine-changes.outputs.web_app_changed == 'true'
     runs-on: ubuntu-latest
+    environment: ENV1
     needs: [determine-changes]
     steps:
       - name: Checkout code
@@ -52,6 +53,7 @@ jobs:
   test-and-deploy-servicio-sistema:
     if: needs.determine-changes.outputs.servicio_sistema_changed == 'true'
     runs-on: ubuntu-latest
+    environment: ENV1
     needs: [determine-changes]
     steps:
       - name: Checkout code
