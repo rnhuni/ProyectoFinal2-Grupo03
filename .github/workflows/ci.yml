@@ -51,13 +51,14 @@ jobs:
         run: npm run test -- --passWithNoTests
 
       - name: Run SonarCloud Scan for web-app
-        working-directory: ./web-app
-        run: |
-          npx sonar-scanner \
-            -Dsonar.projectKey=your_sonar_project_key_web_app \
-            -Dsonar.organization=rnhuni \
-            -Dsonar.sources=./src \
-            -Dsonar.tests=./tests \
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: ./web-app
+          args: >
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
+            -Dsonar.organization=rnhuni
+            -Dsonar.sources=./src
+            -Dsonar.tests=./tests
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -86,11 +87,12 @@ jobs:
         run: pytest tests/
 
       - name: Run SonarCloud Scan for ServicioSistema
-        working-directory: ./microservices/ServicioSistema
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=your_sonar_project_key_servicio_sistema \
-            -Dsonar.organization=rnhuni \
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: ./microservices/ServicioSistema
+          args: >
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
+            -Dsonar.organization=rnhuni
             -Dsonar.sources=.
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
