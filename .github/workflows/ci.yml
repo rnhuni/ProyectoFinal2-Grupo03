@@ -94,10 +94,9 @@ jobs:
           ECR_REPOSITORY: servicio-sistema
           IMAGE_TAG: latest
         run: |
-          docker buildx create --use
-          docker buildx build --platform linux/arm64 -t servicio-sistema .
-          docker tag servicio-sistema:latest 203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-sistema:latest
-          docker push 203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-sistema:latest
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       # Build ECS task definition
       - name: Render ECS task definition for ServicioSistema
