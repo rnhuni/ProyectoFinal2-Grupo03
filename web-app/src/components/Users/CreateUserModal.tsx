@@ -69,7 +69,10 @@ export const CreateUserModal: React.FC<CreateUserModalProps> = ({
 
   const onSubmit = (data: FormData) => {
     console.log("Datos enviados:", data);
-    onClose(); // Cierra el modal después de guardar
+    setShowPassword(false);
+    console.log("onClose is being called!");
+
+    onClose();
   };
 
   return (

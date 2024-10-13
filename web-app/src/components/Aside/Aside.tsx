@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Image } from "@chakra-ui/react";
 import styles from "./componentsAside/Sidebar.module.css";
-import logo from "../../assets/Logo.webp";
+import logo from "../../assets/logo.webp";
 import {
   Plus,
   BarChartLine,

@@ -13,6 +13,7 @@ import {
   Select,
   Stack,
   Text,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -71,6 +72,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
 
   const onSubmit = (data: FormData) => {
     console.log("Datos enviados:", data);
+    setShowPassword(false);
     onClose();
   };
 
@@ -87,7 +89,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                 <FormLabel>Nombre</FormLabel>
                 <Input placeholder="Nombre" {...register("name")} />
                 {errors.name && (
-                  <Text color="red.500">{errors.name.message}</Text>
+                  <FormErrorMessage>{errors.name.message}</FormErrorMessage>
                 )}
               </FormControl>
 
