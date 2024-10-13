@@ -12,14 +12,14 @@ import {
   Input,
   Select,
   Stack,
-  Text,
+  FormErrorMessage,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "../../interfaces/User";
 
-// Esquema de validación usando Zod
 const schema = z
   .object({
     name: z
@@ -41,20 +41,23 @@ const schema = z
 
 type FormData = z.infer<typeof schema>;
 
-interface CreateUserModalProps {
+interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialData?: User;
+  mode: "create" | "edit";
 }
 
-export const CreateUserModal: React.FC<CreateUserModalProps> = ({
+export const UserModal: React.FC<UserModalProps> = ({
   isOpen,
   onClose,
+  initialData,
+  mode,
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
-
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -67,11 +70,28 @@ export const CreateUserModal: React.FC<CreateUserModalProps> = ({
     },
   });
 
+  useEffect(() => {
+    if (mode === "edit" && initialData) {
+      reset({
+        name: initialData.name,
+        email: initialData.email,
+        password: "",
+        confirmPassword: "",
+        role: initialData.role,
+      });
+    } else {
+      reset({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        role: "",
+      });
+    }
+  }, [initialData, mode, reset]);
+
   const onSubmit = (data: FormData) => {
     console.log("Datos enviados:", data);
-    setShowPassword(false);
-    console.log("onClose is being called!");
-
     onClose();
   };
 
@@ -79,20 +99,18 @@ export const CreateUserModal: React.FC<CreateUserModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Crear Nuevo Usuario</ModalHeader>
+        <ModalHeader>
+          {mode === "edit" ? "Editar Usuario" : "Crear Usuario"}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
-              <Text>
-                Complete el siguiente formulario con la información requerida.
-              </Text>
-
               <FormControl isInvalid={!!errors.name}>
                 <FormLabel>Nombre</FormLabel>
                 <Input placeholder="Nombre" {...register("name")} />
                 {errors.name && (
-                  <Text color="red.500">{errors.name.message}</Text>
+                  <FormErrorMessage>{errors.name.message}</FormErrorMessage>
                 )}
               </FormControl>
 
@@ -103,31 +121,33 @@ export const CreateUserModal: React.FC<CreateUserModalProps> = ({
                   {...register("email")}
                 />
                 {errors.email && (
-                  <Text color="red.500">{errors.email.message}</Text>
+                  <FormErrorMessage>{errors.email.message}</FormErrorMessage>
                 )}
               </FormControl>
 
               <FormControl isInvalid={!!errors.password}>
                 <FormLabel>Contraseña</FormLabel>
                 <Input
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   placeholder="Contraseña"
                   {...register("password")}
                 />
                 {errors.password && (
-                  <Text color="red.500">{errors.password.message}</Text>
+                  <FormErrorMessage>{errors.password.message}</FormErrorMessage>
                 )}
               </FormControl>
 
               <FormControl isInvalid={!!errors.confirmPassword}>
                 <FormLabel>Confirmación de contraseña</FormLabel>
                 <Input
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   placeholder="Confirmación de contraseña"
                   {...register("confirmPassword")}
                 />
                 {errors.confirmPassword && (
-                  <Text color="red.500">{errors.confirmPassword.message}</Text>
+                  <FormErrorMessage>
+                    {errors.confirmPassword.message}
+                  </FormErrorMessage>
                 )}
               </FormControl>
 
@@ -140,7 +160,7 @@ export const CreateUserModal: React.FC<CreateUserModalProps> = ({
                   <option value="ClientAdmin">Administrador Clientes</option>
                 </Select>
                 {errors.role && (
-                  <Text color="red.500">{errors.role.message}</Text>
+                  <FormErrorMessage>{errors.role.message}</FormErrorMessage>
                 )}
               </FormControl>
             </Stack>
@@ -152,7 +172,7 @@ export const CreateUserModal: React.FC<CreateUserModalProps> = ({
             Cancelar
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
-            Crear
+            {mode === "edit" ? "Editar" : "Crear"}
           </Button>
         </ModalFooter>
       </ModalContent>
