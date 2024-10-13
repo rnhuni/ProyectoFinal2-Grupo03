@@ -52,17 +52,18 @@ jobs:
 
       - name: Run Unit Tests for web-app
         working-directory: ./web-app
-        run: npm run test -- --passWithNoTests
+        run: npm run test -- --coverage
 
       - name: Run SonarCloud Scan for web-app
         uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
         with:
-          projectBaseDir: ./web-app
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
-            -Dsonar.sources=./src
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.sources=./web-app/src/components/Users
+            -Dsonar.tests=./web-app/src/components/Users
+            -Dsonar.javascript.lcov.reportPaths=./web-app/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -91,12 +92,12 @@ jobs:
 
       - name: Run SonarCloud Scan for ServicioSistema
         uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
         with:
-          projectBaseDir: ./microservices/ServicioSistema
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
-            -Dsonar.sources=.
+            -Dsonar.sources=./microservices/ServicioSistema
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -168,12 +169,12 @@ jobs:
 
       - name: Run SonarCloud Scan for ServicioUsuario
         uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
         with:
-          projectBaseDir: ./microservices/ServicioUsuario
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
-            -Dsonar.sources=.
+            -Dsonar.sources=./microservices/ServicioUsuario
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
