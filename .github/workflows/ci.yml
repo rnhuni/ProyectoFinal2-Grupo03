@@ -89,16 +89,20 @@ jobs:
 
       - name: Run tests for ServicioSistema
         working-directory: ./microservices/ServicioSistema
-        run: pytest tests/
+        run: |
+          coverage run -m pytest
+          coverage lcov -o coverage/lcov.info
 
       - name: Run SonarCloud Scan for ServicioSistema
         uses: SonarSource/sonarcloud-github-action@v2
         continue-on-error: true
         with:
+          projectBaseDir: ./microservices/ServicioSistema
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
-            -Dsonar.sources=./microservices/ServicioSistema
+            -Dsonar.sources=.
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
