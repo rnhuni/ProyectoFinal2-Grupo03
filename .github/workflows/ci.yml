@@ -63,6 +63,7 @@ jobs:
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
             -Dsonar.sources=./src/components/Users
+            -Dsonar.exclusions=**/*.test.tsx
             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
