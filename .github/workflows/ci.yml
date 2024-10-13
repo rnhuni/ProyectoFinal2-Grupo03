@@ -61,8 +61,8 @@ jobs:
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
-            -Dsonar.sources=./web-app/src
-            -Dsonar.javascript.lcov.reportPaths=./web-app/coverage/lcov.info
+            -Dsonar.sources=web-app/src/components/Users
+            -Dsonar.javascript.lcov.reportPaths=web-app/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
