@@ -101,6 +101,7 @@ jobs:
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
+            -Dsonar.exclusions=**/*.test.tsx
             -Dsonar.sources=.
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:

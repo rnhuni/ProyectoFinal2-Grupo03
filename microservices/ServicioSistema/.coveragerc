@@ -1,0 +1,18 @@
+[run]
+omit =
+    # Excluir todos los archivos __init__.py
+    */__init__.py
+    # Excluir todos los archivos de testing
+    */tests/*
+    *test*.py
+    # Excluir archivos temporales de Flask (puedes ajustar los patrones según lo necesario)
+    */flask_session/*
+
+[report]
+exclude_lines =
+    # No cubrir bloques que están siempre rodeados de excepciones
+    pragma: no cover
+    # Evitar código defensivo que se marca explícitamente para excluir
+    if __name__ == .__main__.:
+    # Para desarrollo local
+    raise NotImplementedError
