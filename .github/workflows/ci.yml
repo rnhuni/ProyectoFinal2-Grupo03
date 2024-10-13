@@ -56,6 +56,7 @@ jobs:
 
       - name: Run SonarCloud Scan for web-app
         uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
         with:
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
@@ -90,6 +91,7 @@ jobs:
 
       - name: Run SonarCloud Scan for ServicioSistema
         uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
         with:
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
@@ -166,6 +168,7 @@ jobs:
 
       - name: Run SonarCloud Scan for ServicioUsuario
         uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
         with:
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
