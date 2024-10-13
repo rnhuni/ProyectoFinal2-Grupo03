@@ -18,22 +18,13 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useState } from "react";
-import { EditUserModal } from "../components/Users/EditUserModal";
-import { CreateUserModal } from "../components/Users/CreateUserModal";
+import { UserModal } from "../components/Users/UserModal";
 import { User } from "../interfaces/User";
 
 const Users = () => {
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
-  const {
-    isOpen: isEditOpen,
-    onOpen: onEditOpen,
-    onClose: onEditClose,
-  } = useDisclosure();
-  const {
-    isOpen: isCreateOpen,
-    onOpen: onCreateOpen,
-    onClose: onCreateClose,
-  } = useDisclosure();
+  const [mode, setMode] = useState<"create" | "edit">("create");
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const users: User[] = [
     {
@@ -58,7 +49,14 @@ const Users = () => {
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
-    onEditOpen();
+    setMode("edit");
+    onOpen();
+  };
+
+  const handleCreate = () => {
+    setSelectedUser(undefined);
+    setMode("create");
+    onOpen();
   };
 
   return (
@@ -70,13 +68,12 @@ const Users = () => {
         <Button
           colorScheme="blue"
           leftIcon={<AddIcon />}
-          onClick={onCreateOpen}
+          onClick={handleCreate}
         >
           Crear Usuario
         </Button>
       </HStack>
 
-      {/* Tabla de usuarios */}
       <Table variant="simple" mt={4}>
         <Thead>
           <Tr>
@@ -122,15 +119,12 @@ const Users = () => {
         </Tbody>
       </Table>
 
-      {/* Modal para editar usuario */}
-      <EditUserModal
-        isOpen={isEditOpen}
-        onClose={onEditClose}
-        user={selectedUser}
+      <UserModal
+        isOpen={isOpen}
+        onClose={onClose}
+        initialData={selectedUser}
+        mode={mode}
       />
-
-      {/* Modal para crear usuario */}
-      <CreateUserModal isOpen={isCreateOpen} onClose={onCreateClose} />
     </Box>
   );
 };
