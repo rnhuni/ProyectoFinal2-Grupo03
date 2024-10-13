@@ -82,7 +82,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      # Testing for ServicioSistema
+      # Testing for Servi cioSistema
       - name: Install dependencies for ServicioSistema
         working-directory: ./microservices/ServicioSistema
         run: pip install -r requirements.txt
