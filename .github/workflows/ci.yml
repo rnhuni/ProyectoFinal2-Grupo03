@@ -9,6 +9,14 @@ on:
       - 'microservices/ServicioSistema/**'
       - 'microservices/ServicioUsuario/**'
 
+  push:
+    branches:
+      - main
+    paths:
+      - 'web-app/**'
+      - 'microservices/ServicioSistema/**'
+      - 'microservices/ServicioUsuario/**'
+
 jobs:
   determine-changes:
     runs-on: ubuntu-latest
