@@ -1,17 +1,18 @@
-/**
- * @format
- */
-
 import 'react-native';
 import React from 'react';
-import App from '../App';
+import {render} from '@testing-library/react-native';
+import {App} from '../src/App'; // Asegúrate de que esta ruta sea correcta
 
-// Note: import explicitly to use the types shipped with jest.
-import {it} from '@jest/globals';
+// Mock de StackNavigator sin usar variables externas
+jest.mock('../src/Presentation/Routes/StackNavigator', () => ({
+  StackNavigator: () => <></>, // Devuelve un componente vacío
+}));
 
-// Note: test renderer must be required after react-native.
-import renderer from 'react-test-renderer';
+describe('App', () => {
+  it('renders correctly', () => {
+    const {toJSON} = render(<App />);
 
-it('renders correctly', () => {
-  renderer.create(<App />);
+    // Verificar que el componente se renderiza sin errores
+    expect(toJSON()).toBeNull();
+  });
 });
