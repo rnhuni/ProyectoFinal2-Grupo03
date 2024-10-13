@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "jest --passWithNoTests"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
