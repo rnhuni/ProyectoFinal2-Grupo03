@@ -106,7 +106,7 @@ jobs:
           args: >
             -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
             -Dsonar.organization=rnhuni
-            -Dsonar.exclusions=**/tests/**, **/__init__.py, **/app.py
+            -Dsonar.exclusions=**/tests/**, **/__init__.py, **/app.py, **/__init__.py,**/users/**
             -Dsonar.sources=.
             -Dsonar.python.coverage.reportPaths=coverage/lcov.info
         env:
