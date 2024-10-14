@@ -33,3 +33,24 @@ def create_user():
         return jsonify({'error': f'Faltan parámetros necesarios: {str(e)}'}), 400
     except Exception as e:
         return jsonify({'error': f'Error al crear el usuario: {str(e)}'}), 500
+
+@users_bp.route('/users', methods=['PUT'])
+def edit_user():
+    try:
+        data = request.get_json()
+        username = data['username']
+        attributes = data['attributes']
+
+        user_attributes = [{'Name': key, 'Value': value} for key, value in attributes.items()]
+
+        response = cognito_client.admin_update_user_attributes(
+            UserPoolId=USER_POOL_ID,
+            Username=username,
+            UserAttributes=user_attributes
+        )
+
+        return jsonify({'message': f'Usuario {username} actualizado exitosamente.', 'response': response}), 200
+    except KeyError as e:
+        return jsonify({'error': f'Faltan parámetros necesarios: {str(e)}'}), 400
+    except Exception as e:
+        return jsonify({'error': f'Error al actualizar el usuario: {str(e)}'}), 500
