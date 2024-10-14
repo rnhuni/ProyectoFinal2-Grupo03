@@ -5,18 +5,21 @@ on:
     branches:
       - main
     paths:
+      - 'web-app/**'
       - 'microservices/ServicioSistema/**'
 
   push:
     branches:
       - main
     paths:
+      - 'web-app/**'
       - 'microservices/ServicioSistema/**'
 
 jobs:
   determine-changes:
     runs-on: ubuntu-latest
     outputs:
+      web_app_changed: ${{ steps.filter.outputs.web_app }}
       servicio_sistema_changed: ${{ steps.filter.outputs.servicio_sistema }}
     steps:
       - name: Checkout code
@@ -27,8 +30,48 @@ jobs:
         uses: dorny/paths-filter@v2
         with:
           filters: |
+            web_app:
+              - 'web-app/**'
             servicio_sistema:
               - 'microservices/ServicioSistema/**'
+            servicio_usuario:
+              - 'microservices/ServicioUsuario/**'
+
+  test-web-app:
+    if: needs.determine-changes.outputs.web_app_changed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [determine-changes]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: ./web-app
+        run: npm install
+
+      - name: Run Unit Tests for web-app
+        working-directory: ./web-app
+        run: npm run test -- --coverage
+
+      - name: Run SonarCloud Scan for web-app
+        uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
+        with:
+          projectBaseDir: ./web-app
+          args: >
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
+            -Dsonar.organization=rnhuni
+            -Dsonar.sources=./src/components/Users
+            -Dsonar.exclusions=**/*.test.tsx
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   test-and-deploy-servicio-sistema:
     if: needs.determine-changes.outputs.servicio_sistema_changed == 'true'
