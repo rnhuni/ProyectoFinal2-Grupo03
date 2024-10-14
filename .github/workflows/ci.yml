@@ -1,0 +1,113 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'microservices/ServicioSistema/**'
+
+  push:
+    branches:
+      - main
+    paths:
+      - 'microservices/ServicioSistema/**'
+
+jobs:
+  determine-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      servicio_sistema_changed: ${{ steps.filter.outputs.servicio_sistema }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Determine changed files
+        id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            servicio_sistema:
+              - 'microservices/ServicioSistema/**'
+
+  test-and-deploy-servicio-sistema:
+    if: needs.determine-changes.outputs.servicio_sistema_changed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [determine-changes]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Testing for Servi cioSistema
+      - name: Install dependencies for ServicioSistema
+        working-directory: ./microservices/ServicioSistema
+        run: pip install -r requirements.txt
+
+      - name: Run tests for ServicioSistema
+        working-directory: ./microservices/ServicioSistema
+        run: |
+          coverage run -m pytest
+          coverage lcov -o coverage/lcov.info
+
+      - name: Run SonarCloud Scan for ServicioSistema
+        uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
+        with:
+          projectBaseDir: ./microservices/ServicioSistema
+          args: >
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
+            -Dsonar.organization=rnhuni
+            -Dsonar.exclusions=**/tests/**, **/__init__.py, **/app.py
+            -Dsonar.sources=.
+            -Dsonar.python.coverage.reportPaths=coverage/lcov.info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # Configure AWS deploy
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Build and push Docker
+      - name: Build, tag, and push ServicioSistema image to ECR
+        id: build-servicio-sistema
+        working-directory: ./microservices/ServicioSistema
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: servicio-sistema
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # Build ECS task definition
+      - name: Render ECS task definition for ServicioSistema
+        id: render-servicio-sistema
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./microservices/ecs/servicio-sistema-task-def.json
+          container-name: servicio-sistema
+          image: ${{ steps.build-servicio-sistema.outputs.image }}
+
+      # ECS deploy
+      - name: Deploy to ECS ServicioSistema
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-servicio-sistema.outputs.task-definition }}
+          service: ServicioSistema
+          cluster: ServicioSistema
+          wait-for-service-stability: false
