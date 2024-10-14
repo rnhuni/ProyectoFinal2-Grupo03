@@ -35,6 +35,7 @@ const Users = () => {
       status: "Active",
       createdAt: "Nov 30, 2023",
       updatedAt: "Dec 11, 2023",
+      roles: [],
     },
     {
       id: 2,
@@ -44,6 +45,7 @@ const Users = () => {
       status: "Completed",
       createdAt: "Jun 18, 2023",
       updatedAt: "Nov 9, 2023",
+      roles: [],
     },
   ];
 

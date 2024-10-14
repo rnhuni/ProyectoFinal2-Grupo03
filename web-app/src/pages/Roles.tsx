@@ -17,7 +17,7 @@ import {
   Text,
   Badge,
 } from "@chakra-ui/react";
-import { AddIcon, EditIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { UserRole } from "../interfaces/UserRole";
 import { User } from "../interfaces/User"; // Asegúrate de importar User
