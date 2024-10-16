@@ -20,8 +20,10 @@ import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { Permission } from "../interfaces/Permissions";
 import { PermissionModal } from "../components/Permissions/PermissionsModal";
+import { useTranslation } from "react-i18next";
 
 const Permissions = () => {
+  const { t } = useTranslation();
   const [selectedPermission, setSelectedPermission] = useState<
     Permission | undefined
   >(undefined);
@@ -63,26 +65,26 @@ const Permissions = () => {
     <Box p={4}>
       <HStack justifyContent="space-between" mb={4}>
         <Text fontSize="2xl" fontWeight="bold">
-          Permisos de la plataforma
+          {t("permissions.title")}
         </Text>
         <Button
           colorScheme="blue"
           leftIcon={<AddIcon />}
           onClick={handleCreate}
         >
-          Crear Permiso
+          {t("permissions.create")}
         </Button>
       </HStack>
 
       <Table variant="simple" mt={4}>
         <Thead>
           <Tr>
-            <Th>Nombre </Th>
-            <Th>Descripci&oacute;n</Th>
-            <Th>Estado</Th>
-            <Th>Fecha Creación</Th>
-            <Th>Fecha Edición</Th>
-            <Th>Acciones</Th>
+            <Th>{t("permissions.name")}</Th>
+            <Th>{t("permissions.description")}</Th>
+            <Th>{t("common.status")}</Th>
+            <Th>{t("common.creation_date")}</Th>
+            <Th>{t("common.edition_date")}</Th>
+            <Th>{t("common.actions")}</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -101,13 +103,13 @@ const Permissions = () => {
                       icon={<EditIcon />}
                       onClick={() => handleEdit(permission)}
                     >
-                      Editar
+                      {t("common.actions_edit")}
                     </MenuItem>
                     <MenuItem
                       icon={<DeleteIcon />}
                       onClick={() => console.log("Delete Permission")}
                     >
-                      Eliminar
+                      {t("common.actions_delete")}
                     </MenuItem>
                   </MenuList>
                 </Menu>

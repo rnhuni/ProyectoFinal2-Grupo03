@@ -18,18 +18,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Permission } from "../../interfaces/Permissions";
+import { permissionsModalSchema } from "./PermissionsModalSchema";
+import { useTranslation } from "react-i18next";
 
-const schema = z.object({
-  name: z
-    .string()
-    .min(3, { message: "El nombre debe tener al menos 3 caracteres." }),
-  description: z
-    .string()
-    .min(10, "La descripcion debe tener al menos 10 caracteres"),
-  status: z.enum(["Active", "Completed", "Inactive"]).default("Active"),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof permissionsModalSchema>;
 
 interface PermissionModalProps {
   isOpen: boolean;
@@ -50,13 +42,14 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(permissionsModalSchema),
     defaultValues: {
       name: "",
       description: "",
       status: "Active",
     },
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -84,29 +77,36 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {mode === "edit" ? "Editar Permiso" : "Crear Permiso"}
+          {mode === "edit"
+            ? t("permissions.modal.edit")
+            : t("permissions.modal.create")}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
               <FormControl isInvalid={!!errors.name}>
-                <FormLabel>Nombre</FormLabel>
-                <Input placeholder="Nombre" {...register("name")} />
+                <FormLabel>{t("permissions.name")}</FormLabel>
+                <Input
+                  placeholder={t("permissions.name")}
+                  {...register("name")}
+                />
                 {errors.name && (
-                  <FormErrorMessage>{errors.name.message}</FormErrorMessage>
+                  <FormErrorMessage>
+                    {t(`${errors.name.message}`, { count: 3 })}
+                  </FormErrorMessage>
                 )}
               </FormControl>
 
               <FormControl isInvalid={!!errors.description}>
-                <FormLabel>Descripci&oacute;n</FormLabel>
+                <FormLabel>{t("permissions.description")}</FormLabel>
                 <Input
-                  placeholder="Descripci&oacute;n"
+                  placeholder={t("permissions.description")}
                   {...register("description")}
                 />
                 {errors.description && (
                   <FormErrorMessage>
-                    {errors.description.message}
+                    {t(`${errors.description.message}`, { count: 10 })}
                   </FormErrorMessage>
                 )}
               </FormControl>
@@ -116,10 +116,12 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" onClick={onClose}>
-            Cancelar
+            {t("common.button.cancel")}
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
-            {mode === "edit" ? "Editar" : "Crear"}
+            {mode === "edit"
+              ? t("common.button.edit")
+              : t("common.button.create")}
           </Button>
         </ModalFooter>
       </ModalContent>

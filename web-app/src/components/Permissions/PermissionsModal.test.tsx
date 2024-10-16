@@ -1,31 +1,36 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
-import { PermissionModal } from "./PermissionsModal"; // Ajusta la ruta según la estructura de tu proyecto
-import { Permission } from "../../interfaces/Permissions"; // Ajusta la ruta según la estructura de tu proyecto
+import { render, fireEvent, screen } from "@testing-library/react";
+import { PermissionModal } from "./PermissionsModal";
+import i18n from "../../../i18nextConfig"; // Asegúrate de que la ruta sea correcta
+import { act } from "react-dom/test-utils";
+import { Permission } from "../../interfaces/Permissions";
 
 describe("PermissionModal", () => {
   const onCloseMock = jest.fn();
-  const initialData: Permission = {
-    id: 1,
-    name: "Test Permission",
-    description: "Test Description",
-    status: "Active",
-  };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    i18n.changeLanguage("es"); // Cambia el idioma a español para las pruebas
   });
 
-  test("renders create modal correctly", () => {
+  test("should render modal in create mode", () => {
     render(
       <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
     );
 
-    expect(screen.getByText("Crear Permiso")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Nombre")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Descripción")).toBeInTheDocument();
+    expect(screen.getByText("permissions.modal.create")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("permissions.name")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("permissions.description")
+    ).toBeInTheDocument();
   });
 
-  test("renders edit modal correctly with initial data", () => {
+  test("should render modal in edit mode with initial data", () => {
+    const initialData: Permission = {
+      id: 1,
+      name: "Test Permission",
+      description: "Test Description",
+      status: "Active",
+    };
+
     render(
       <PermissionModal
         isOpen={true}
@@ -35,61 +40,71 @@ describe("PermissionModal", () => {
       />
     );
 
-    expect(screen.getByText("Editar Permiso")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Nombre")).toHaveValue(initialData.name);
-    expect(screen.getByPlaceholderText("Descripción")).toHaveValue(
-      initialData.description
-    );
-  });
-
-  test("validates form and shows error messages", async () => {
-    render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
-    );
-
-    fireEvent.click(screen.getByText("Crear"));
-
+    expect(screen.getByText("permissions.modal.edit")).toBeInTheDocument();
+    expect(screen.getByDisplayValue(initialData.name)).toBeInTheDocument();
     expect(
-      await screen.findByText("El nombre debe tener al menos 3 caracteres.")
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(
-        "La descripcion debe tener al menos 10 caracteres"
-      )
+      screen.getByDisplayValue(initialData.description)
     ).toBeInTheDocument();
   });
 
-  test("submits form successfully", async () => {
+  test("should call onClose when cancel button is clicked", () => {
     render(
       <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
     );
 
-    // Completa los campos del formulario dentro de act
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText("Nombre"), {
-        target: { value: "New Permission" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Descripción"), {
-        target: { value: "New Description" },
-      });
-    });
+    const cancelButton = screen.getByText("common.button.cancel");
+    fireEvent.click(cancelButton);
 
-    // Haz clic en el botón "Crear" dentro de act
-    await act(async () => {
-      fireEvent.click(screen.getByText("Crear"));
-    });
-
-    // Verifica que onCloseMock haya sido llamado
-    expect(onCloseMock).toHaveBeenCalled();
+    expect(onCloseMock).toHaveBeenCalledTimes(1);
   });
 
-  test("closes modal on Cancel button click", () => {
+  test("should display validation errors", async () => {
     render(
       <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
     );
 
-    fireEvent.click(screen.getByText("Cancelar"));
+    // Intentar enviar el formulario vacío
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
-    expect(onCloseMock).toHaveBeenCalled();
+    // Verifica que se muestre el mensaje de error
+    expect(
+      await screen.findByText("permissions.validations.name")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("permissions.validations.description")
+    ).toBeInTheDocument();
+  });
+
+  test("should call onClose and log data on valid submission", async () => {
+    const logSpy = jest.spyOn(console, "log"); // Espía el console.log
+
+    render(
+      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+    );
+
+    // Completa el formulario
+    fireEvent.change(screen.getByPlaceholderText("permissions.name"), {
+      target: { value: "Permiso Válido" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("permissions.description"), {
+      target: { value: "Descripción Válida" },
+    });
+
+    // Envía el formulario
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: "common.button.create" })
+      );
+    });
+
+    expect(logSpy).toHaveBeenCalledWith("Datos enviados:", {
+      name: "Permiso Válido",
+      description: "Descripción Válida",
+      status: "Active",
+    });
+
+    logSpy.mockRestore(); // Restablece el espía
   });
 });

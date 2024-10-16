@@ -12,6 +12,7 @@ import Activity from "./pages/Activity";
 import Create from "./pages/Create";
 import Admin from "./pages/Admin";
 import Permissions from "./pages/Permissions";
+import "../i18n";
 
 function App() {
   return (
