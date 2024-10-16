@@ -1,6 +1,6 @@
 import { render, fireEvent, screen } from "@testing-library/react";
 import { PermissionModal } from "./PermissionsModal";
-import i18n from "../../../i18nextConfig"; // Asegúrate de que la ruta sea correcta
+import i18n from "../../../i18nextConfig";
 import { act } from "react";
 import { Permission } from "../../interfaces/Permissions";
 
@@ -8,7 +8,7 @@ describe("PermissionModal", () => {
   const onCloseMock = jest.fn();
 
   beforeEach(() => {
-    i18n.changeLanguage("es"); // Cambia el idioma a español para las pruebas
+    i18n.changeLanguage("es");
   });
 
   test("should render modal in create mode", () => {
@@ -28,7 +28,7 @@ describe("PermissionModal", () => {
       id: 1,
       name: "Test Permission",
       description: "Test Description",
-      status: "Active",
+      service: "Service",
     };
 
     render(
@@ -63,12 +63,10 @@ describe("PermissionModal", () => {
       <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
     );
 
-    // Intentar enviar el formulario vacío
     fireEvent.click(
       screen.getByRole("button", { name: "common.button.create" })
     );
 
-    // Verifica que se muestre el mensaje de error
     expect(
       await screen.findByText("permissions.validations.name")
     ).toBeInTheDocument();
@@ -78,21 +76,21 @@ describe("PermissionModal", () => {
   });
 
   test("should call onClose and log data on valid submission", async () => {
-    const logSpy = jest.spyOn(console, "log"); // Espía el console.log
-
+    const logSpy = jest.spyOn(console, "log");
     render(
       <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
     );
 
-    // Completa el formulario
     fireEvent.change(screen.getByPlaceholderText("permissions.name"), {
       target: { value: "Permiso Válido" },
     });
     fireEvent.change(screen.getByPlaceholderText("permissions.description"), {
       target: { value: "Descripción Válida" },
     });
+    fireEvent.change(screen.getByPlaceholderText("permissions.service"), {
+      target: { value: "Service" },
+    });
 
-    // Envía el formulario
     await act(async () => {
       fireEvent.click(
         screen.getByRole("button", { name: "common.button.create" })
@@ -102,9 +100,9 @@ describe("PermissionModal", () => {
     expect(logSpy).toHaveBeenCalledWith("Datos enviados:", {
       name: "Permiso Válido",
       description: "Descripción Válida",
-      status: "Active",
+      service: "Service",
     });
 
-    logSpy.mockRestore(); // Restablece el espía
+    logSpy.mockRestore();
   });
 });
