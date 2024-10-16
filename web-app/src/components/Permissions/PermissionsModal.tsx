@@ -46,7 +46,7 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
     defaultValues: {
       name: "",
       description: "",
-      status: "Active",
+      service: "service",
     },
   });
   const { t } = useTranslation();
@@ -56,13 +56,13 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
       reset({
         name: initialData.name,
         description: initialData.description,
-        status: initialData.status,
+        service: initialData.service,
       });
     } else {
       reset({
         name: "",
         description: "",
-        status: "Active",
+        service: "",
       });
     }
   }, [initialData, mode, reset]);
@@ -98,6 +98,18 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
                 )}
               </FormControl>
 
+              <FormControl isInvalid={!!errors.service}>
+                <FormLabel>{t("permissions.service")}</FormLabel>
+                <Input
+                  placeholder={t("permissions.service")}
+                  {...register("service")}
+                />
+                {errors.service && (
+                  <FormErrorMessage>
+                    {t(`${errors.service.message}`, { count: 3 })}
+                  </FormErrorMessage>
+                )}
+              </FormControl>
               <FormControl isInvalid={!!errors.description}>
                 <FormLabel>{t("permissions.description")}</FormLabel>
                 <Input

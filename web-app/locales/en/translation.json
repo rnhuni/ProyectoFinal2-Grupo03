@@ -1,6 +1,5 @@
 {
     "common": {
-        "status": "Status",
         "creation_date": "Creation Date",
         "edition_date": "Edition Date",
         "actions": "Actions",
@@ -14,13 +13,14 @@
     },
     "permissions": {
         "name": "Name",
+        "service": "Service",
         "description": "Description",
         "title": "Platform Permissions",
         "create": "Create Permission",
         "validations": {
             "name": "The name must be at least {{count}} characters.",
             "description": "The description must be at least {{count}} characters.",
-            "status": "Invalid value for status."
+            "service": "The service must be at least {{count}} characters."
         },
         "modal": {
             "edit": "Edit Permission",

@@ -1,8 +1,7 @@
 {
     "common": {
-        "status": "Estado",
-        "creation_date": "Fecha de Creación",
-        "edition_date": "Fecha de Edición",
+        "creation_date": "Fecha de creación",
+        "edition_date": "Fecha de edición",
         "actions": "Acciones",
         "actions_edit": "Editar",
         "actions_delete": "Eliminar",
@@ -14,17 +13,18 @@
     },
     "permissions": {
         "name": "Nombre",
+        "service": "Servicio",
         "description": "Descripción",
-        "title": "Permisos de la Plataforma",
-        "create": "Crear Permiso",
+        "title": "Permisos de la plataforma",
+        "create": "Crear permiso",
         "validations": {
             "name": "El nombre debe tener al menos {{count}} caracteres.",
             "description": "La descripción debe tener al menos {{count}} caracteres.",
-            "status": "Valor no válido para el estado."
+            "service": "El servicio debe tener al menos {{count}} caracteres."
         },
         "modal": {
-            "edit": "Editar Permiso",
-            "create": "Crear Permiso"
+            "edit": "Editar permiso",
+            "create": "Crear permiso"
         }
     }
 }

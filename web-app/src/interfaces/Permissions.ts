@@ -2,7 +2,7 @@ export interface Permission {
   id: number;
   name: string;
   description: string;
-  status: 'Active' | 'Completed' | 'Inactive';
+  service: string;
   createdAt?: string;
   updatedAt?: string;
 }
