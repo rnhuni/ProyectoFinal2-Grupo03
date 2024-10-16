@@ -1,7 +1,7 @@
 import { render, fireEvent, screen } from "@testing-library/react";
 import { PermissionModal } from "./PermissionsModal";
 import i18n from "../../../i18nextConfig"; // Asegúrate de que la ruta sea correcta
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Permission } from "../../interfaces/Permissions";
 
 describe("PermissionModal", () => {
