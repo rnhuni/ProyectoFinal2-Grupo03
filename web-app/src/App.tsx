@@ -11,6 +11,8 @@ import Roles from "./pages/Roles";
 import Activity from "./pages/Activity";
 import Create from "./pages/Create";
 import Admin from "./pages/Admin";
+import Permissions from "./pages/Permissions";
+import "../i18n";
 
 function App() {
   return (
@@ -38,6 +40,7 @@ function App() {
           <Route path="activity" element={<Activity />} />
           <Route path="create" element={<Create />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="permissions" element={<Permissions />} />
         </Route>
       </Routes>
     </Router>
