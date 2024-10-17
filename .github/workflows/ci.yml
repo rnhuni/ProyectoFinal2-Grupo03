@@ -95,7 +95,7 @@ jobs:
       - name: Run tests for ServicioSistema
         working-directory: ./microservices/ServicioSistema
         run: |
-          coverage run -m pytest
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=80
           coverage lcov -o coverage/lcov.info
 
       - name: Run SonarCloud Scan for ServicioSistema
@@ -108,7 +108,7 @@ jobs:
             -Dsonar.organization=rnhuni
             -Dsonar.exclusions=**/tests/**, **/__init__.py, **/app.py, **/__init__.py,**/users/**
             -Dsonar.sources=.
-            -Dsonar.python.coverage.reportPaths=coverage/lcov.info
+            -Dsonar.python.coverage.reportPaths=coverage.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
