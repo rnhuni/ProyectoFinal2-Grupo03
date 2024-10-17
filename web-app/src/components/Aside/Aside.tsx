@@ -11,6 +11,7 @@ import {
   ClipboardData,
   Gear,
   Person,
+  ListCheck,
 } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 
@@ -30,6 +31,11 @@ const Sidebar = () => {
     { name: "Planes", icon: <CashStack />, path: "/dashboard/plans" },
     { name: "Roles", icon: <People />, path: "/dashboard/roles" },
     { name: "Actividad", icon: <ClipboardData />, path: "/dashboard/activity" },
+    {
+      name: "Permisos",
+      icon: <ListCheck />,
+      path: "/dashboard/permissions",
+    },
     { name: "Admin", icon: <Gear />, path: "/dashboard/admin" },
   ];
 

@@ -1,0 +1,30 @@
+{
+    "common": {
+        "creation_date": "Creation Date",
+        "edition_date": "Edition Date",
+        "actions": "Actions",
+        "actions_edit": "Edit",
+        "actions_delete": "Delete",
+        "button": {
+            "cancel": "Cancel",
+            "edit": "Edit",
+            "create": "Create"
+        }
+    },
+    "permissions": {
+        "name": "Name",
+        "service": "Service",
+        "description": "Description",
+        "title": "Platform Permissions",
+        "create": "Create Permission",
+        "validations": {
+            "name": "The name must be at least {{count}} characters.",
+            "description": "The description must be at least {{count}} characters.",
+            "service": "The service must be at least {{count}} characters."
+        },
+        "modal": {
+            "edit": "Edit Permission",
+            "create": "Create Permission"
+        }
+    }
+}
