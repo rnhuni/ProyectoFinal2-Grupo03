@@ -95,8 +95,7 @@ jobs:
       - name: Run tests for ServicioSistema
         working-directory: ./microservices/ServicioSistema
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=80
-          coverage lcov -o coverage/lcov.info
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=80          
 
       - name: Run SonarCloud Scan for ServicioSistema
         uses: SonarSource/sonarcloud-github-action@v2
