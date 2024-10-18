@@ -1,28 +1,22 @@
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 from .model import Model, Base
-from .role_permission import RolePermission
 from .subscription_plan_role import SubscriptionPlanRole
 
-class Role(Model):
-    __tablename__ = 'role'
+class SubscriptionPlan(Model):
+    __tablename__ = 'subscription_plan'
     id = Column(String, nullable=False, primary_key=True)
     name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
 
-    permissions = relationship(
-        'RolePermission', 
-        backref='role',
-        cascade="all, delete-orphan",
-        lazy='joined'
-    )
-
-    plans = relationship(
-        'SubscriptionPlan', 
+    roles = relationship(
+        'Role', 
         secondary='subscription_plan_role', 
-        back_populates='roles'
+        back_populates='plans'
     )
 
-    def __init__(self, id, name):
+    def __init__(self, id, name, description):
         Model.__init__(self)
         self.id = id
         self.name = name
+        self.description = description

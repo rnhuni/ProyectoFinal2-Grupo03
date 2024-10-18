@@ -13,9 +13,9 @@ class TestCreatePermission():
   
     def test_create_permission(self):
         test_data = {
-            "id": 1,
-            "name": "Test Permission",
-            "service": "UserService",
+            "id": "pem-s-1",
+            "name": "1",
+            "service": "s",
             "description": "Permission to manage users"
         }
 
@@ -32,9 +32,9 @@ class TestCreatePermission():
     def test_create_permission_failure_on_commit(self, mocker):
         """Test when commit fails"""
         test_data = {
-            "id": 2,
-            "name": "Test Permission Fail",
-            "service": "OrderService",
+            "id": "pem-s-2",
+            "name": "2",
+            "service": "s",
             "description": "Permission to manage orders"
         }
         self.mock_commit.side_effect = Exception("Commit failed")
