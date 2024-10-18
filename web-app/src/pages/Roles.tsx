@@ -31,67 +31,96 @@ const Roles = () => {
   // Lista de usuarios como ejemplo
   const roles = [
     {
-      id: 1,
-      name: "Admin",
-      description: "Rol con acceso total a todos los módulos y funciones",
+      id: "id-role-222",
+      name: "name-role-222",
       permissions: [
-        { id: 101, name: "manage-users", description: "Permiso para gestionar usuarios", resource: "Usuarios" },
-        { id: 102, name: "read-reports", description: "Permiso para leer reportes", resource: "Reportes" },
-        { id: 103, name: "write-reports", description: "Permiso para escribir reportes", resource: "Reportes" },
+        {
+          id: "pem-id-role-222-1",
+          actions: [
+            "write",
+            "read"
+          ]
+        },
+        {
+          id: "pem-id-role-222-2",
+          actions: [
+            "write"
+          ]
+        },
+        {
+          id: "pem-id-role-222-3",
+          actions: [
+            "write",
+            "read"
+          ]
+        }
       ],
-      createdAt: "2024-10-15",
-      updatedAt: "2024-10-16",
+      "createdAt": "Thu, 17 Oct 2024 18:22:49 GMT",
+      "updatedAt": "Thu, 17 Oct 2024 18:22:49 GMT"
     },
     {
-      id: 2,
-      name: "Editor",
-      description: "Rol con permisos para crear y editar contenido",
+      id: "id-role-333",
+      name: "name-role-333",
       permissions: [
-        { id: 201, name: "write-posts", description: "Permiso para escribir publicaciones", resource: "Publicaciones" },
-        { id: 202, name: "update-posts", description: "Permiso para editar publicaciones", resource: "Publicaciones" },
+        {
+          id: "pem-id-role-333-1",
+          actions: [
+            "write",
+            "read"
+          ]
+        },
+        {
+          id: "pem-id-role-333-2",
+          actions: [
+            "write"
+          ]
+        },
+        {
+          id: "pem-id-role-333-3",
+          actions: [
+            "write",
+            "read"
+          ]
+        }
       ],
-      createdAt: "2024-10-10",
-      updatedAt: "2024-10-12",
+      "createdAt": "Thu, 17 Oct 2024 18:22:49 GMT",
+      "updatedAt": "Thu, 17 Oct 2024 18:22:49 GMT"
     },
     {
-      id: 3,
-      name: "Viewer",
-      description: "Rol con permisos solo de lectura",
+      id: "id-role-444",
+      name: "name-role-444",
       permissions: [
-        { id: 301, name: "read-posts", description: "Permiso para leer publicaciones", resource: "Publicaciones" },
-        { id: 302, name: "read-reports", description: "Permiso para leer reportes", resource: "Reportes" },
+        {
+          id: "pem-id-role-444-1",
+          actions: [
+            "write",
+            "read"
+          ]
+        },
+        {
+          id: "pem-id-role-444-2",
+          actions: [
+            "write"
+          ]
+        },
+        {
+          id: "pem-id-role-444-3",
+          actions: [
+            "write",
+            "read"
+          ]
+        }
       ],
-      createdAt: "2024-09-15",
-    },
-    {
-      id: 4,
-      name: "Support",
-      description: "Rol con permisos para gestionar solicitudes de soporte",
-      permissions: [
-        { id: 401, name: "read-tickets", description: "Permiso para leer tickets de soporte", resource: "Soporte" },
-        { id: 402, name: "update-tickets", description: "Permiso para actualizar tickets de soporte", resource: "Soporte" },
-      ],
-      createdAt: "2024-08-20",
-      updatedAt: "2024-08-22",
-    },
-    {
-      id: 5,
-      name: "Auditor",
-      description: "Rol con permisos para auditar sistemas y revisar logs",
-      permissions: [
-        { id: 501, name: "read-logs", description: "Permiso para leer logs del sistema", resource: "Sistemas" },
-        { id: 502, name: "read-audits", description: "Permiso para leer reportes de auditoría", resource: "Auditoría" },
-      ],
-      createdAt: "2024-07-30",
-      updatedAt: "2024-08-01",
-    },
+      "createdAt": "Thu, 17 Oct 2024 18:22:49 GMT",
+      "updatedAt": "Thu, 17 Oct 2024 18:22:49 GMT"
+    }
+
   ];
 
   const handleEdit = (rol: Role) => {
     const role: Role = {
       id: rol.id,
       name: rol.name,
-      description: rol.description, // Si necesitas userId como propiedad separada
       permissions: rol.permissions,
       createdAt: rol.createdAt,
       updatedAt: rol.updatedAt,
@@ -130,7 +159,6 @@ const Roles = () => {
         <Thead>
           <Tr>
             <Th>Nombre</Th>
-            <Th>Descripcion</Th>
             <Th>Permisos</Th>
             <Th>Fecha Creación</Th>
             <Th>FEcha Edición</Th>
@@ -141,8 +169,7 @@ const Roles = () => {
           {roles.map((rol) => (
             <Tr key={rol.id}>
               <Td>{rol.name}</Td>
-              <Td>{rol.description}</Td>
-              <Td>{rol.permissions.map(permission => permission.name).join(', ')}</Td>
+              <Td>{rol.permissions.map(permission => permission.id).join(', ')}</Td>
               <Td>{rol.createdAt || ""}</Td>
               <Td>{rol.updatedAt || ""}</Td>
               <Td>

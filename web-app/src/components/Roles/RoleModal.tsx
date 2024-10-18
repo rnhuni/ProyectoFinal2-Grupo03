@@ -91,25 +91,13 @@ const RoleModal: React.FC<RoleModalProps> = ({
                 )}
               </FormControl>
 
-              <FormControl isInvalid={!!errors.description}>
-                <FormLabel>Descripción</FormLabel>
-                <Textarea
-                  placeholder="Descripción del rol"
-                  {...register("description")}
-                />
-                {errors.description && (
-                  <FormErrorMessage>
-                    {errors.description.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
 
               <>
                 {/* Mostrar roles actuales del usuario */}
                 {/* Mostrar roles actuales del usuario */}
                 {initialData?.permissions?.length ? (
                   <FormControl>
-                    <FormLabel>Roles actuales</FormLabel>
+                    <FormLabel>Permisos actuales</FormLabel>
                     <Stack spacing={2}>
                       {initialData.permissions.map((permission) => (
                         <Badge key={permission.id} colorScheme="blue">
