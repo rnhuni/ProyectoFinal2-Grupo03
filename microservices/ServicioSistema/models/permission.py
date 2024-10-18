@@ -6,13 +6,13 @@ class Permission(Model):
     __tablename__ = 'permission'
     id = Column(String, nullable=False, primary_key=True)
     name = Column(String, nullable=False)
-    service = Column(String, nullable=False)
+    resource = Column(String, nullable=False)
     description = Column(String, nullable=True)
     
-    def  __init__(self, id, name, service, description):
+    def  __init__(self, id, name, resource, description):
         Model.__init__(self)
 
         self.id = id
         self.name = name
-        self.service = service
+        self.resource = resource
         self.description = description

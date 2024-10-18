@@ -15,7 +15,7 @@ class TestCreatePermission():
         test_data = {
             "id": "pem-s-1",
             "name": "1",
-            "service": "s",
+            "resource": "s",
             "description": "Permission to manage users"
         }
 
@@ -26,7 +26,7 @@ class TestCreatePermission():
         assert isinstance(permission_created, Permission)
         assert permission_created.id == test_data['id']
         assert permission_created.name == test_data['name']
-        assert permission_created.service == test_data['service']
+        assert permission_created.resource == test_data['resource']
         assert permission_created.description == test_data['description']
     
     def test_create_permission_failure_on_commit(self, mocker):
@@ -34,7 +34,7 @@ class TestCreatePermission():
         test_data = {
             "id": "pem-s-2",
             "name": "2",
-            "service": "s",
+            "resource": "s",
             "description": "Permission to manage orders"
         }
         self.mock_commit.side_effect = Exception("Commit failed")
@@ -51,7 +51,7 @@ class TestCreatePermission():
         invalid_data = {
             "id": None,  # Invalid ID
             "name": "",
-            "service": "",
+            "resource": "",
             "description": ""
         }
 

@@ -13,22 +13,22 @@ def create_permission():
     try:
         data = request.get_json()
         name = data.get('name').strip()
-        service = data.get('service').strip()
+        resource = data.get('resource').strip()
         description = data.get('description').strip()
 
-        if not name or not service or len(name) < 1 or len(service) < 1:
+        if not name or not resource or len(name) < 1 or len(resource) < 1:
             return "Invalid parameters", 400
 
-        id = build_permission_id(service, name)
+        id = build_permission_id(resource, name)
         if ExistsPermission(id=id).execute():
             return "Already exists", 400
         
-        data = CreatePermission(id, name, service, description).execute()
+        data = CreatePermission(id, name, resource, description).execute()
 
         return jsonify({
             "id": data.id,
             "name": data.name,
-            "service": data.service,
+            "resource": data.resource,
             "createdAt": data.createdAt,
             "updatedAt": data.updatedAt
         }), 201
@@ -46,7 +46,7 @@ def get_permission(permission_id):
         return jsonify({
             "id": permission.id,
             "name": permission.name,
-            "service": permission.service,
+            "resource": permission.resource,
             "description": permission.description,
             "createdAt": permission.createdAt,
             "updatedAt": permission.updatedAt
@@ -63,7 +63,7 @@ def get_all_permissions():
         return jsonify([{
             "id": perm.id,
             "name": perm.name,
-            "service": perm.service,
+            "resource": perm.resource,
             "description": perm.description,
             "createdAt": perm.createdAt,
             "updatedAt": perm.updatedAt

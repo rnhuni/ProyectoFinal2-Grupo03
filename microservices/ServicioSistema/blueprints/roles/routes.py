@@ -21,15 +21,15 @@ def create_role():
             return "Name is required", 400
         
         id = build_role_id(name)
-        if ExistsRole(id).execute():
+        if ExistsRole(id).execute() or id == "role-admin":
             return "Role already exists", 400
         
         valid_permissions = []
         for perm in permissions:
             permission_id = perm.get('id')
-            scopes = perm.get('scopes', [])
+            actions = perm.get('actions', [])
 
-            if len(scopes) < 1:
+            if len(actions) < 1:
                 return f"Permission '{permission_id}' does not have accessLevel list values", 400
 
             if not ExistsPermission(id=permission_id).execute():
@@ -37,7 +37,7 @@ def create_role():
 
             valid_permissions.append({
                 "permission": permission_id,
-                "scopes": scopes
+                "actions": actions
             })
 
         if len(valid_permissions) < 1:
@@ -69,11 +69,9 @@ def get_role(role_id):
             if permission_id not in permission_dict:
                 permission_dict[permission_id] = {
                     "id": rp.permission.id,
-                    "name": rp.permission.name,
-                    "service": rp.permission.service,
-                    "scopes": []
+                    "actions": []
                 }
-            permission_dict[permission_id]["scopes"].append(rp.scope)
+            permission_dict[permission_id]["actions"].append(rp.action)
 
         permissions = list(permission_dict.values())
 
@@ -103,11 +101,9 @@ def get_all_roles():
                 if permission_id not in permission_dict:
                     permission_dict[permission_id] = {
                         "id": rp.permission.id,
-                        "name": rp.permission.name,
-                        "service": rp.permission.service,
-                        "scopes": []
+                        "actions": []
                     }
-                permission_dict[permission_id]["scopes"].append(rp.scope)
+                permission_dict[permission_id]["actions"].append(rp.action)
 
             permissions = list(permission_dict.values())
 
