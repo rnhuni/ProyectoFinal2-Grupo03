@@ -30,7 +30,7 @@ def test_create_role_success(client, mocker):
     mocker.patch('ServicioSistema.utils.build_role_id', return_value="role-id")
 
     json_data = {
-        "name": "Admin",
+        "name": "Admin2",
         "permissions": [
             {"id": "permission-1", "actions": ["read", "write"]},
             {"id": "permission-2", "actions": ["read"]}
@@ -65,7 +65,7 @@ def test_create_role_permission_not_exist(client, mocker):
     mocker.patch('ServicioSistema.commands.permission_exists.ExistsPermission.execute', return_value=False)
 
     json_data = {
-        "name": "Admin",
+        "name": "Admin2",
         "permissions": [
             {"id": "invalid-permission", "actions": ["read"]}
         ]
@@ -81,7 +81,7 @@ def test_create_role_permission_missing_actions(client, mocker):
     mocker.patch('ServicioSistema.commands.permission_exists.ExistsPermission.execute', return_value=True)
 
     json_data = {
-        "name": "Admin",
+        "name": "Admin2",
         "permissions": [
             {"id": "permission-1", "actions": []}
         ]
@@ -97,7 +97,7 @@ def test_create_role_missing_permissions(client, mocker):
     mocker.patch('ServicioSistema.commands.permission_exists.ExistsPermission.execute', return_value=True)
 
     json_data = {
-        "name": "Admin",
+        "name": "Admin2",
         "permissions": []
     }
 
@@ -123,7 +123,7 @@ def test_create_role_internal_error(client, mocker):
     mocker.patch('ServicioSistema.commands.role_exists.ExistsRole.execute', side_effect=Exception("Some internal error"))
 
     json_data = {
-        "name": "Admin",
+        "name": "Admin2",
         "permissions": [
             {"id": "permission-1", "actions": ["read", "write"]}
         ]
