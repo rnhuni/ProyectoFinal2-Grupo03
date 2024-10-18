@@ -1,4 +1,5 @@
 from  sqlalchemy  import  Column, String, ForeignKey
+from sqlalchemy.orm import relationship
 from .model  import  Model
 
 class RolePermission(Model):
@@ -6,6 +7,8 @@ class RolePermission(Model):
     role_id = Column('role_id', String, ForeignKey('role.id'), primary_key=True)
     permission_id = Column('permission_id', String, ForeignKey('permission.id'), primary_key=True)
     scope = Column(String, primary_key=True)
+
+    permission = relationship("Permission", backref="role_permissions")
     
     def  __init__(self, role_id, permission_id, scope):
         Model.__init__(self)
