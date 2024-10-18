@@ -13,14 +13,14 @@
     },
     "permissions": {
         "name": "Nombre",
-        "service": "Servicio",
+        "resource": "Recurso",
         "description": "Descripción",
         "title": "Permisos de la plataforma",
         "create": "Crear permiso",
         "validations": {
             "name": "El nombre debe tener al menos {{count}} caracteres.",
             "description": "La descripción debe tener al menos {{count}} caracteres.",
-            "service": "El servicio debe tener al menos {{count}} caracteres."
+            "resource": "El recurso debe tener al menos {{count}} caracteres."
         },
         "modal": {
             "edit": "Editar permiso",

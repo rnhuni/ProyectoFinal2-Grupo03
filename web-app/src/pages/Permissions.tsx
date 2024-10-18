@@ -32,18 +32,18 @@ const Permissions = () => {
 
   const permissions: Permission[] = [
     {
-      id: 1,
+      id: "1",
       name: "Crear usuarios",
       description: "Permite crear nuevos usuarios en el sistema.",
-      service: "Users",
+      resource: "Users",
       createdAt: "Nov 30, 2023",
       updatedAt: "Dec 11, 2023",
     },
     {
-      id: 2,
+      id: "2",
       name: "Ver usuarios",
       description: "Permite ver la lista de usuarios registrados.",
-      service: "Users",
+      resource: "Users",
       createdAt: "Jun 18, 2023",
       updatedAt: "Nov 9, 2023",
     },
@@ -80,7 +80,7 @@ const Permissions = () => {
         <Thead>
           <Tr>
             <Th>{t("permissions.name")}</Th>
-            <Th>{t("permissions.service")}</Th>
+            <Th>{t("permissions.resource")}</Th>
             <Th>{t("permissions.description")}</Th>
             <Th>{t("common.creation_date")}</Th>
             <Th>{t("common.edition_date")}</Th>
@@ -91,7 +91,7 @@ const Permissions = () => {
           {permissions.map((permission) => (
             <Tr key={permission.id}>
               <Td>{permission.name}</Td>
-              <Td>{permission.service}</Td>
+              <Td>{permission.resource}</Td>
               <Td>{permission.description}</Td>
               <Td>{permission.createdAt || "None"}</Td>
               <Td>{permission.updatedAt || "None"}</Td>

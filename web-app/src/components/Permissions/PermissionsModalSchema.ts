@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const permissionsModalSchema = z.object({
-    service: z
+    resource: z
         .string()
-        .min(3, { message: 'permissions.validations.service' }),
+        .min(3, { message: 'permissions.validations.resource' }),
     name: z
         .string()
         .min(3, { message: 'permissions.validations.name' }),

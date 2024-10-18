@@ -13,14 +13,14 @@
     },
     "permissions": {
         "name": "Name",
-        "service": "Service",
+        "resource": "Resource",
         "description": "Description",
         "title": "Platform Permissions",
         "create": "Create Permission",
         "validations": {
             "name": "The name must be at least {{count}} characters.",
             "description": "The description must be at least {{count}} characters.",
-            "service": "The service must be at least {{count}} characters."
+            "resource": "The resource must be at least {{count}} characters."
         },
         "modal": {
             "edit": "Edit Permission",

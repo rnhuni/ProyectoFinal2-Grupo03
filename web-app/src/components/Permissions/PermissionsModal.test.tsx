@@ -25,10 +25,10 @@ describe("PermissionModal", () => {
 
   test("should render modal in edit mode with initial data", () => {
     const initialData: Permission = {
-      id: 1,
+      id: "1",
       name: "Test Permission",
       description: "Test Description",
-      service: "Service",
+      resource: "resource",
     };
 
     render(
@@ -87,8 +87,8 @@ describe("PermissionModal", () => {
     fireEvent.change(screen.getByPlaceholderText("permissions.description"), {
       target: { value: "Descripción Válida" },
     });
-    fireEvent.change(screen.getByPlaceholderText("permissions.service"), {
-      target: { value: "Service" },
+    fireEvent.change(screen.getByPlaceholderText("permissions.resource"), {
+      target: { value: "resource" },
     });
 
     await act(async () => {
@@ -100,7 +100,7 @@ describe("PermissionModal", () => {
     expect(logSpy).toHaveBeenCalledWith("Datos enviados:", {
       name: "Permiso Válido",
       description: "Descripción Válida",
-      service: "Service",
+      resource: "resource",
     });
 
     logSpy.mockRestore();
