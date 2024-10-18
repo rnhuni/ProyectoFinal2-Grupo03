@@ -13,6 +13,7 @@ import {
   Stack,
   FormErrorMessage,
   Textarea,
+  Badge,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -20,8 +21,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Role } from "../../interfaces/Role"; // Asegúrate de usar la interfaz correcta aquí
 import { roleSchema } from "./RolesModalSchema";
-
-
 
 type FormData = z.infer<typeof roleSchema>;
 
@@ -105,13 +104,29 @@ const RoleModal: React.FC<RoleModalProps> = ({
                 )}
               </FormControl>
 
+              <>
+                {/* Mostrar roles actuales del usuario */}
+                {/* Mostrar roles actuales del usuario */}
+                {initialData?.permissions?.length ? (
+                  <FormControl>
+                    <FormLabel>Roles actuales</FormLabel>
+                    <Stack spacing={2}>
+                      {initialData.permissions.map((permission) => (
+                        <Badge key={permission.id} colorScheme="blue">
+                          {permission.name}
+                        </Badge>
+                      ))}
+                    </Stack>
+                  </FormControl>
+                ) : null}
+              </>
+
               <FormControl isInvalid={!!errors.permissions}>
                 <FormLabel>Permisos (IDs separados por coma)</FormLabel>
                 <Input
                   placeholder="Permisos (ej: 1, 2, 3)"
                   {...register("permissions", {
-                    setValueAs: (v) =>
-                      v.map((n: Role) => n.description),
+                    setValueAs: (v) => v.map((n: Role) => n.description),
                   })}
                 />
                 {errors.permissions && (

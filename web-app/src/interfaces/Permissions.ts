@@ -1,8 +1,8 @@
 export interface Permission {
-  id: number;
+  id: string;
   name: string;
-  description: string;
   service: string;
+  description: string;
   createdAt?: string;
   updatedAt?: string;
 }

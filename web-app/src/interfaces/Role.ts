@@ -4,7 +4,7 @@ export interface Role {
   id: number;
   name: string;
   description: string;
-  permissions: Permission[];
+  permissions: Permission[] | undefined;
   createdAt?: string;
   updatedAt?: string;
 }
