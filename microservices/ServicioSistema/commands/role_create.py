@@ -19,12 +19,12 @@ class CreateRole(BaseCommannd):
             session.flush()
             for perm in self.permissions:
                 permission_id = perm.get('permission')
-                scopes = perm.get('scopes')
-                for scope in scopes:
+                actions = perm.get('actions')
+                for action in actions:
                     role_permission = RolePermission(
                             role_id=role.id,
                             permission_id=permission_id,
-                            scope=scope
+                            action=action
                         )
                     print(f"role_permission={role_permission}")
                     session.add(role_permission)

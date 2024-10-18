@@ -19,11 +19,11 @@ class TestCreateRole():
             "permissions": [
                 {
                     "permission": 101,
-                    "scopes": ["read", "write"]
+                    "actions": ["read", "write"]
                 },
                 {
                     "permission": 102,
-                    "scopes": ["read"]
+                    "actions": ["read"]
                 }
             ]
         }

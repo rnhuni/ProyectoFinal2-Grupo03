@@ -9,10 +9,10 @@ def build_role_id(name):
     slug = generate_slug(name)
     return f"role-{slug}" if not slug.startswith("role-") else slug
 
-def build_permission_id(service, name):
-    service_slug = generate_slug(service)
+def build_permission_id(resource, name):
+    resource_slug = generate_slug(resource)
     name_slug = generate_slug(name)
-    return f"pem-{service_slug}-{name_slug}" if not (service_slug.startswith("pem-") or name_slug.startswith("pem-")) else f"{service_slug}-{name_slug}"
+    return f"pem-{resource_slug}-{name_slug}" if not (resource_slug.startswith("pem-") or name_slug.startswith("pem-")) else f"{service_slug}-{name_slug}"
 
 def generate_slug(name):
     name = name.lower()

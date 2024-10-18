@@ -21,7 +21,7 @@ def test_create_permission_success(client, mocker):
     mock_permission = MagicMock()
     mock_permission.id = "permission-id"
     mock_permission.name = "Test"
-    mock_permission.service = "TestService"
+    mock_permission.resource = "TestService"
     mock_permission.createdAt = "2024-01-01"
     mock_permission.updatedAt = "2024-01-01"
 
@@ -30,7 +30,7 @@ def test_create_permission_success(client, mocker):
 
     json_data = {
         "name": "Test",
-        "service": "TestService",
+        "resource": "TestService",
         "description": "Permission description"
     }
 
@@ -40,7 +40,7 @@ def test_create_permission_success(client, mocker):
     assert response.json == {
         "id": "permission-id",
         "name": "Test",
-        "service": "TestService",
+        "resource": "TestService",
         "createdAt": "2024-01-01",
         "updatedAt": "2024-01-01"
     }
@@ -50,7 +50,7 @@ def test_create_permission_already_exists(client, mocker):
 
     json_data = {
         "name": "Test",
-        "service": "TestService",
+        "resource": "TestService",
         "description": "Permission description"
     }
 
@@ -62,7 +62,7 @@ def test_create_permission_already_exists(client, mocker):
 def test_create_permission_invalid_parameters(client):
     json_data = {
         "name": "",
-        "service": "TestService",
+        "resource": "TestService",
         "description": "Permission description"
     }
 
@@ -76,7 +76,7 @@ def test_create_permission_internal_error(client, mocker):
 
     json_data = {
         "name": "Test",
-        "service": "TestService",
+        "resource": "TestService",
         "description": "Permission description"
     }
 
@@ -89,7 +89,7 @@ def test_get_permission_success(client, mocker):
     mock_permission = MagicMock()
     mock_permission.id = "permission-id"
     mock_permission.name = "Test"
-    mock_permission.service = "TestService"
+    mock_permission.resource = "TestService"
     mock_permission.description = "Permission description"
     mock_permission.createdAt = "2024-01-01"
     mock_permission.updatedAt = "2024-01-01"
@@ -102,7 +102,7 @@ def test_get_permission_success(client, mocker):
     assert response.json == {
         "id": "permission-id",
         "name": "Test",
-        "service": "TestService",
+        "resource": "TestService",
         "description": "Permission description",
         "createdAt": "2024-01-01",
         "updatedAt": "2024-01-01"
@@ -128,7 +128,7 @@ def test_get_all_permissions_success(client, mocker):
     mock_permission1 = MagicMock()
     mock_permission1.id = "permission-id-1"
     mock_permission1.name = "Test 1"
-    mock_permission1.service = "TestService"
+    mock_permission1.resource = "TestService"
     mock_permission1.description = "Permission description 1"
     mock_permission1.createdAt = "2024-01-01"
     mock_permission1.updatedAt = "2024-01-01"
@@ -136,7 +136,7 @@ def test_get_all_permissions_success(client, mocker):
     mock_permission2 = MagicMock()
     mock_permission2.id = "permission-id-2"
     mock_permission2.name = "Test 2"
-    mock_permission2.service = "TestService"
+    mock_permission2.resource = "TestService"
     mock_permission2.description = "Permission description 2"
     mock_permission2.createdAt = "2024-01-01"
     mock_permission2.updatedAt = "2024-01-01"
@@ -150,7 +150,7 @@ def test_get_all_permissions_success(client, mocker):
         {
             "id": "permission-id-1",
             "name": "Test 1",
-            "service": "TestService",
+            "resource": "TestService",
             "description": "Permission description 1",
             "createdAt": "2024-01-01",
             "updatedAt": "2024-01-01"
@@ -158,7 +158,7 @@ def test_get_all_permissions_success(client, mocker):
         {
             "id": "permission-id-2",
             "name": "Test 2",
-            "service": "TestService",
+            "resource": "TestService",
             "description": "Permission description 2",
             "createdAt": "2024-01-01",
             "updatedAt": "2024-01-01"

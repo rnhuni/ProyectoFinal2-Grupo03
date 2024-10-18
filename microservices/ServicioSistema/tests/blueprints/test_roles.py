@@ -32,8 +32,8 @@ def test_create_role_success(client, mocker):
     json_data = {
         "name": "Admin",
         "permissions": [
-            {"id": "permission-1", "scopes": ["read", "write"]},
-            {"id": "permission-2", "scopes": ["read"]}
+            {"id": "permission-1", "actions": ["read", "write"]},
+            {"id": "permission-2", "actions": ["read"]}
         ]
     }
 
@@ -67,7 +67,7 @@ def test_create_role_permission_not_exist(client, mocker):
     json_data = {
         "name": "Admin",
         "permissions": [
-            {"id": "invalid-permission", "scopes": ["read"]}
+            {"id": "invalid-permission", "actions": ["read"]}
         ]
     }
 
@@ -76,14 +76,14 @@ def test_create_role_permission_not_exist(client, mocker):
     assert response.status_code == 400
     assert response.data == b"Permission 'invalid-permission' does not exist"
 
-def test_create_role_permission_missing_scopes(client, mocker):
+def test_create_role_permission_missing_actions(client, mocker):
     mocker.patch('ServicioSistema.commands.role_exists.ExistsRole.execute', return_value=False)
     mocker.patch('ServicioSistema.commands.permission_exists.ExistsPermission.execute', return_value=True)
 
     json_data = {
         "name": "Admin",
         "permissions": [
-            {"id": "permission-1", "scopes": []}
+            {"id": "permission-1", "actions": []}
         ]
     }
 
@@ -110,7 +110,7 @@ def test_create_role_invalid_name(client):
     json_data = {
         "name": "",
         "permissions": [
-            {"id": "permission-1", "scopes": ["read", "write"]}
+            {"id": "permission-1", "actions": ["read", "write"]}
         ]
     }
 
@@ -125,7 +125,7 @@ def test_create_role_internal_error(client, mocker):
     json_data = {
         "name": "Admin",
         "permissions": [
-            {"id": "permission-1", "scopes": ["read", "write"]}
+            {"id": "permission-1", "actions": ["read", "write"]}
         ]
     }
 
@@ -144,14 +144,14 @@ def test_get_role_success(client, mocker):
     mock_permission_1 = MagicMock()
     mock_permission_1.permission.id = "permission-1"
     mock_permission_1.permission.name = "Permission 1"
-    mock_permission_1.permission.service = "Service 1"
-    mock_permission_1.scope = "read"
+    mock_permission_1.permission.resource = "Service 1"
+    mock_permission_1.action = "read"
 
     mock_permission_2 = MagicMock()
     mock_permission_2.permission.id = "permission-2"
     mock_permission_2.permission.name = "Permission 2"
-    mock_permission_2.permission.service = "Service 2"
-    mock_permission_2.scope = "write"
+    mock_permission_2.permission.resource = "Service 2"
+    mock_permission_2.action = "write"
 
     mock_role.permissions = [mock_permission_1, mock_permission_2]
 
@@ -166,15 +166,11 @@ def test_get_role_success(client, mocker):
         "permissions": [
             {
                 "id": "permission-1",
-                "name": "Permission 1",
-                "service": "Service 1",
-                "scopes": ["read"]
+                "actions": ["read"]
             },
             {
                 "id": "permission-2",
-                "name": "Permission 2",
-                "service": "Service 2",
-                "scopes": ["write"]
+                "actions": ["write"]
             }
         ],
         "createdAt": "2024-01-01",
@@ -207,8 +203,8 @@ def test_get_all_roles_success(client, mocker):
     mock_permission_1 = MagicMock()
     mock_permission_1.permission.id = "permission-1"
     mock_permission_1.permission.name = "Permission 1"
-    mock_permission_1.permission.service = "Service 1"
-    mock_permission_1.scope = "read"
+    mock_permission_1.permission.resource = "Service 1"
+    mock_permission_1.action = "read"
 
     mock_role_1.permissions = [mock_permission_1]
 
@@ -221,8 +217,8 @@ def test_get_all_roles_success(client, mocker):
     mock_permission_2 = MagicMock()
     mock_permission_2.permission.id = "permission-2"
     mock_permission_2.permission.name = "Permission 2"
-    mock_permission_2.permission.service = "Service 2"
-    mock_permission_2.scope = "write"
+    mock_permission_2.permission.resource = "Service 2"
+    mock_permission_2.action = "write"
 
     mock_role_2.permissions = [mock_permission_2]
 
@@ -238,9 +234,7 @@ def test_get_all_roles_success(client, mocker):
             "permissions": [
                 {
                     "id": "permission-1",
-                    "name": "Permission 1",
-                    "service": "Service 1",
-                    "scopes": ["read"]
+                    "actions": ["read"]
                 }
             ],
             "createdAt": "2024-01-01",
@@ -252,9 +246,7 @@ def test_get_all_roles_success(client, mocker):
             "permissions": [
                 {
                     "id": "permission-2",
-                    "name": "Permission 2",
-                    "service": "Service 2",
-                    "scopes": ["write"]
+                    "actions": ["write"]
                 }
             ],
             "createdAt": "2024-01-01",
