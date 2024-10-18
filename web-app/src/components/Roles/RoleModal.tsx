@@ -19,24 +19,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Role } from "../../interfaces/Role"; // Asegúrate de usar la interfaz correcta aquí
+import { roleSchema } from "./RolesModalSchema";
 
-// Esquema de validación de Zod
-const schema = z.object({
-  roleName: z
-    .string()
-    .min(3, { message: "El nombre del rol debe tener al menos 3 caracteres." }),
-  email: z.string().email({ message: "Debe ser un correo válido." }),
-  role: z.string().nonempty({ message: "El rol es requerido." }),
-  description: z
-    .string()
-    .min(10, { message: "La descripción debe tener al menos 10 caracteres." })
-    .optional(), // La descripción es opcional
-  permissions: z
-    .array(z.number())
-    .min(1, { message: "Debes asignar al menos un permiso." }),
-});
 
-type FormData = z.infer<typeof schema>;
+
+type FormData = z.infer<typeof roleSchema>;
 
 interface RoleModalProps {
   isOpen: boolean;
@@ -57,9 +44,9 @@ const RoleModal: React.FC<RoleModalProps> = ({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(roleSchema),
     defaultValues: {
-      roleName: "",
+      name: "",
       description: "",
       permissions: [],
     },
@@ -68,13 +55,13 @@ const RoleModal: React.FC<RoleModalProps> = ({
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
-        roleName: initialData.roleName,
-        description: initialData.description || "", // Asegurarse de manejar un valor vacío
+        name: initialData.name,
+        description: initialData.description,
         permissions: initialData.permissions,
       });
     } else {
       reset({
-        roleName: "",
+        name: "",
         description: "",
         permissions: [],
       });
@@ -97,11 +84,11 @@ const RoleModal: React.FC<RoleModalProps> = ({
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
-              <FormControl isInvalid={!!errors.roleName}>
+              <FormControl isInvalid={!!errors.name}>
                 <FormLabel>Nombre del Rol</FormLabel>
-                <Input placeholder="Nombre del Rol" {...register("roleName")} />
-                {errors.roleName && (
-                  <FormErrorMessage>{errors.roleName.message}</FormErrorMessage>
+                <Input placeholder="Nombre del Rol" {...register("name")} />
+                {errors.name && (
+                  <FormErrorMessage>{errors.name.message}</FormErrorMessage>
                 )}
               </FormControl>
 
@@ -124,7 +111,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                   placeholder="Permisos (ej: 1, 2, 3)"
                   {...register("permissions", {
                     setValueAs: (v) =>
-                      v.split(",").map((n: string) => parseInt(n.trim())),
+                      v.map((n: Role) => n.description),
                   })}
                 />
                 {errors.permissions && (

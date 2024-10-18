@@ -15,66 +15,89 @@ import {
   useDisclosure,
   HStack,
   Text,
-  Badge,
 } from "@chakra-ui/react";
 import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useState } from "react";
-import { UserRole } from "../interfaces/UserRole";
-import { User } from "../interfaces/User"; // Asegúrate de importar User
-import UserRoleModal from "../components/Roles/UserRoleModal";
+import RoleModal from "../components/Roles/RoleModal";
+import { Role } from "../interfaces/Role";
 
 const Roles = () => {
-  const [selectedRole, setSelectedRole] = useState<UserRole | undefined>(
+  const [selectedRole, setSelectedRole] = useState<Role | undefined>(
     undefined
   );
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Lista de usuarios como ejemplo
-  const users: User[] = [
+  const roles = [
     {
       id: 1,
-      name: "Juan Pérez",
-      email: "juan.perez@mail.com",
-      role: "Administrador",
-      status: "Active",
-      createdAt: "Feb 8 2024, 1:11:00 pm",
-      roles: [
-        {
-          id: 1,
-          roleName: "Administrador",
-          status: "Active",
-          permissions: [1, 2],
-          description: "Admin role",
-        },
+      name: "Admin",
+      description: "Rol con acceso total a todos los módulos y funciones",
+      permissions: [
+        { id: 101, name: "manage-users", description: "Permiso para gestionar usuarios", service: "Usuarios" },
+        { id: 102, name: "read-reports", description: "Permiso para leer reportes", service: "Reportes" },
+        { id: 103, name: "write-reports", description: "Permiso para escribir reportes", service: "Reportes" },
       ],
+      createdAt: "2024-10-15",
+      updatedAt: "2024-10-16",
     },
     {
       id: 2,
-      name: "María García",
-      email: "maria.garcia@mail.com",
-      role: "Agente",
-      status: "Active",
-      createdAt: "Feb 22 2024, 1:11:00 pm",
-      roles: [],
+      name: "Editor",
+      description: "Rol con permisos para crear y editar contenido",
+      permissions: [
+        { id: 201, name: "write-posts", description: "Permiso para escribir publicaciones", service: "Publicaciones" },
+        { id: 202, name: "update-posts", description: "Permiso para editar publicaciones", service: "Publicaciones" },
+      ],
+      createdAt: "2024-10-10",
+      updatedAt: "2024-10-12",
     },
-    // ... más usuarios
+    {
+      id: 3,
+      name: "Viewer",
+      description: "Rol con permisos solo de lectura",
+      permissions: [
+        { id: 301, name: "read-posts", description: "Permiso para leer publicaciones", service: "Publicaciones" },
+        { id: 302, name: "read-reports", description: "Permiso para leer reportes", service: "Reportes" },
+      ],
+      createdAt: "2024-09-15",
+    },
+    {
+      id: 4,
+      name: "Support",
+      description: "Rol con permisos para gestionar solicitudes de soporte",
+      permissions: [
+        { id: 401, name: "read-tickets", description: "Permiso para leer tickets de soporte", service: "Soporte" },
+        { id: 402, name: "update-tickets", description: "Permiso para actualizar tickets de soporte", service: "Soporte" },
+      ],
+      createdAt: "2024-08-20",
+      updatedAt: "2024-08-22",
+    },
+    {
+      id: 5,
+      name: "Auditor",
+      description: "Rol con permisos para auditar sistemas y revisar logs",
+      permissions: [
+        { id: 501, name: "read-logs", description: "Permiso para leer logs del sistema", service: "Sistemas" },
+        { id: 502, name: "read-audits", description: "Permiso para leer reportes de auditoría", service: "Auditoría" },
+      ],
+      createdAt: "2024-07-30",
+      updatedAt: "2024-08-01",
+    },
   ];
 
-  // Lista de todos los roles disponibles
-  const availableRoles = ["Administrador", "Agente", "Soporte", "Cliente"];
-
-  const handleEdit = (user: User) => {
-    const transformedRole: UserRole = {
-      id: user.id,
-      role: user.role,
-      userId: user.id, // Si necesitas userId como propiedad separada
-      status: user.status,
-      createdAt: user.createdAt,
-      email: user.email,
+  const handleEdit = (rol: Role) => {
+    const role: Role = {
+      id: rol.id,
+      name: rol.name,
+      description: rol.description, // Si necesitas userId como propiedad separada
+      permissions: rol.permissions,
+      createdAt: rol.createdAt,
+      updatedAt: rol.updatedAt,
     };
 
-    setSelectedRole(transformedRole); // Aquí pasamos el UserRole transformado
+    setSelectedRole(role); // Aquí pasamos el UserRole transformado
     setMode("edit");
     onOpen();
   };
@@ -86,16 +109,7 @@ const Roles = () => {
     onOpen();
   };
 
-  // Función para mostrar el estado con colores, incluyendo el estado "Completed"
-  const renderStatusBadge = (status: "Active" | "Completed" | "Inactive") => {
-    if (status === "Active") {
-      return <Badge colorScheme="green">Activo</Badge>;
-    }
-    if (status === "Completed") {
-      return <Badge colorScheme="blue">Completado</Badge>;
-    }
-    return <Badge colorScheme="gray">Inactivo</Badge>;
-  };
+
 
   return (
     <Box p={4}>
@@ -116,26 +130,26 @@ const Roles = () => {
         <Thead>
           <Tr>
             <Th>Nombre</Th>
-            <Th>Email</Th>
-            <Th>Estado</Th>
+            <Th>Descripcion</Th>
+            <Th>Permisos</Th>
             <Th>Fecha Creación</Th>
-            <Th>Rol</Th>
+            <Th>FEcha Edición</Th>
             <Th>Acción</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {users.map((user) => (
-            <Tr key={user.id}>
-              <Td>{user.name}</Td>
-              <Td>{user.email}</Td>
-              <Td>{renderStatusBadge(user.status)}</Td>
-              <Td>{user.createdAt || "None"}</Td>
-              <Td>{user.role}</Td>
+          {roles.map((rol) => (
+            <Tr key={rol.id}>
+              <Td>{rol.name}</Td>
+              <Td>{rol.description}</Td>
+              <Td>{rol.permissions.map(permission => permission.name).join(', ')}</Td>
+              <Td>{rol.createdAt || ""}</Td>
+              <Td>{rol.updatedAt || ""}</Td>
               <Td>
                 <Menu>
                   <MenuButton as={IconButton} icon={<HamburgerIcon />} />
                   <MenuList>
-                    <MenuItem onClick={() => handleEdit(user)}>Editar</MenuItem>
+                    <MenuItem onClick={() => handleEdit(rol)}>Editar</MenuItem>
                   </MenuList>
                 </Menu>
               </Td>
@@ -145,13 +159,11 @@ const Roles = () => {
       </Table>
 
       {/* Modal para asignar o editar roles */}
-      <UserRoleModal
+      <RoleModal
         isOpen={isOpen}
         onClose={onClose}
         initialData={selectedRole}
         mode={mode}
-        users={users} // Pasamos la lista de usuarios al modal
-        availableRoles={availableRoles} // Pasamos la lista de roles disponibles al modal
       />
     </Box>
   );

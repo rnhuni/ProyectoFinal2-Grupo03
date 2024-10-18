@@ -26,5 +26,19 @@
             "edit": "Edit Permission",
             "create": "Create Permission"
         }
+    },
+    "role": {
+        "name": "Name",
+        "description": "Description",
+        "title": "Platform Role",
+        "create": "Create Role",
+        "validations": {
+            "name": "The name must be at least {{count}} characters.",
+            "description": "The description must be at least {{count}} characters."
+        },
+        "modal": {
+            "edit": "Edit Role",
+            "create": "Create Role"
+        }
     }
 }
