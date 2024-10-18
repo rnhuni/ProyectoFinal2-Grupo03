@@ -113,7 +113,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                     <Stack spacing={2}>
                       {initialData.permissions.map((permission) => (
                         <Badge key={permission.id} colorScheme="blue">
-                          {permission.name}
+                          {permission.id}
                         </Badge>
                       ))}
                     </Stack>
@@ -121,20 +121,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                 ) : null}
               </>
 
-              <FormControl isInvalid={!!errors.permissions}>
-                <FormLabel>Permisos (IDs separados por coma)</FormLabel>
-                <Input
-                  placeholder="Permisos (ej: 1, 2, 3)"
-                  {...register("permissions", {
-                    setValueAs: (v) => v.map((n: Role) => n.description),
-                  })}
-                />
-                {errors.permissions && (
-                  <FormErrorMessage>
-                    {errors.permissions.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
+              
             </Stack>
           </form>
         </ModalBody>

@@ -1,10 +1,10 @@
-import { Permission } from './Permissions';
+import { RolePermissions } from './RolePermissions';
 
 export interface Role {
   id: number;
   name: string;
   description: string;
-  permissions: Permission[] | undefined;
+  permissions: RolePermissions[] | undefined;
   createdAt?: string;
   updatedAt?: string;
 }
