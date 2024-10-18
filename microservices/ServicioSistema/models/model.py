@@ -2,8 +2,6 @@ from datetime import datetime
 import os
 from sqlalchemy import create_engine, Column, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
-import uuid
-#from sqlalchemy.dialects.postgresql import UUID
 import logging
 
 from . import CONNECTION_STRING
