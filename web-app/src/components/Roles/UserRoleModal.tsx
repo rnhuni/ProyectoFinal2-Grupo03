@@ -146,7 +146,7 @@ const UserRoleModal: React.FC<UserRoleModalProps> = ({
                       <Stack spacing={2}>
                         {selectedUser.roles.map((role) => (
                           <Badge key={role.id} colorScheme="blue">
-                            {role.roleName}
+                            {role.name}
                           </Badge>
                         ))}
                       </Stack>
@@ -162,7 +162,7 @@ const UserRoleModal: React.FC<UserRoleModalProps> = ({
                     .filter(
                       (role) =>
                         !selectedUser?.roles.some(
-                          (r) => r.roleName === role // Evita roles duplicados
+                          (r) => r.name === role // Evita roles duplicados
                         )
                     )
                     .map((role) => (

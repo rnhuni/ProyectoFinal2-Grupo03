@@ -12,7 +12,6 @@ import {
   Input,
   Stack,
   FormErrorMessage,
-  Textarea,
   Badge,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
@@ -55,7 +54,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
     if (mode === "edit" && initialData) {
       reset({
         name: initialData.name,
-        description: initialData.description,
         permissions: initialData.permissions,
       });
     } else {
@@ -93,7 +91,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
 
               <>
-                {/* Mostrar roles actuales del usuario */}
                 {/* Mostrar roles actuales del usuario */}
                 {initialData?.permissions?.length ? (
                   <FormControl>

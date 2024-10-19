@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import httpClient from "../services/httpClient"; // Reemplaza el import con el nuevo cliente
+import httpClient from "../services/HttpClient"; // Reemplaza el import con el nuevo cliente
 import { CanceledError } from "axios";
 import { Role } from "../interfaces/Role";
 

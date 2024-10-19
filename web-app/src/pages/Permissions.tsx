@@ -17,10 +17,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { useEffect, useState } from "react";
 import { Permission } from "../interfaces/Permissions";
 import { PermissionModal } from "../components/Permissions/PermissionsModal";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const Permissions = () => {
   const { t } = useTranslation();
@@ -60,19 +60,6 @@ const Permissions = () => {
     setMode("create");
     onOpen();
   };
-
-  const fetchPermissions = async () => {
-    try {
-      const response = await httpclient  .get('/permissions'); // Cambia '/permissions' por el endpoint correcto
-      setPermissions(response.data); // Asigna los permisos obtenidos al estado
-    } catch (error) {
-      console.error("Error fetching permissions:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPermissions(); // Llama a la función para obtener permisos cuando se monta el componente
-  }, []);
 
   return (
     <Box p={4}>
