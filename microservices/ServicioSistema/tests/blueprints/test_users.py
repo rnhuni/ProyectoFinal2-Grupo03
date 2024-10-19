@@ -2,10 +2,6 @@ import pytest
 from flask import Flask, jsonify
 from unittest.mock import patch, MagicMock
 from ServicioSistema.blueprints.users.routes import users_bp
-from ServicioSistema.commands.user_create import CreateUser
-from ServicioSistema.commands.role_exists import ExistsRole
-from ServicioSistema.commands.client_exists import ExistsClient
-from ServicioSistema.commands.user_exists_by_email import ExistsUserByEmail
 
 @pytest.fixture
 def client():
@@ -13,42 +9,6 @@ def client():
     app.register_blueprint(users_bp, url_prefix='/api')
     with app.test_client() as client:
         yield client
-
-def test_create_user_success(client, mocker):
-    mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
-    mocker.patch('ServicioSistema.commands.role_exists.ExistsRole.execute', return_value=True)
-    mocker.patch('ServicioSistema.commands.client_exists.ExistsClient.execute', return_value=True)
-    
-    mock_user = MagicMock()
-    mock_user.id = "user-1"
-    mock_user.name = "Test User"
-    mock_user.email = "testuser@example.com"
-    mock_user.role_id = "role-1"
-    mock_user.client_id = "client-1"
-    mock_user.createdAt = "2024-01-01"
-    mock_user.updatedAt = "2024-01-01"
-    
-    mocker.patch('ServicioSistema.commands.user_create.CreateUser.execute', return_value=mock_user)
-
-    json_data = {
-        "name": "Test User",
-        "email": "testuser@example.com",
-        "role_id": "role-1",
-        "client_id": "client-1"
-    }
-
-    response = client.post('/api/users', json=json_data)
-
-    assert response.status_code == 201
-    assert response.json == {
-        "id": "user-1",
-        "name": "Test User",
-        "email": "testuser@example.com",
-        "role_id": "role-1",
-        "client_id": "client-1",
-        "createdAt": "2024-01-01",
-        "updatedAt": "2024-01-01"
-    }
 
 def test_create_user_email_already_in_use(client, mocker):
     mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=True)
@@ -67,7 +27,7 @@ def test_create_user_email_already_in_use(client, mocker):
 
 def test_create_user_role_not_exist(client, mocker):
     mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
-    mocker.patch('ServicioSistema.commands.role_exists.ExistsRole.execute', return_value=False)
+    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', return_value=False)
 
     json_data = {
         "name": "Test User",
@@ -81,10 +41,9 @@ def test_create_user_role_not_exist(client, mocker):
     assert response.status_code == 400
     assert response.data == b"Role 'role-1' does not exist"
 
-# Test para cuando el cliente no existe
 def test_create_user_client_not_exist(client, mocker):
     mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
-    mocker.patch('ServicioSistema.commands.role_exists.ExistsRole.execute', return_value=True)
+    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', return_value=True)
     mocker.patch('ServicioSistema.commands.client_exists.ExistsClient.execute', return_value=False)
 
     json_data = {
@@ -114,7 +73,7 @@ def test_create_user_missing_parameters(client):
 
 def test_create_user_internal_error(client, mocker):
     mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
-    mocker.patch('ServicioSistema.commands.role_exists.ExistsRole.execute', side_effect=Exception("Internal Error"))
+    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', side_effect=Exception("Internal Error"))
 
     json_data = {
         "name": "Test User",

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from ServicioSistema.commands.user_create import CreateUser
-from ServicioSistema.commands.role_exists import ExistsRole
+from ServicioSistema.commands.role_get import GetRole
 from ServicioSistema.commands.client_exists import ExistsClient
 from ServicioSistema.commands.user_exists_by_email import ExistsUserByEmail
 
@@ -30,19 +30,21 @@ def create_user():
         if ExistsUserByEmail(email).execute():
             return "Email is already in use", 400
 
-        if not ExistsRole(role_id).execute():
+        role = GetRole(role_id).execute()
+        if not role:
             return f"Role '{role_id}' does not exist", 400
 
         if not ExistsClient(client_id).execute():
             return f"Client '{client_id}' does not exist", 400
 
-        user = CreateUser(name, email, "", role_id, client_id).execute()
+        user = CreateUser(name, email, role, client_id).execute()
 
         return jsonify({
             "id": user.id,
             "name": user.name,
             "email": user.email,
             "role_id": user.role_id,
+            "status": user.status,
             "client_id": user.client_id,
             "createdAt": user.createdAt,
             "updatedAt": user.updatedAt
