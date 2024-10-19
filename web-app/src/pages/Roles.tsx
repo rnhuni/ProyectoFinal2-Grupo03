@@ -26,7 +26,7 @@ const Roles = () => {
   const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { roles, error } = useRoles(); // Reemplaza el hook con el nuevo hook
+  const { roles, error } = useRoles();
 
   const handleEdit = (rol: Role) => {
     const role: Role = {

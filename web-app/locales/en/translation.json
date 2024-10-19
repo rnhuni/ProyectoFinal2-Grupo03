@@ -1,44 +1,56 @@
 {
-    "common": {
-        "creation_date": "Creation Date",
-        "edition_date": "Edition Date",
-        "actions": "Actions",
-        "actions_edit": "Edit",
-        "actions_delete": "Delete",
-        "button": {
-            "cancel": "Cancel",
-            "edit": "Edit",
-            "create": "Create"
-        }
-    },
-    "permissions": {
-        "name": "Name",
-        "resource": "Resource",
-        "description": "Description",
-        "title": "Platform Permissions",
-        "create": "Create Permission",
-        "validations": {
-            "name": "The name must be at least {{count}} characters.",
-            "description": "The description must be at least {{count}} characters.",
-            "resource": "The resource must be at least {{count}} characters."
-        },
-        "modal": {
-            "edit": "Edit Permission",
-            "create": "Create Permission"
-        }
-    },
-    "role": {
-        "name": "Name",
-        "description": "Description",
-        "title": "Platform Role",
-        "create": "Create Role",
-        "validations": {
-            "name": "The name must be at least {{count}} characters.",
-            "description": "The description must be at least {{count}} characters."
-        },
-        "modal": {
-            "edit": "Edit Role",
-            "create": "Create Role"
-        }
+  "common": {
+    "creation_date": "Creation Date",
+    "edition_date": "Edition Date",
+    "actions": "Actions",
+    "actions_edit": "Edit",
+    "actions_delete": "Delete",
+    "button": {
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "create": "Create"
     }
+  },
+  "permissions": {
+    "name": "Name",
+    "resource": "Resource",
+    "description": "Description",
+    "title": "Platform Permissions",
+    "create": "Create Permission",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "description": "The description must be at least {{count}} characters.",
+      "resource": "The resource must be at least {{count}} characters."
+    },
+    "modal": {
+      "edit": "Edit Permission",
+      "create": "Create Permission"
+    }
+  },
+  "role": {
+    "name": "Name",
+    "description": "Description",
+    "title": "Platform Role",
+    "create": "Create Role",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "description": "The description must be at least {{count}} characters."
+    },
+    "modal": {
+      "edit": "Edit Role",
+      "create": "Create Role"
+    }
+  },
+  "plans": {
+    "title": "Available Plans",
+    "create": "Create Plan",
+    "name": "Plan Name",
+    "description": "Description",
+    "status": "Status",
+    "price": "Price",
+    "features": "Features",
+    "details": "Details",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
 }

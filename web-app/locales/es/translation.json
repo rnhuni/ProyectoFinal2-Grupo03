@@ -1,30 +1,42 @@
 {
-    "common": {
-        "creation_date": "Fecha de creación",
-        "edition_date": "Fecha de edición",
-        "actions": "Acciones",
-        "actions_edit": "Editar",
-        "actions_delete": "Eliminar",
-        "button": {
-            "cancel": "Cancelar",
-            "edit": "Editar",
-            "create": "Crear"
-        }
-    },
-    "permissions": {
-        "name": "Nombre",
-        "resource": "Recurso",
-        "description": "Descripción",
-        "title": "Permisos de la plataforma",
-        "create": "Crear permiso",
-        "validations": {
-            "name": "El nombre debe tener al menos {{count}} caracteres.",
-            "description": "La descripción debe tener al menos {{count}} caracteres.",
-            "resource": "El recurso debe tener al menos {{count}} caracteres."
-        },
-        "modal": {
-            "edit": "Editar permiso",
-            "create": "Crear permiso"
-        }
+  "common": {
+    "creation_date": "Fecha de creación",
+    "edition_date": "Fecha de edición",
+    "actions": "Acciones",
+    "actions_edit": "Editar",
+    "actions_delete": "Eliminar",
+    "button": {
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "create": "Crear"
     }
+  },
+  "permissions": {
+    "name": "Nombre",
+    "resource": "Recurso",
+    "description": "Descripción",
+    "title": "Permisos de la plataforma",
+    "create": "Crear permiso",
+    "validations": {
+      "name": "El nombre debe tener al menos {{count}} caracteres.",
+      "description": "La descripción debe tener al menos {{count}} caracteres.",
+      "resource": "El recurso debe tener al menos {{count}} caracteres."
+    },
+    "modal": {
+      "edit": "Editar permiso",
+      "create": "Crear permiso"
+    }
+  },
+  "plans": {
+    "title": "Planes Disponibles",
+    "create": "Crear Plan",
+    "name": "Nombre del Plan",
+    "description": "Descripción",
+    "status": "Estado",
+    "price": "Precio",
+    "features": "Características",
+    "details": "Detalles",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  }
 }
