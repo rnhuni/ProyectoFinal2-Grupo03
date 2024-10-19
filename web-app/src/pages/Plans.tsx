@@ -9,22 +9,19 @@ import {
   Td,
   IconButton,
   Badge,
-  HStack,
   Text,
   Checkbox,
+  Stack,
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import PlanFilterDrawer from "../components/Plans/PlanFilterDrawer";
+import PlanFormModal from "../components/Plans/PlanFormModal";
 
-interface Plan {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  price: string;
-  features: string;
-}
+import DeleteConfirmationModal from "../components/Plans/DeleteConfirmationModal";
+import { Plan } from "../interfaces/Plan";
+import PlanDetailsModal from "../components/Plans/PlanDetailsModal";
 
 const Plans = () => {
   const { t } = useTranslation();
@@ -35,7 +32,7 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: "$10.000",
-      features: "24/7 Technical support",
+      features: "24/7 Technical support, 1TB Storage",
     },
     {
       id: "2",
@@ -43,7 +40,7 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: "$35.000",
-      features: "24/7 Technical support",
+      features: "24/7 Technical support, Advanced Analytics",
     },
     {
       id: "3",
@@ -51,7 +48,7 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: "$65.000",
-      features: "24/7 Technical support",
+      features: "24/7 Technical support, Premium Integration, Custom Reporting",
     },
     {
       id: "4",
@@ -59,32 +56,124 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: "$85.000",
-      features: "24/7 Technical support",
+      features: "Priority Support 24/7, Unlimited Users, Real-Time Monitoring",
     },
   ]);
 
+  const [filteredPlans, setFilteredPlans] = useState<Plan[]>(plans);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+
   const handleEdit = (plan: Plan) => {
-    console.log("Edit Plan", plan);
+    setSelectedPlan(plan);
+    setFormMode("edit");
+    setIsFormModalOpen(true);
   };
 
-  const handleDelete = (planId: string) => {
-    setPlans((prevPlans) => prevPlans.filter((plan) => plan.id !== planId));
+  const handleCreate = () => {
+    setFormMode("create");
+    setSelectedPlan(null);
+    setIsFormModalOpen(true);
   };
+
+  const handleSave = (updatedPlan: Plan) => {
+    if (formMode === "edit") {
+      setPlans((prevPlans) =>
+        prevPlans.map((p) => (p.id === updatedPlan.id ? updatedPlan : p))
+      );
+    } else if (formMode === "create") {
+      setPlans((prevPlans) => [
+        ...prevPlans,
+        { ...updatedPlan, id: (prevPlans.length + 1).toString() },
+      ]);
+    }
+    setIsFormModalOpen(false);
+  };
+
+  const applyFilters = (filters: { field: string; searchValue: string }) => {
+    console.log("Aplicando filtros: ", filters);
+
+    const { field, searchValue } = filters;
+
+    if (!searchValue) {
+      setFilteredPlans(plans);
+      return;
+    }
+
+    const filtered = plans.filter((plan) => {
+      const planFieldValue = plan[field as keyof Plan]
+        ?.toString()
+        .toLowerCase();
+      return planFieldValue?.includes(searchValue.toLowerCase());
+    });
+
+    setFilteredPlans(filtered);
+  };
+
+  const clearFilters = () => {
+    setFilteredPlans(plans);
+  };
+
+  const handleViewDetails = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedPlan(null);
+  };
+
+  const handleDelete = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedPlan) {
+      setPlans((prevPlans) =>
+        prevPlans.filter((plan) => plan.id !== selectedPlan.id)
+      );
+      setFilteredPlans((prevPlans) =>
+        prevPlans.filter((plan) => plan.id !== selectedPlan.id)
+      );
+    }
+    setIsDeleteModalOpen(false);
+    setSelectedPlan(null);
+  };
+
+  const isFiltered = filteredPlans.length !== plans.length;
 
   return (
-    <Box p={4}>
-      <HStack justifyContent="space-between" mb={4}>
+    <Box p={6}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={4}
+      >
         <Text fontSize="2xl" fontWeight="bold">
           {t("plans.title")}
         </Text>
-        <Button
-          colorScheme="blue"
-          leftIcon={<AddIcon />}
-          onClick={() => console.log("Create Plan")}
-        >
-          {t("plans.create")}
-        </Button>
-      </HStack>
+        <Stack direction="row" spacing={4}>
+          <PlanFilterDrawer applyFilters={applyFilters} />
+          {isFiltered && (
+            <Button colorScheme="gray" variant="outline" onClick={clearFilters}>
+              {t("plans.clear_filters", "Limpiar Filtros")}
+            </Button>
+          )}
+          <Button
+            colorScheme="blue"
+            leftIcon={<AddIcon />}
+            onClick={handleCreate}
+          >
+            {t("plans.create")}
+          </Button>
+        </Stack>
+      </Stack>
 
       <Table variant="simple" mt={4}>
         <Thead>
@@ -103,7 +192,7 @@ const Plans = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {plans.map((plan) => (
+          {filteredPlans.map((plan) => (
             <Tr key={plan.id}>
               <Td>
                 <Checkbox />
@@ -119,7 +208,8 @@ const Plans = () => {
                 <IconButton
                   aria-label="View details"
                   icon={<ViewIcon />}
-                  onClick={() => console.log("View Details", plan)}
+                  onClick={() => handleViewDetails(plan)}
+                  variant="ghost"
                 />
               </Td>
               <Td>
@@ -127,19 +217,42 @@ const Plans = () => {
                   aria-label="Edit plan"
                   icon={<EditIcon />}
                   onClick={() => handleEdit(plan)}
+                  variant="ghost"
                 />
               </Td>
               <Td>
                 <IconButton
                   aria-label="Delete plan"
                   icon={<DeleteIcon />}
-                  onClick={() => handleDelete(plan.id)}
+                  onClick={() => handleDelete(plan)}
+                  variant="ghost"
                 />
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
+
+      <PlanDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseDetailsModal}
+        plan={selectedPlan}
+      />
+
+      <PlanFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        onSave={handleSave}
+        plan={formMode === "edit" ? selectedPlan : null}
+        mode={formMode}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        planName={selectedPlan?.name || ""}
+      />
     </Box>
   );
 };

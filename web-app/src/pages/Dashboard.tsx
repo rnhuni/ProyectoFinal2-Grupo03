@@ -15,13 +15,12 @@ const Dashboard: React.FC = () => {
         base: `"nav" "main"`,
         lg: `"aside nav" "aside main"`,
       }}
-      templateRows="auto 1fr" // Cambié la altura del nav a "auto" para ajustarla automáticamente
+      templateRows="auto 1fr"
       templateColumns={{ base: "1fr", lg: "5vw 1fr" }}
       h="100vh"
     >
       <GridItem area="nav" bg={bg} color={color} w="100%" h="auto">
         {" "}
-        {/* Ajusté h="auto" para evitar altura fija */}
         <NavBar />
       </GridItem>
 
@@ -43,11 +42,10 @@ const Dashboard: React.FC = () => {
         w="100%"
         h="100%"
         display="flex"
-        p={{ base: "2vh 1vw", lg: "2vh 1vw" }} // Reducí el padding para evitar espacios innecesarios
+        p={{ base: "2vh 1vw", lg: "2vh 1vw" }}
       >
         <Box w="100%" h="100%" overflow="auto">
           {" "}
-          {/* Cambié w="80%" a w="100%" para ajustar completamente */}
           <Outlet />
         </Box>
       </GridItem>
