@@ -19,7 +19,6 @@ class Model(Base):
  
 engine = None
 if os.getenv('ENV') != 'test':
-    print(CONNECTION_STRING)
     engine = create_engine(CONNECTION_STRING, echo=True)
 
 def initdb():    
