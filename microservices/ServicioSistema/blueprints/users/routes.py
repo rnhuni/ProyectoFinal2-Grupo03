@@ -1,34 +1,54 @@
 from flask import Blueprint, request, jsonify
-#import boto3
-import os
+from ServicioSistema.commands.user_create import CreateUser
+from ServicioSistema.commands.role_exists import ExistsRole
+from ServicioSistema.commands.client_exists import ExistsClient
+from ServicioSistema.commands.user_exists_by_email import ExistsUserByEmail
 
 users_bp = Blueprint('users_bp', __name__)
-#cognito_client = boto3.client('cognito-idp', region_name=os.getenv('AWS_REGION', 'us-east-1'))
-#USER_POOL_ID = os.getenv('USER_POOL_ID')
-#CLIENT_ID = os.getenv('CLIENT_ID')
 
 @users_bp.route('/users', methods=['POST'])
 def create_user():
-    #try:
+    try:
         data = request.get_json()
-        username = data['username']
-        password = data['password']
-        email = data['email']
+        name = data.get('name').strip()
+        email = data.get('email').strip()
+        role_id = data.get('role_id').strip()
+        client_id = data.get('client_id').strip()
 
-        """ response = cognito_client.admin_create_user(
-            UserPoolId=USER_POOL_ID,
-            Username=username,
-            UserAttributes=[
-                {
-                    'Name': 'email',
-                    'Value': email
-                },
-            ],
-            TemporaryPassword=password,
-            MessageAction='SUPPRESS'
-        ) """
+        if not name or len(name) < 1:
+            return "Name is required", 400
 
-        return jsonify({'message': f'Usuario {username} creado exitosamente.', 'response': "response"}), 201
+        if not email or len(email) < 1:
+            return "Email is required", 400
+
+        if not role_id or len(role_id) < 1:
+            return "Role ID is required", 400
+
+        if not client_id or len(client_id) < 1:
+            return "Client ID is required", 400
+        
+        if ExistsUserByEmail(email).execute():
+            return "Email is already in use", 400
+
+        if not ExistsRole(role_id).execute():
+            return f"Role '{role_id}' does not exist", 400
+
+        if not ExistsClient(client_id).execute():
+            return f"Client '{client_id}' does not exist", 400
+
+        user = CreateUser(name, email, "", role_id, client_id).execute()
+
+        return jsonify({
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role_id": user.role_id,
+            "client_id": user.client_id,
+            "createdAt": user.createdAt,
+            "updatedAt": user.updatedAt
+        }), 201
+    except Exception as e:
+        return jsonify({'error': f'Create user failed. Details: {str(e)}'}), 500
 
 @users_bp.route('/users', methods=['PUT'])
 def edit_user():
