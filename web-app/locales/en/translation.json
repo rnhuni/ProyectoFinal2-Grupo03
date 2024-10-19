@@ -17,7 +17,7 @@
         "description": "Description",
         "title": "Platform Permissions",
         "create": "Create Permission",
-        "error_message":"Error",
+        "error_message": "Error",
         "validations": {
             "name": "The name must be at least {{count}} characters.",
             "description": "The description must be at least {{count}} characters.",
@@ -26,15 +26,16 @@
         "modal": {
             "edit": "Edit Permission",
             "create": "Create Permission",
-            "error_message":"Error",
-            "loading_message":"Loading"
+            "error_message": "Error",
+            "loading_message": "Loading"
         }
     },
     "role": {
-        "name": "Name",
         "description": "Description",
-        "title": "Platform Role",
+        "title": "Role Management",
         "create": "Create Role",
+        "name": "Name",
+        "permissions": "Permissions",
         "validations": {
             "name": "The name must be at least {{count}} characters.",
             "description": "The description must be at least {{count}} characters."

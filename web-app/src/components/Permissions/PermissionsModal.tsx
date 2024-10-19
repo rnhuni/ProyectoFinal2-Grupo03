@@ -27,14 +27,14 @@ import usePermissions from "../../hooks/permissions/usePermissions";
 
 type FormData = z.infer<typeof permissionsModalSchema>;
 
-interface PermissionModalProps {
+interface PermissionsModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialData?: Permission;
   mode: "create" | "edit";
 }
 
-export const PermissionModal: React.FC<PermissionModalProps> = ({
+export const PermissionsModal: React.FC<PermissionsModalProps> = ({
   isOpen,
   onClose,
   initialData,
@@ -119,7 +119,7 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} role="form">
             <Stack spacing={4}>
               <FormControl isInvalid={!!errors.name}>
                 <FormLabel>{t("permissions.name")}</FormLabel>
