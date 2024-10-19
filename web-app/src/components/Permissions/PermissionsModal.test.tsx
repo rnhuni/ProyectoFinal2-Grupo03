@@ -1,14 +1,127 @@
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { PermissionModal } from "./PermissionsModal";
 import i18n from "../../../i18nextConfig";
-import { act } from "react";
 import { Permission } from "../../interfaces/Permissions";
+import useOperationsPermission from "../../hooks/permissions/useOperationsPermissions";
 
-describe("PermissionModal", () => {
+jest.mock("../../hooks/permissions/useOperationsPermissions");
+
+describe("PermissionModal loading state", () => {
   const onCloseMock = jest.fn();
+  const createPermissionMock = jest.fn();
 
   beforeEach(() => {
     i18n.changeLanguage("es");
+  });
+
+  test("should display loading message when loading is true", () => {
+    // Mocking the hook to simulate the loading state
+    (useOperationsPermission as jest.Mock).mockReturnValue({
+      createPermission: createPermissionMock,
+      error: null,
+      loading: true, // Simulamos que está cargando
+    });
+
+    render(
+      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+    );
+
+    // Verificar que el spinner y el mensaje de carga estén presentes
+    expect(screen.getByText("permissions.modal.loading_message")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveClass("chakra-alert"); // Verifica que hay un alert Chakra
+  });
+});
+
+
+describe("PermissionModal error handling", () => {
+  const onCloseMock = jest.fn();
+  const createPermissionMock = jest.fn();
+
+  beforeEach(() => {
+    i18n.changeLanguage("es");
+  });
+
+  test("should display error message when an error occurs", async () => {
+    // Mocking the hook to return an error
+    (useOperationsPermission as jest.Mock).mockReturnValue({
+      createPermission: createPermissionMock,
+      error: "An error occurred",
+      loading: false,
+    });
+
+    render(
+      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+    );
+
+    // Verificar que el mensaje de error esté presente
+    expect(screen.getByText("permissions.modal.error_message")).toBeInTheDocument();
+  });
+});
+
+
+
+
+describe("PermissionModal onSubmit", () => {
+  const onCloseMock = jest.fn();
+  const createPermissionMock = jest.fn();
+
+  beforeEach(() => {
+    // Set up mocks
+    i18n.changeLanguage("es");
+    (useOperationsPermission as jest.Mock).mockReturnValue({
+      createPermission: createPermissionMock,
+      error: null,
+      loading: false,
+    });
+  });
+
+  test("should call handleSubmitAsyn and onClose on form submit", async () => {
+    render(
+      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+    );
+
+    // Simulate filling out the form fields
+    fireEvent.change(screen.getByPlaceholderText("permissions.name"), {
+      target: { value: "Test Permission" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("permissions.description"), {
+      target: { value: "Test Description" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("permissions.resource"), {
+      target: { value: "Test Resource" },
+    });
+
+    // Click the submit button
+    fireEvent.click(screen.getByRole("button", { name: "common.button.create" }));
+
+    // Wait for async actions to complete
+    await waitFor(() => {
+      expect(createPermissionMock).toHaveBeenCalledWith({
+        name: "Test Permission",
+        description: "Test Description",
+        resource: "Test Resource",
+        id: ""
+      });
+      expect(onCloseMock).toHaveBeenCalledTimes(1); // Ensure the modal closes
+    });
+  });
+});
+
+
+
+describe("PermissionModal", () => {
+  const onCloseMock = jest.fn();
+  const createPermissionMock = jest.fn();
+  const updatePermissionMock = jest.fn(); // Agrega el mock para updatePermission
+
+  beforeEach(() => {
+    i18n.changeLanguage("es");
+    (useOperationsPermission as jest.Mock).mockReturnValue({
+      createPermission: createPermissionMock,
+      updatePermission: updatePermissionMock, // Mock de updatePermission
+      error: null,
+      loading: false,
+    });
   });
 
   test("should render modal in create mode", () => {
@@ -25,10 +138,10 @@ describe("PermissionModal", () => {
 
   test("should render modal in edit mode with initial data", () => {
     const initialData: Permission = {
-      id: 1,
+      id: "1",
       name: "Test Permission",
       description: "Test Description",
-      service: "Service",
+      resource: "resource",
     };
 
     render(
@@ -75,34 +188,47 @@ describe("PermissionModal", () => {
     ).toBeInTheDocument();
   });
 
-  test("should call onClose and log data on valid submission", async () => {
-    const logSpy = jest.spyOn(console, "log");
+  test("should call updatePermission on form submit in edit mode", async () => {
+    const initialData: Permission = {
+      id: "1",
+      name: "Test Permission",
+      description: "Test Description",
+      resource: "resource",
+    };
+
     render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+      <PermissionModal
+        isOpen={true}
+        onClose={onCloseMock}
+        initialData={initialData}
+        mode="edit"
+      />
     );
 
+    // Simulate filling out the form fields
     fireEvent.change(screen.getByPlaceholderText("permissions.name"), {
-      target: { value: "Permiso Válido" },
+      target: { value: "Updated Permission" },
     });
     fireEvent.change(screen.getByPlaceholderText("permissions.description"), {
-      target: { value: "Descripción Válida" },
+      target: { value: "Updated Description" },
     });
-    fireEvent.change(screen.getByPlaceholderText("permissions.service"), {
-      target: { value: "Service" },
-    });
-
-    await act(async () => {
-      fireEvent.click(
-        screen.getByRole("button", { name: "common.button.create" })
-      );
+    fireEvent.change(screen.getByPlaceholderText("permissions.resource"), {
+      target: { value: "Updated Resource" },
     });
 
-    expect(logSpy).toHaveBeenCalledWith("Datos enviados:", {
-      name: "Permiso Válido",
-      description: "Descripción Válida",
-      service: "Service",
-    });
+    // Click the submit button
+    fireEvent.click(screen.getByRole("button", { name: "common.button.edit" })); // Asegúrate de que el texto sea correcto
 
-    logSpy.mockRestore();
+    // Wait for async actions to complete
+    await waitFor(() => {
+      expect(updatePermissionMock).toHaveBeenCalledWith({
+        id: initialData.id, // Asegúrate de que el ID se pase correctamente
+        name: "Updated Permission",
+        description: "Updated Description",
+        resource: "Updated Resource",
+      });
+    });
   });
+
+  
 });

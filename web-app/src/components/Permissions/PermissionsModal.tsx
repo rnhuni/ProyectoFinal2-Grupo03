@@ -12,6 +12,9 @@ import {
   Input,
   Stack,
   FormErrorMessage,
+  Alert,
+  AlertIcon,
+  Spinner,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -20,6 +23,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Permission } from "../../interfaces/Permissions";
 import { permissionsModalSchema } from "./PermissionsModalSchema";
 import { useTranslation } from "react-i18next";
+import useOperationsPermissions from "../../hooks/permissions/useOperationsPermissions";
+
 
 type FormData = z.infer<typeof permissionsModalSchema>;
 
@@ -46,30 +51,44 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
     defaultValues: {
       name: "",
       description: "",
-      service: "service",
+      resource: "resource",
     },
   });
   const { t } = useTranslation();
+  const { createPermission, updatePermission, error, loading } = useOperationsPermissions();
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
+        id: initialData.id,
         name: initialData.name,
         description: initialData.description,
-        service: initialData.service,
+        resource: initialData.resource,
       });
     } else {
       reset({
+        id: "",
         name: "",
         description: "",
-        service: "",
+        resource: "",
       });
     }
   }, [initialData, mode, reset]);
 
   const onSubmit = (data: FormData) => {
-    console.log("Datos enviados:", data);
+    // console.log("Datos enviados:", data);
+    handleSubmitAsyn(data);
     onClose();
+  };
+
+  const handleSubmitAsyn = async (data: FormData) => {
+    if (mode === "edit") {
+      await updatePermission(data);
+      // console.log("Permiso actualizado:", updatedPermission);
+    } else {
+      await createPermission(data);
+      // console.log("Permiso creado:", createdPermission);
+    }
   };
 
   return (
@@ -83,6 +102,23 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
+          {/* Mensaje de error */}
+          {error && (
+            <Alert status="error" mb={4}>
+              <AlertIcon />
+              {t("permissions.modal.error_message")}
+            </Alert>
+          )}
+
+          {/* Indicador de carga */}
+          {loading && (
+            <Alert status="info" mb={4}>
+              <AlertIcon />
+              <Spinner size="sm" mr={2} />
+              {t("permissions.modal.loading_message")}
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
               <FormControl isInvalid={!!errors.name}>
@@ -98,15 +134,15 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
                 )}
               </FormControl>
 
-              <FormControl isInvalid={!!errors.service}>
-                <FormLabel>{t("permissions.service")}</FormLabel>
+              <FormControl isInvalid={!!errors.resource}>
+                <FormLabel>{t("permissions.resource")}</FormLabel>
                 <Input
-                  placeholder={t("permissions.service")}
-                  {...register("service")}
+                  placeholder={t("permissions.resource")}
+                  {...register("resource")}
                 />
-                {errors.service && (
+                {errors.resource && (
                   <FormErrorMessage>
-                    {t(`${errors.service.message}`, { count: 3 })}
+                    {t(`${errors.resource.message}`, { count: 3 })}
                   </FormErrorMessage>
                 )}
               </FormControl>

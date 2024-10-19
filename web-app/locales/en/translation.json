@@ -13,18 +13,35 @@
     },
     "permissions": {
         "name": "Name",
-        "service": "Service",
+        "resource": "Resource",
         "description": "Description",
         "title": "Platform Permissions",
         "create": "Create Permission",
+        "error_message":"Error",
         "validations": {
             "name": "The name must be at least {{count}} characters.",
             "description": "The description must be at least {{count}} characters.",
-            "service": "The service must be at least {{count}} characters."
+            "resource": "The resource must be at least {{count}} characters."
         },
         "modal": {
             "edit": "Edit Permission",
-            "create": "Create Permission"
+            "create": "Create Permission",
+            "error_message":"Error",
+            "loading_message":"Loading"
+        }
+    },
+    "role": {
+        "name": "Name",
+        "description": "Description",
+        "title": "Platform Role",
+        "create": "Create Role",
+        "validations": {
+            "name": "The name must be at least {{count}} characters.",
+            "description": "The description must be at least {{count}} characters."
+        },
+        "modal": {
+            "edit": "Edit Role",
+            "create": "Create Role"
         }
     }
 }
