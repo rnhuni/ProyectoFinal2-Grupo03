@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import usePermissions from "./usePermissions"; // Asegúrate de ajustar la ruta
 import httpClient from "../../services/HttpClient";
 import { CanceledError } from "axios";

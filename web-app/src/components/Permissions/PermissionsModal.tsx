@@ -23,7 +23,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Permission } from "../../interfaces/Permissions";
 import { permissionsModalSchema } from "./PermissionsModalSchema";
 import { useTranslation } from "react-i18next";
-import usePermissions from "../../hooks/permissions/usePermissions";
 import useOperationsPermissions from "../../hooks/permissions/useOperationsPermissions";
 
 
