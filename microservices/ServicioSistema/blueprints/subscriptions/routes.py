@@ -12,6 +12,9 @@ def create_plan():
         data = request.get_json()
         name = data.get('name').strip()
         description = data.get('description', '').strip()
+        status = data.get('status', '').strip()
+        price = data.get('price', 0.0)
+        features = data.get('features', '').strip()
         roles = data.get('roles', [])
 
         if not name or len(name) < 1:
@@ -33,12 +36,16 @@ def create_plan():
         if len(valid_roles) < 1:
             return "roles are required", 400
         
-        data = CreateSubscriptionPlan(id, name, description, valid_roles).execute()
+        data = CreateSubscriptionPlan(id, name, description, status, 
+                                      price, features, valid_roles).execute()
 
         return jsonify({
             "id": data.id,
             "name": data.name,
             "description": data.description,
+            "status": data.status,
+            "price": float(data.price),
+            "features": data.features,
             "roles": valid_roles,
             "createdAt": data.createdAt,
             "updatedAt": data.updatedAt

@@ -14,6 +14,9 @@ def test_create_subscription_plan_success(mocker):
         id="plan-premium", 
         name="Premium Plan", 
         description="Plan for premium users", 
+        status="active", 
+        price=99.99, 
+        features="Advanced support, Unlimited access", 
         roles=["role-1", "role-2"]
     )
 
@@ -28,6 +31,9 @@ def test_create_subscription_plan_success(mocker):
     assert plan.id == "plan-premium"
     assert plan.name == "Premium Plan"
     assert plan.description == "Plan for premium users"
+    assert plan.status == "active"
+    assert plan.price == 99.99
+    assert plan.features == "Advanced support, Unlimited access"
     
     assert add_spy.call_count == 3
     for call in add_spy.mock_calls:
@@ -36,7 +42,7 @@ def test_create_subscription_plan_success(mocker):
 
 def test_create_subscription_plan_invalid_data():
     with pytest.raises(ValueError, match="Invalid data provided"):
-        command = CreateSubscriptionPlan(id="plan-premium", name="Premium Plan", description="Plan for premium users", roles=[])
+        command = CreateSubscriptionPlan(id="plan-premium", name="Premium Plan", description="Plan for premium users", status="active", price=99.99, features="Advanced support, Unlimited access", roles=[])
         command.execute()
 
 def test_create_subscription_plan_rollback_on_error(mocker):
@@ -47,6 +53,9 @@ def test_create_subscription_plan_rollback_on_error(mocker):
         id="plan-premium", 
         name="Premium Plan", 
         description="Plan for premium users", 
+        status="active", 
+        price=99.99, 
+        features="Advanced support, Unlimited access", 
         roles=["role-1", "role-2"]
     )
 

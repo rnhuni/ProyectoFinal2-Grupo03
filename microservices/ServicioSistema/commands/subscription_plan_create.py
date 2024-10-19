@@ -4,10 +4,13 @@ from ..models.subscription_plan_role import SubscriptionPlanRole
 from .base_command import BaseCommannd
 
 class CreateSubscriptionPlan(BaseCommannd):
-    def __init__(self, id, name, description, roles):
+    def __init__(self, id, name, description, status, price, features, roles):
         self.id = id
         self.name = name
         self.description = description
+        self.status = status
+        self.price = price
+        self.features = features
         self.roles = roles
 
     def execute(self):
@@ -15,7 +18,8 @@ class CreateSubscriptionPlan(BaseCommannd):
             raise ValueError("Invalid data provided")
 
         try:
-            plan = SubscriptionPlan(id=self.id, name=self.name, description=self.description)
+            plan = SubscriptionPlan(id=self.id, name=self.name, description=self.description, 
+                                    status=self.status, price=self.price, features=self.features)
             session.add(plan)
             session.flush()
             
