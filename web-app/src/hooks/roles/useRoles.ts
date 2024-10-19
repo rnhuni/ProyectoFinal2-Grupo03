@@ -1,22 +1,24 @@
 import { useState } from "react";
-import httpClient from "../../services/HttpClient";
+import httpClient from "../../services/HttpClient"; // Reemplaza el import con el nuevo cliente
 import { AxiosError, CanceledError } from "axios";
-import { Permission } from "../../interfaces/Permissions";
+import { Role } from "../../interfaces/Role";
 
-const usePermissions = () => {
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+const useRoles = () => {
+  const [roles, setRoles] = useState<Role[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const service = "/system/permissions";
 
-  const reloadPermissions = () => {
+  const service = "/system/roles";
+
+  const reloadRoles = () => {
 
     httpClient
-      .get<Permission[]>("/system/permissions")
+      .get<Role[]>(service) // Cambia el endpoint a "/roles"
       .then((res) => {
         console.log(res);
-        setPermissions(res.data);
+        setRoles(res.data);
       })
+
       .catch((err) => {
         if (err instanceof CanceledError) return;
         setError(err.message);
@@ -24,11 +26,11 @@ const usePermissions = () => {
 
   };
 
-  const createPermission = async (newPermission: Permission) => {
+  const createRole = async (newRole: Role) => {
     setLoading(true); // Inicia el estado de carga
 
     try {
-      const res = await httpClient.post<Permission>(service, newPermission);
+      const res = await httpClient.post<Role>(service, newRole);
       return res.data; // Retorna el nuevo permiso creado
     } catch (err) {
       if (err instanceof CanceledError) return;
@@ -41,11 +43,11 @@ const usePermissions = () => {
     }
   };
 
-  const updatePermission = async (aPermission: Permission) => {
+  const updateRole = async (aRole: Role) => {
     setLoading(true);
 
     try {
-      const res = await httpClient.put<Permission>(service + `/${aPermission.id}`, aPermission);
+      const res = await httpClient.put<Role>(service + `/${aRole.id}`, aRole);
       return res.data;
     } catch (err) {
       if (err instanceof CanceledError) return;
@@ -57,7 +59,8 @@ const usePermissions = () => {
     }
   };
 
-  return { permissions, loading, error, reloadPermissions, updatePermission, createPermission }; // Retornamos reloadPermissions
+
+  return { roles, loading, error, reloadRoles, createRole, updateRole };
 };
 
-export default usePermissions;
+export default useRoles;

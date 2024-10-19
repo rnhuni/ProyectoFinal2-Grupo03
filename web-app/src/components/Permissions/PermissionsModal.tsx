@@ -23,8 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Permission } from "../../interfaces/Permissions";
 import { permissionsModalSchema } from "./PermissionsModalSchema";
 import { useTranslation } from "react-i18next";
-import useOperationsPermissions from "../../hooks/permissions/useOperationsPermissions";
-
+import usePermissions from "../../hooks/permissions/usePermissions";
 
 type FormData = z.infer<typeof permissionsModalSchema>;
 
@@ -55,7 +54,8 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
     },
   });
   const { t } = useTranslation();
-  const { createPermission, updatePermission, error, loading } = useOperationsPermissions();
+  const { createPermission, updatePermission, error, loading } =
+    usePermissions();
 
   useEffect(() => {
     if (mode === "edit" && initialData) {

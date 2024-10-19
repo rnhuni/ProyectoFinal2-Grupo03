@@ -22,7 +22,7 @@ import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { Permission } from "../interfaces/Permissions";
 import { PermissionModal } from "../components/Permissions/PermissionsModal";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import usePermissions from "../hooks/permissions/usePermissions";
 
 const Permissions = () => {
@@ -52,6 +52,10 @@ const Permissions = () => {
     reloadPermissions(); // Recarga los permisos
   };
 
+  useEffect(() => {
+    reloadPermissions(); // Carga inicial de permisos
+  }, []);
+
   return (
     <Box p={4}>
       <HStack justifyContent="space-between" mb={4}>
@@ -66,13 +70,13 @@ const Permissions = () => {
           {t("permissions.create")}
         </Button>
       </HStack>
-       {/* Mensaje de error */}
-       {error && (
-            <Alert status="error" mb={4}>
-              <AlertIcon />
-              {t("permissions.error_message")} 
-            </Alert>
-          )}
+      {/* Mensaje de error */}
+      {error && (
+        <Alert status="error" mb={4}>
+          <AlertIcon />
+          {t("permissions.error_message")}
+        </Alert>
+      )}
 
       <Table variant="simple" mt={4}>
         <Thead>

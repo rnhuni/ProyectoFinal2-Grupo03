@@ -17,16 +17,16 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RoleModal from "../components/Roles/RoleModal";
 import { Role } from "../interfaces/Role";
-import useRoles from "../hooks/useRoles";
+import useRoles from "../hooks/roles/useRoles";
 
 const Roles = () => {
   const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { roles, error } = useRoles(); // Reemplaza el hook con el nuevo hook
+  const { roles, error, reloadRoles } = useRoles(); // Reemplaza el hook con el nuevo hook
 
   const handleEdit = (rol: Role) => {
     const role: Role = {
@@ -48,6 +48,10 @@ const Roles = () => {
     setMode("create");
     onOpen();
   };
+
+  useEffect(() => {
+    reloadRoles();
+  }, []);
 
   return (
     <Box p={4}>
@@ -80,7 +84,7 @@ const Roles = () => {
               <Td>{rol.name}</Td>
               <Td>
                 {(rol.permissions ?? [])
-                  .map((permission) => permission.id)
+                  .map((permission: { id: string }) => permission.id)
                   .join(", ")}
               </Td>
               <Td>{rol.createdAt || ""}</Td>

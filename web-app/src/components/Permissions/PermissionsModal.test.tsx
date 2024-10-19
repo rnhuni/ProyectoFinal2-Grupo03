@@ -2,9 +2,9 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { PermissionModal } from "./PermissionsModal";
 import i18n from "../../../i18nextConfig";
 import { Permission } from "../../interfaces/Permissions";
-import useOperationsPermission from "../../hooks/permissions/useOperationsPermissions";
+import usePermissions from "../../hooks/permissions/usePermissions";
 
-jest.mock("../../hooks/permissions/useOperationsPermissions");
+jest.mock("../../hooks/permissions/usePermissions");
 
 describe("PermissionModal loading state", () => {
   const onCloseMock = jest.fn();
@@ -16,7 +16,7 @@ describe("PermissionModal loading state", () => {
 
   test("should display loading message when loading is true", () => {
     // Mocking the hook to simulate the loading state
-    (useOperationsPermission as jest.Mock).mockReturnValue({
+    (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
       error: null,
       loading: true, // Simulamos que está cargando
@@ -27,11 +27,12 @@ describe("PermissionModal loading state", () => {
     );
 
     // Verificar que el spinner y el mensaje de carga estén presentes
-    expect(screen.getByText("permissions.modal.loading_message")).toBeInTheDocument();
+    expect(
+      screen.getByText("permissions.modal.loading_message")
+    ).toBeInTheDocument();
     expect(screen.getByRole("alert")).toHaveClass("chakra-alert"); // Verifica que hay un alert Chakra
   });
 });
-
 
 describe("PermissionModal error handling", () => {
   const onCloseMock = jest.fn();
@@ -43,7 +44,7 @@ describe("PermissionModal error handling", () => {
 
   test("should display error message when an error occurs", async () => {
     // Mocking the hook to return an error
-    (useOperationsPermission as jest.Mock).mockReturnValue({
+    (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
       error: "An error occurred",
       loading: false,
@@ -54,12 +55,11 @@ describe("PermissionModal error handling", () => {
     );
 
     // Verificar que el mensaje de error esté presente
-    expect(screen.getByText("permissions.modal.error_message")).toBeInTheDocument();
+    expect(
+      screen.getByText("permissions.modal.error_message")
+    ).toBeInTheDocument();
   });
 });
-
-
-
 
 describe("PermissionModal onSubmit", () => {
   const onCloseMock = jest.fn();
@@ -68,7 +68,7 @@ describe("PermissionModal onSubmit", () => {
   beforeEach(() => {
     // Set up mocks
     i18n.changeLanguage("es");
-    (useOperationsPermission as jest.Mock).mockReturnValue({
+    (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
       error: null,
       loading: false,
@@ -92,7 +92,9 @@ describe("PermissionModal onSubmit", () => {
     });
 
     // Click the submit button
-    fireEvent.click(screen.getByRole("button", { name: "common.button.create" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     // Wait for async actions to complete
     await waitFor(() => {
@@ -100,14 +102,12 @@ describe("PermissionModal onSubmit", () => {
         name: "Test Permission",
         description: "Test Description",
         resource: "Test Resource",
-        id: ""
+        id: "",
       });
       expect(onCloseMock).toHaveBeenCalledTimes(1); // Ensure the modal closes
     });
   });
 });
-
-
 
 describe("PermissionModal", () => {
   const onCloseMock = jest.fn();
@@ -116,7 +116,7 @@ describe("PermissionModal", () => {
 
   beforeEach(() => {
     i18n.changeLanguage("es");
-    (useOperationsPermission as jest.Mock).mockReturnValue({
+    (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
       updatePermission: updatePermissionMock, // Mock de updatePermission
       error: null,
@@ -229,6 +229,4 @@ describe("PermissionModal", () => {
       });
     });
   });
-
-  
 });
