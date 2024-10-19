@@ -15,12 +15,15 @@ import {
   useDisclosure,
   HStack,
   Text,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { Permission } from "../interfaces/Permissions";
 import { PermissionModal } from "../components/Permissions/PermissionsModal";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import usePermissions from "../hooks/permissions/usePermissions";
 
 const Permissions = () => {
   const { t } = useTranslation();
@@ -30,24 +33,7 @@ const Permissions = () => {
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const permissions: Permission[] = [
-    {
-      id: "1",
-      name: "Crear usuarios",
-      description: "Permite crear nuevos usuarios en el sistema.",
-      resource: "Users",
-      createdAt: "Nov 30, 2023",
-      updatedAt: "Dec 11, 2023",
-    },
-    {
-      id: "2",
-      name: "Ver usuarios",
-      description: "Permite ver la lista de usuarios registrados.",
-      resource: "Users",
-      createdAt: "Jun 18, 2023",
-      updatedAt: "Nov 9, 2023",
-    },
-  ];
+  const { permissions, error, reloadPermissions } = usePermissions(); // Reemplaza el hook con el nuevo hook
 
   const handleEdit = (permission: Permission) => {
     setSelectedPermission(permission);
@@ -59,6 +45,11 @@ const Permissions = () => {
     setSelectedPermission(undefined);
     setMode("create");
     onOpen();
+  };
+
+  const handleModalClose = () => {
+    onClose(); // Cierra el modal
+    reloadPermissions(); // Recarga los permisos
   };
 
   return (
@@ -75,6 +66,13 @@ const Permissions = () => {
           {t("permissions.create")}
         </Button>
       </HStack>
+       {/* Mensaje de error */}
+       {error && (
+            <Alert status="error" mb={4}>
+              <AlertIcon />
+              {t("permissions.error_message")} 
+            </Alert>
+          )}
 
       <Table variant="simple" mt={4}>
         <Thead>
@@ -121,7 +119,7 @@ const Permissions = () => {
 
       <PermissionModal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleModalClose}
         initialData={selectedPermission}
         mode={mode}
       />

@@ -5,6 +5,12 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+
+    "target": "es5",
+    
+    "strict": true,
+    "esModuleInterop": true
   }
 }
