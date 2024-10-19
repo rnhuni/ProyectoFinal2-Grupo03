@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const permissionsModalSchema = z.object({
+    id: z.string().default(""),
     resource: z
         .string()
         .min(3, { message: 'permissions.validations.resource' }),

@@ -1,42 +1,59 @@
 {
-  "common": {
-    "creation_date": "Fecha de creación",
-    "edition_date": "Fecha de edición",
-    "actions": "Acciones",
-    "actions_edit": "Editar",
-    "actions_delete": "Eliminar",
-    "button": {
-      "cancel": "Cancelar",
-      "edit": "Editar",
-      "create": "Crear"
-    }
-  },
-  "permissions": {
-    "name": "Nombre",
-    "resource": "Recurso",
-    "description": "Descripción",
-    "title": "Permisos de la plataforma",
-    "create": "Crear permiso",
-    "validations": {
-      "name": "El nombre debe tener al menos {{count}} caracteres.",
-      "description": "La descripción debe tener al menos {{count}} caracteres.",
-      "resource": "El recurso debe tener al menos {{count}} caracteres."
+    "common": {
+        "creation_date": "Fecha de Creación",
+        "edition_date": "Fecha de Edición",
+        "actions": "Acciones",
+        "actions_edit": "Editar",
+        "actions_delete": "Eliminar",
+        "button": {
+            "cancel": "Cancelar",
+            "edit": "Editar",
+            "create": "Crear"
+        }
     },
-    "modal": {
-      "edit": "Editar permiso",
-      "create": "Crear permiso"
+    "permissions": {
+        "name": "Nombre",
+        "resource": "Recurso",
+        "description": "Descripción",
+        "title": "Permisos de la Plataforma",
+        "create": "Crear Permiso",
+        "error_message": "Error",
+        "validations": {
+            "name": "El nombre debe tener al menos {{count}} caracteres.",
+            "description": "La descripción debe tener al menos {{count}} caracteres.",
+            "resource": "El recurso debe tener al menos {{count}} caracteres."
+        },
+        "modal": {
+            "edit": "Editar Permiso",
+            "create": "Crear Permiso",
+            "error_message": "Error",
+            "loading_message": "Cargando"
+        }
+    },
+    "role": {
+        "description": "Descripción",
+        "title": "Gestión de Roles",
+        "create": "Crear Rol",
+        "name": "Nombre",
+        "permissions": "Permisos",
+        "validations": {
+            "name": "El nombre debe tener al menos {{count}} caracteres.",
+            "description": "La descripción debe tener al menos {{count}} caracteres."
+        },
+        "modal": {
+            "edit": "Editar Rol",
+            "create": "Crear Rol"
+        }
+    },
+    "plans": {
+      "title": "Planes Disponibles",
+      "create": "Crear Plan",
+      "name": "Nombre del Plan",
+      "description": "Descripción",
+      "status": "Estado",
+      "price": "Precio",
+      "features": "Características",
+      "details": "Detalles",
+      "edit": "Editar",
+      "delete": "Eliminar"
     }
-  },
-  "plans": {
-    "title": "Planes Disponibles",
-    "create": "Crear Plan",
-    "name": "Nombre del Plan",
-    "description": "Descripción",
-    "status": "Estado",
-    "price": "Precio",
-    "features": "Características",
-    "details": "Detalles",
-    "edit": "Editar",
-    "delete": "Eliminar"
-  }
-}

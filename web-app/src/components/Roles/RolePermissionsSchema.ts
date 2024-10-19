@@ -1,12 +1,14 @@
 import { z } from "zod";
 
-// Esquema para las acciones permitidas
-export const actionSchema = z.enum(["read", "write", "update", "delete"]);
+export const actionSchema = z.enum(["write", "read", "update", "delete"]);
 
-// Esquema para un permiso
-export const rolePermissionSchema = z.object({
-  id: z.string(), // El ID debe ser una cadena
-  actions: z.array(actionSchema), // Las acciones deben ser un array de los valores permitidos
+export const permissionSchema = z.object({
+  id: z.string(),
+  actions: z.array(actionSchema),
 });
 
-
+export const roleSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "El nombre es requerido"),
+  permissions: z.array(permissionSchema),
+});
