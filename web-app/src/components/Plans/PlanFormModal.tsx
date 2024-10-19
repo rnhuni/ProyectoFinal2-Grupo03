@@ -23,7 +23,6 @@ import { useEffect, useState } from "react";
 const planSchema = z.object({
   name: z.string().min(1, "El nombre del plan es requerido"),
   description: z.string().min(1, "La descripción es requerida"),
-  features: z.string().min(1, "Las características son requeridas"),
   price: z.string().min(1, "El precio es requerido"),
 });
 
@@ -52,37 +51,59 @@ const PlanFormModal = ({
     defaultValues: {
       name: "",
       description: "",
-      features: "",
-      price: "",
+      price: "0",
     },
   });
 
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const featuresList = [
+    "Soporte técnico 24/7",
+    "Acceso a reportes detallados",
+    "Editar perfiles",
+    "Integración con plataformas externas",
+    "Facturación automática",
+    "Usuarios permitidos: 1, 10, ilimitados",
+    "Espacio de almacenamiento",
+    "Actualizaciones de software automáticas",
+    "Acceso móvil",
+    "Modificar usuarios",
+    "Eliminar usuarios",
+    "Varios usuarios al tiempo",
+    "Con publicidad",
+    "Sin publicidad",
+    "Facturación periódica",
+  ];
+
+  const [checkedItems, setCheckedItems] = useState<boolean[]>(
+    featuresList.map(() => false)
+  );
 
   useEffect(() => {
     if (plan) {
       reset(plan);
-      setSelectedFeatures(plan.features.split(", ").map((f) => f.trim()));
+      const planFeatures = plan.features.split(", ").map((f) => f.trim());
+      setCheckedItems(
+        featuresList.map((feature) => planFeatures.includes(feature))
+      );
     } else {
       reset({
         name: "",
         description: "",
-        features: "",
-        price: "",
+        price: "0",
       });
-      setSelectedFeatures([]);
+      setCheckedItems(featuresList.map(() => false));
     }
   }, [plan, reset]);
 
-  const handleFeatureChange = (feature: string) => {
-    setSelectedFeatures((prev) =>
-      prev.includes(feature)
-        ? prev.filter((f) => f !== feature)
-        : [...prev, feature]
+  const handleFeatureChange = (index: number) => {
+    setCheckedItems((prev) =>
+      prev.map((item, i) => (i === index ? !item : item))
     );
   };
 
   const onSubmit = (data: Plan) => {
+    const selectedFeatures = featuresList.filter(
+      (_, index) => checkedItems[index]
+    );
     const updatedPlan = {
       ...data,
       features: selectedFeatures.join(", "),
@@ -125,27 +146,11 @@ const PlanFormModal = ({
             <FormControl mb={4}>
               <FormLabel>Características del Plan *</FormLabel>
               <Grid templateColumns="repeat(3, 1fr)" gap={2}>
-                {[
-                  "Soporte técnico 24/7",
-                  "Acceso a reportes detallados",
-                  "Editar perfiles",
-                  "Integración con plataformas externas",
-                  "Facturación automática",
-                  "Usuarios permitidos: 1, 10, ilimitados",
-                  "Espacio de almacenamiento",
-                  "Actualizaciones de software automáticas",
-                  "Acceso móvil",
-                  "Modificar usuarios",
-                  "Eliminar usuarios",
-                  "Varios usuarios al tiempo",
-                  "Con publicidad",
-                  "Sin publicidad",
-                  "Facturación periódica",
-                ].map((feature) => (
+                {featuresList.map((feature, index) => (
                   <Checkbox
                     key={feature}
-                    isChecked={selectedFeatures.includes(feature)}
-                    onChange={() => handleFeatureChange(feature)}
+                    isChecked={checkedItems[index]}
+                    onChange={() => handleFeatureChange(index)}
                   >
                     {feature}
                   </Checkbox>

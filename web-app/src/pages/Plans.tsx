@@ -18,20 +18,20 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import PlanFilterDrawer from "../components/Plans/PlanFilterDrawer";
 import PlanFormModal from "../components/Plans/PlanFormModal";
-
 import DeleteConfirmationModal from "../components/Plans/DeleteConfirmationModal";
 import { Plan } from "../interfaces/Plan";
 import PlanDetailsModal from "../components/Plans/PlanDetailsModal";
 
 const Plans = () => {
   const { t } = useTranslation();
+
   const [plans, setPlans] = useState<Plan[]>([
     {
       id: "1",
       name: "Basic Plan",
       description: "Limited access to essential functions.",
       status: "Active",
-      price: "$10.000",
+      price: 10000.5, // Ahora es un número con decimales
       features: "24/7 Technical support, 1TB Storage",
     },
     {
@@ -39,7 +39,7 @@ const Plans = () => {
       name: "Advanced Plan",
       description: "Limited access to essential functions.",
       status: "Active",
-      price: "$35.000",
+      price: 35000.75, // Número con decimales
       features: "24/7 Technical support, Advanced Analytics",
     },
     {
@@ -47,7 +47,7 @@ const Plans = () => {
       name: "Premium Plan",
       description: "Limited access to essential functions.",
       status: "Active",
-      price: "$65.000",
+      price: 65000.99, // Número con decimales
       features: "24/7 Technical support, Premium Integration, Custom Reporting",
     },
     {
@@ -55,7 +55,7 @@ const Plans = () => {
       name: "Pro Plan",
       description: "Limited access to essential functions.",
       status: "Active",
-      price: "$85.000",
+      price: 85000.25, // Número con decimales
       features: "Priority Support 24/7, Unlimited Users, Real-Time Monitoring",
     },
   ]);
@@ -202,7 +202,14 @@ const Plans = () => {
               <Td>
                 <Badge colorScheme="green">{t("status.active")}</Badge>
               </Td>
-              <Td>{plan.price}</Td>
+              <Td>
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(plan.price)}
+              </Td>
               <Td>{plan.features}</Td>
               <Td>
                 <IconButton

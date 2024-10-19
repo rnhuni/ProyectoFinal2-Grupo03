@@ -3,6 +3,6 @@ export interface Plan {
   name: string;
   description: string;
   status: string;
-  price: string;
+  price: number;
   features: string;
 }

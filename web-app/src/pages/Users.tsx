@@ -28,24 +28,16 @@ const Users = () => {
 
   const users: User[] = [
     {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Admin",
-      status: "Active",
-      createdAt: "Nov 30, 2023",
-      updatedAt: "Dec 11, 2023",
-      roles: [],
+      name: "nicohug",
+      email: "nicohug@gmail.com",
+      role_id: "role-1",
+      client_id: "50b0aae0-c8ff-4481-a9c6-6fe60f2ea66a",
     },
     {
-      id: 2,
-      name: "Jane Doe",
+      name: "janedoe",
       email: "jane@example.com",
-      role: "User",
-      status: "Completed",
-      createdAt: "Jun 18, 2023",
-      updatedAt: "Nov 9, 2023",
-      roles: [],
+      role_id: "role-2",
+      client_id: "70b0aae0-c8ff-4481-a9c6-6fe60f2ea66b",
     },
   ];
 
@@ -80,23 +72,19 @@ const Users = () => {
         <Thead>
           <Tr>
             <Th>Nombre Completo</Th>
-            <Th>Estado</Th>
             <Th>Correo Electrónico</Th>
             <Th>Rol</Th>
-            <Th>Fecha Creación</Th>
-            <Th>Fecha Edición</Th>
+            <Th>Cliente</Th>
             <Th>Acciones</Th>
           </Tr>
         </Thead>
         <Tbody>
           {users.map((user) => (
-            <Tr key={user.id}>
+            <Tr key={user.client_id}>
               <Td>{user.name}</Td>
-              <Td>{user.status}</Td>
               <Td>{user.email}</Td>
-              <Td>{user.role}</Td>
-              <Td>{user.createdAt || "None"}</Td>
-              <Td>{user.updatedAt || "None"}</Td>
+              <Td>{user.role_id}</Td>
+              <Td>{user.client_id}</Td>
               <Td>
                 <Menu>
                   <MenuButton as={IconButton} icon={<HamburgerIcon />} />
