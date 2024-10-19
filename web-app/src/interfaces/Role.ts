@@ -1,4 +1,7 @@
-import { RolePermissions } from './RolePermissions';
+export interface RolePermissions {
+  id: string;
+  actions: ("read" | "write" | "update" | "delete")[];
+}
 
 export interface Role {
   id: string;

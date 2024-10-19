@@ -24,6 +24,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Role } from "../../interfaces/Role"; // Asegúrate de usar la interfaz correcta aquí
 import { roleSchema } from "./RolePermissionsSchema";
 import { z } from "zod";
+import usePermissions from "../../hooks/permissions/usePermissions";
+import useRoles from "../../hooks/roles/useRoles";
 
 type FormData = z.infer<typeof roleSchema>;
 
@@ -33,11 +35,6 @@ interface RoleModalProps {
   initialData?: Role;
   mode: "create" | "edit";
 }
-
-const permissionsList = [
-  { id: "pem-id-role-555-1", name: "Crear usuarios" },
-  { id: "pem-id-role-555-2", name: "Ver usuarios" },
-];
 
 const RoleModal: React.FC<RoleModalProps> = ({
   isOpen,
@@ -63,6 +60,8 @@ const RoleModal: React.FC<RoleModalProps> = ({
   // Guardar las acciones seleccionadas para cada permiso
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<string>("");
+  const { permissions, reloadPermissions } = usePermissions();
+  const { createRole } = useRoles();
 
   // Inicializar o resetear el formulario según el modo
   useEffect(() => {
@@ -91,6 +90,10 @@ const RoleModal: React.FC<RoleModalProps> = ({
       setSelectedPermission(""); // Limpiar la selección del permiso
     }
   }, [initialData, mode, reset]);
+
+  useEffect(() => {
+    reloadPermissions(); // Carga inicial de permisos
+  }, []);
 
   // Manejar el cambio en los checkboxes para acciones
   const handleCheckboxChange = (
@@ -167,7 +170,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
   // Función de envío del formulario
   const onSubmit = (data: FormData) => {
-    console.log("Formulario enviado:", data);
+    createRole(data as Role);
     onClose();
   };
 
@@ -241,7 +244,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                   value={selectedPermission}
                   onChange={(e) => handlePermissionSelect(e.target.value)}
                 >
-                  {permissionsList.map((permission) => (
+                  {permissions.map((permission) => (
                     <option key={permission.id} value={permission.id}>
                       {permission.name}
                     </option>

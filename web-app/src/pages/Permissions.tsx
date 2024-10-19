@@ -33,7 +33,7 @@ const Permissions = () => {
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { permissions, error, reloadPermissions } = usePermissions(); // Reemplaza el hook con el nuevo hook
+  const { permissions, error, reloadPermissions } = usePermissions();
 
   const handleEdit = (permission: Permission) => {
     setSelectedPermission(permission);
