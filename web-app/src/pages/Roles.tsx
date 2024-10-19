@@ -51,6 +51,7 @@ const Roles = () => {
 
   useEffect(() => {
     reloadRoles();
+    console.log(roles);
   }, []);
 
   return (
