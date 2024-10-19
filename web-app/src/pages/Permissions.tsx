@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { Permission } from "../interfaces/Permissions";
-import { PermissionModal } from "../components/Permissions/PermissionsModal";
+import { PermissionsModal } from "../components/Permissions/PermissionsModal";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import usePermissions from "../hooks/permissions/usePermissions";
@@ -121,7 +121,7 @@ const Permissions = () => {
         </Tbody>
       </Table>
 
-      <PermissionModal
+      <PermissionsModal
         isOpen={isOpen}
         onClose={handleModalClose}
         initialData={selectedPermission}

@@ -1,8 +1,9 @@
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
-import { PermissionModal } from "./PermissionsModal";
+import { PermissionsModal } from "./PermissionsModal";
 import i18n from "../../../i18nextConfig";
 import { Permission } from "../../interfaces/Permissions";
 import usePermissions from "../../hooks/permissions/usePermissions";
+import { ChakraProvider } from "@chakra-ui/react";
 
 jest.mock("../../hooks/permissions/usePermissions");
 
@@ -23,7 +24,9 @@ describe("PermissionModal loading state", () => {
     });
 
     render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+      <ChakraProvider>
+        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+      </ChakraProvider>
     );
 
     // Verificar que el spinner y el mensaje de carga estén presentes
@@ -51,7 +54,9 @@ describe("PermissionModal error handling", () => {
     });
 
     render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+      <ChakraProvider>
+        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+      </ChakraProvider>
     );
 
     // Verificar que el mensaje de error esté presente
@@ -77,7 +82,9 @@ describe("PermissionModal onSubmit", () => {
 
   test("should call handleSubmitAsyn and onClose on form submit", async () => {
     render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+      <ChakraProvider>
+        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+      </ChakraProvider>
     );
 
     // Simulate filling out the form fields
@@ -126,7 +133,9 @@ describe("PermissionModal", () => {
 
   test("should render modal in create mode", () => {
     render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+      <ChakraProvider>
+        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+      </ChakraProvider>
     );
 
     expect(screen.getByText("permissions.modal.create")).toBeInTheDocument();
@@ -145,12 +154,14 @@ describe("PermissionModal", () => {
     };
 
     render(
-      <PermissionModal
-        isOpen={true}
-        onClose={onCloseMock}
-        initialData={initialData}
-        mode="edit"
-      />
+      <ChakraProvider>
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          initialData={initialData}
+          mode="edit"
+        />
+      </ChakraProvider>
     );
 
     expect(screen.getByText("permissions.modal.edit")).toBeInTheDocument();
@@ -162,7 +173,9 @@ describe("PermissionModal", () => {
 
   test("should call onClose when cancel button is clicked", () => {
     render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+      <ChakraProvider>
+        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+      </ChakraProvider>
     );
 
     const cancelButton = screen.getByText("common.button.cancel");
@@ -173,7 +186,9 @@ describe("PermissionModal", () => {
 
   test("should display validation errors", async () => {
     render(
-      <PermissionModal isOpen={true} onClose={onCloseMock} mode="create" />
+      <ChakraProvider>
+        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+      </ChakraProvider>
     );
 
     fireEvent.click(
@@ -197,12 +212,14 @@ describe("PermissionModal", () => {
     };
 
     render(
-      <PermissionModal
-        isOpen={true}
-        onClose={onCloseMock}
-        initialData={initialData}
-        mode="edit"
-      />
+      <ChakraProvider>
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          initialData={initialData}
+          mode="edit"
+        />
+      </ChakraProvider>
     );
 
     // Simulate filling out the form fields
