@@ -5,4 +5,5 @@ export interface Permission {
   description: string;
   createdAt?: string;
   updatedAt?: string;
+  actions?: ("write" | "read" | "update" | "delete")[];
 }

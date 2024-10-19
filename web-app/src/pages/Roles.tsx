@@ -21,8 +21,10 @@ import { useEffect, useState } from "react";
 import RoleModal from "../components/Roles/RoleModal";
 import { Role } from "../interfaces/Role";
 import useRoles from "../hooks/roles/useRoles";
+import { useTranslation } from "react-i18next";
 
 const Roles = () => {
+  const { t } = useTranslation();
   const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,29 +55,34 @@ const Roles = () => {
     reloadRoles();
   }, []);
 
+  const handleOnClose = () => {
+    reloadRoles();
+    onClose();
+  };
+
   return (
     <Box p={4}>
       <HStack justifyContent="space-between" mb={4}>
         <Text fontSize="2xl" fontWeight="bold">
-          Gestión de Roles
+          {t("role.title")}
         </Text>
         <Button
           colorScheme="blue"
           leftIcon={<AddIcon />}
           onClick={handleCreate}
         >
-          Crear Rol
+          {t("role.create")}
         </Button>
       </HStack>
       {error && <Text color="red.500">{error}</Text>}
       <Table variant="simple" mt={4}>
         <Thead>
           <Tr>
-            <Th>Nombre</Th>
-            <Th>Permisos</Th>
-            <Th>Fecha Creación</Th>
-            <Th>FEcha Edición</Th>
-            <Th>Acción</Th>
+            <Th>{t("role.name")}</Th>
+            <Th>{t("role.permissions")}</Th>
+            <Th>{t("common.creation_date")}</Th>
+            <Th>{t("common.edition_date")}</Th>
+            <Th>{t("common.actions")}</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -105,7 +112,7 @@ const Roles = () => {
       {/* Modal para asignar o editar roles */}
       <RoleModal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleOnClose}
         initialData={selectedRole}
         mode={mode}
       />
