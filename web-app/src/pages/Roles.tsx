@@ -20,102 +20,13 @@ import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import RoleModal from "../components/Roles/RoleModal";
 import { Role } from "../interfaces/Role";
+import useRoles from "../hooks/useRoles";
 
 const Roles = () => {
-  const [selectedRole, setSelectedRole] = useState<Role | undefined>(
-    undefined
-  );
+  const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // Lista de usuarios como ejemplo
-  const roles = [
-    {
-      id: "id-role-222",
-      name: "name-role-222",
-      permissions: [
-        {
-          id: "pem-id-role-222-1",
-          actions: [
-            "write",
-            "read"
-          ]
-        },
-        {
-          id: "pem-id-role-222-2",
-          actions: [
-            "write"
-          ]
-        },
-        {
-          id: "pem-id-role-222-3",
-          actions: [
-            "write",
-            "read"
-          ]
-        }
-      ],
-      "createdAt": "Thu, 17 Oct 2024 18:22:49 GMT",
-      "updatedAt": "Thu, 17 Oct 2024 18:22:49 GMT"
-    },
-    {
-      id: "id-role-333",
-      name: "name-role-333",
-      permissions: [
-        {
-          id: "pem-id-role-333-1",
-          actions: [
-            "write",
-            "read"
-          ]
-        },
-        {
-          id: "pem-id-role-333-2",
-          actions: [
-            "write"
-          ]
-        },
-        {
-          id: "pem-id-role-333-3",
-          actions: [
-            "write",
-            "read"
-          ]
-        }
-      ],
-      "createdAt": "Thu, 17 Oct 2024 18:22:49 GMT",
-      "updatedAt": "Thu, 17 Oct 2024 18:22:49 GMT"
-    },
-    {
-      id: "id-role-444",
-      name: "name-role-444",
-      permissions: [
-        {
-          id: "pem-id-role-444-1",
-          actions: [
-            "write",
-            "read"
-          ]
-        },
-        {
-          id: "pem-id-role-444-2",
-          actions: [
-            "write"
-          ]
-        },
-        {
-          id: "pem-id-role-444-3",
-          actions: [
-            "write",
-            "read"
-          ]
-        }
-      ],
-      "createdAt": "Thu, 17 Oct 2024 18:22:49 GMT",
-      "updatedAt": "Thu, 17 Oct 2024 18:22:49 GMT"
-    }
-
-  ];
+  const { roles, error } = useRoles(); // Reemplaza el hook con el nuevo hook
 
   const handleEdit = (rol: Role) => {
     const role: Role = {
@@ -126,7 +37,7 @@ const Roles = () => {
       updatedAt: rol.updatedAt,
     };
 
-    setSelectedRole(role); // Aquí pasamos el UserRole transformado
+    setSelectedRole(role);
     setMode("edit");
     onOpen();
   };
@@ -137,8 +48,6 @@ const Roles = () => {
     setMode("create");
     onOpen();
   };
-
-
 
   return (
     <Box p={4}>
@@ -154,7 +63,7 @@ const Roles = () => {
           Crear Rol
         </Button>
       </HStack>
-
+      {error && <Text color="red.500">{error}</Text>}
       <Table variant="simple" mt={4}>
         <Thead>
           <Tr>
@@ -169,7 +78,11 @@ const Roles = () => {
           {roles.map((rol) => (
             <Tr key={rol.id}>
               <Td>{rol.name}</Td>
-              <Td>{rol.permissions.map(permission => permission.id).join(', ')}</Td>
+              <Td>
+                {(rol.permissions ?? [])
+                  .map((permission) => permission.id)
+                  .join(", ")}
+              </Td>
               <Td>{rol.createdAt || ""}</Td>
               <Td>{rol.updatedAt || ""}</Td>
               <Td>
