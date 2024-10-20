@@ -25,19 +25,18 @@ const usePermissions = () => {
   };
 
   const createPermission = async (newPermission: Permission) => {
-    setLoading(true); // Inicia el estado de carga
+    setLoading(true);
 
     try {
       const res = await httpClient.post<Permission>(service, newPermission);
-      return res.data; // Retorna el nuevo permiso creado
+      return res.data;
     } catch (err) {
       if (err instanceof CanceledError) return;
 
-      // Verificar si el error es de Axios
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
-      setLoading(false); // Finaliza el estado de carga
+      setLoading(false);
     }
   };
 
@@ -57,7 +56,7 @@ const usePermissions = () => {
     }
   };
 
-  return { permissions, loading, error, reloadPermissions, updatePermission, createPermission }; // Retornamos reloadPermissions
+  return { permissions, loading, error, reloadPermissions, updatePermission, createPermission };
 };
 
 export default usePermissions;
