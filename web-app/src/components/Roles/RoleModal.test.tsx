@@ -1,21 +1,10 @@
-import {
-  render,
-  fireEvent,
-  screen,
-  waitFor,
-  renderHook,
-  prettyDOM,
-  getByTestId,
-  getAllByAltText,
-} from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import RoleModal from "./RoleModal";
 import i18n from "../../../i18nextConfig";
 import { Role } from "../../interfaces/Role";
 import usePermissions from "../../hooks/permissions/usePermissions";
 import useRoles from "../../hooks/roles/useRoles";
 import { ChakraProvider } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
-import userEvent from "@testing-library/user-event";
 
 jest.mock("../../hooks/permissions/usePermissions");
 jest.mock("../../hooks/roles/useRoles");
@@ -24,11 +13,9 @@ describe("RoleModal", () => {
   const onCloseMock = jest.fn();
   const createRoleMock = jest.fn();
   const reloadPermissionsMock = jest.fn();
-  let mockHandleRequest: jest.Mock;
 
   beforeEach(() => {
     i18n.changeLanguage("es");
-    mockHandleRequest = jest.fn();
     (usePermissions as jest.Mock).mockReturnValue({
       permissions: [{ id: "1", name: "Permission 1" }],
       reloadPermissions: reloadPermissionsMock,
@@ -288,7 +275,6 @@ describe("RoleModal", () => {
 describe("RoleModal handleCheckboxChange", () => {
   let mockSetValue: jest.Mock;
   let mockGetValues: jest.Mock;
-  let setSelectedActions: jest.Mock;
   let mockReloadPermissions: jest.Mock;
   let mockCreateRole: jest.Mock;
 
@@ -300,7 +286,6 @@ describe("RoleModal handleCheckboxChange", () => {
       { id: "2", actions: ["write", "update"] },
     ]);
 
-    setSelectedActions = jest.fn();
     mockReloadPermissions = jest.fn();
     mockCreateRole = jest.fn(); // Mockeamos el método createRole
 
@@ -373,7 +358,6 @@ describe("RoleModal handleCheckboxChange", () => {
 describe("RoleModal handlePermissionSelect", () => {
   let mockSetValue: jest.Mock;
   let mockGetValues: jest.Mock;
-  let setSelectedPermission: jest.Mock;
   let mockReloadPermissions: jest.Mock;
   let mockCreateRole: jest.Mock;
 
@@ -386,7 +370,6 @@ describe("RoleModal handlePermissionSelect", () => {
       { id: "permission6", name: "permission6-name", actions: [] },
     ]);
 
-    setSelectedPermission = jest.fn();
     mockReloadPermissions = jest.fn();
     mockCreateRole = jest.fn();
 

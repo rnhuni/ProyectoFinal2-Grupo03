@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Spinner, Box } from "@chakra-ui/react";
+import { Spinner, Box } from "@chakra-ui/react";
 import config from "../../cognito_config.json"; // Ajusta la ruta según la ubicación de tu archivo JSON
 
 const LoginCognito = () => {
