@@ -70,7 +70,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
   // Inicializar o resetear el formulario según el modo
   useEffect(() => {
-    debugger;
     if (mode === "edit" && initialData) {
       reset({
         name: initialData.name,
@@ -108,6 +107,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
     permissionId: string,
     action: "write" | "read" | "update" | "delete"
   ) => {
+    debugger;
     const actionId = `${permissionId}-${action}`;
     // console.log("Action ID:", actionId);
 
@@ -159,6 +159,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
   // Manejar la selección del permiso en el select
   const handlePermissionSelect = (permissionId: string) => {
+    debugger;
     const currentPermissions = getValues("permissions");
 
     // Verificar si el permiso ya existe
@@ -185,8 +186,9 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
   // Función de envío del formulario
   const onSubmit = async (data: FormData) => {
-    let message = await handleRequest(data);
     debugger;
+    let message = await handleRequest(data);
+
     if (typeof message === "string") {
       if (message == "Role already exists") {
         setErrorMessage("role.validations.exists");
@@ -216,7 +218,11 @@ const RoleModal: React.FC<RoleModalProps> = ({
               <FormLabel>{errorMessage}</FormLabel>
             </FormControl>
           )}
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            role="form_modal"
+            data-testid="role-modal-form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <Stack spacing={4}>
               {/* Nombre del Rol */}
               <FormControl isInvalid={!!errors.name}>
@@ -245,6 +251,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                             {["write", "read", "update", "delete"].map(
                               (action) => (
                                 <Checkbox
+                                  id={`${permission.id}-${action}`}
                                   key={`${permission.id}-${action}`}
                                   isChecked={selectedActions.includes(
                                     `${permission.id}-${action}`
@@ -299,12 +306,17 @@ const RoleModal: React.FC<RoleModalProps> = ({
               <FormControl mt={4}>
                 <FormLabel>Seleccionar Permiso</FormLabel>
                 <Select
+                  role="select"
                   placeholder="Seleccionar permiso"
                   value={selectedPermission}
                   onChange={(e) => handlePermissionSelect(e.target.value)}
                 >
                   {permissions.map((permission) => (
-                    <option key={permission.id} value={permission.id}>
+                    <option
+                      role="select_option"
+                      key={permission.id}
+                      value={permission.id}
+                    >
                       {permission.name}
                     </option>
                   ))}
