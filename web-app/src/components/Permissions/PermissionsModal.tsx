@@ -12,6 +12,9 @@ import {
   Input,
   Stack,
   FormErrorMessage,
+  Alert,
+  AlertIcon,
+  Spinner,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -20,21 +23,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Permission } from "../../interfaces/Permissions";
 import { permissionsModalSchema } from "./PermissionsModalSchema";
 import { useTranslation } from "react-i18next";
+import usePermissions from "../../hooks/permissions/usePermissions";
 
 type FormData = z.infer<typeof permissionsModalSchema>;
 
-interface PermissionModalProps {
+interface PermissionsModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialData?: Permission;
   mode: "create" | "edit";
+  setReloadData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const PermissionModal: React.FC<PermissionModalProps> = ({
+export const PermissionsModal: React.FC<PermissionsModalProps> = ({
   isOpen,
   onClose,
   initialData,
   mode,
+  setReloadData,
 }) => {
   const {
     register,
@@ -46,30 +52,43 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
     defaultValues: {
       name: "",
       description: "",
-      service: "service",
+      resource: "resource",
     },
   });
   const { t } = useTranslation();
+  const { createPermission, updatePermission, error, loading } =
+    usePermissions();
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
+        id: initialData.id,
         name: initialData.name,
         description: initialData.description,
-        service: initialData.service,
+        resource: initialData.resource,
       });
     } else {
       reset({
+        id: "",
         name: "",
         description: "",
-        service: "",
+        resource: "",
       });
     }
   }, [initialData, mode, reset]);
 
   const onSubmit = (data: FormData) => {
-    console.log("Datos enviados:", data);
+    handleSubmitAsyn(data);
+    setReloadData(true);
     onClose();
+  };
+
+  const handleSubmitAsyn = async (data: FormData) => {
+    if (mode === "edit") {
+      await updatePermission(data);
+    } else {
+      await createPermission(data);
+    }
   };
 
   return (
@@ -83,7 +102,24 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Mensaje de error */}
+          {error && (
+            <Alert status="error" mb={4}>
+              <AlertIcon />
+              {t("permissions.modal.error_message")}
+            </Alert>
+          )}
+
+          {/* Indicador de carga */}
+          {loading && (
+            <Alert status="info" mb={4}>
+              <AlertIcon />
+              <Spinner size="sm" mr={2} />
+              {t("permissions.modal.loading_message")}
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} role="form">
             <Stack spacing={4}>
               <FormControl isInvalid={!!errors.name}>
                 <FormLabel>{t("permissions.name")}</FormLabel>
@@ -98,15 +134,15 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
                 )}
               </FormControl>
 
-              <FormControl isInvalid={!!errors.service}>
-                <FormLabel>{t("permissions.service")}</FormLabel>
+              <FormControl isInvalid={!!errors.resource}>
+                <FormLabel>{t("permissions.resource")}</FormLabel>
                 <Input
-                  placeholder={t("permissions.service")}
-                  {...register("service")}
+                  placeholder={t("permissions.resource")}
+                  {...register("resource")}
                 />
-                {errors.service && (
+                {errors.resource && (
                   <FormErrorMessage>
-                    {t(`${errors.service.message}`, { count: 3 })}
+                    {t(`${errors.resource.message}`, { count: 3 })}
                   </FormErrorMessage>
                 )}
               </FormControl>

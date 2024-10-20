@@ -1,30 +1,118 @@
 {
-    "common": {
-        "creation_date": "Creation Date",
-        "edition_date": "Edition Date",
-        "actions": "Actions",
-        "actions_edit": "Edit",
-        "actions_delete": "Delete",
-        "button": {
-            "cancel": "Cancel",
-            "edit": "Edit",
-            "create": "Create"
-        }
-    },
-    "permissions": {
-        "name": "Name",
-        "service": "Service",
-        "description": "Description",
-        "title": "Platform Permissions",
-        "create": "Create Permission",
-        "validations": {
-            "name": "The name must be at least {{count}} characters.",
-            "description": "The description must be at least {{count}} characters.",
-            "service": "The service must be at least {{count}} characters."
-        },
-        "modal": {
-            "edit": "Edit Permission",
-            "create": "Create Permission"
-        }
+  "common": {
+    "creation_date": "Creation Date",
+    "edition_date": "Edition Date",
+    "actions": "Actions",
+    "actions_edit": "Edit",
+    "actions_delete": "Delete",
+    "button": {
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "create": "Create"
     }
+  },
+  "permissions": {
+    "name": "Name",
+    "resource": "Resource",
+    "description": "Description",
+    "title": "Platform Permissions",
+    "create": "Create Permission",
+    "error_message": "Error",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "description": "The description must be at least {{count}} characters.",
+      "resource": "The resource must be at least {{count}} characters."
+    },
+    "modal": {
+      "edit": "Edit Permission",
+      "create": "Create Permission",
+      "error_message": "Error",
+      "loading_message": "Loading"
+    }
+  },
+  "role": {
+    "description": "Description",
+    "title": "Role Management",
+    "create": "Create Role",
+    "name": "Name",
+    "permissions": "Permissions",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "name_requerid": "The name is required",
+      "description": "The description must be at least {{count}} characters.",
+      "exists": "Role already exists",
+      "permissions_required": "permissions is required",
+      "permissions_list_values": "Permission does not have accessLevel list values",
+      "permissions_unknown": "Error"
+    },
+    "modal": {
+      "name": "Role name",
+      "edit": "Edit Role",
+      "create": "Create Role",
+      "current_permissions": "Current Permissions",
+      "select_permission": "Select Permission"
+    }
+  },
+  "plans": {
+    "title": "Available Plans",
+    "create": "Create Plan",
+    "name": "Plan Name",
+    "description": "Description",
+    "status": "Status",
+    "price": "Price",
+    "features": "Features",
+    "details": "Details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "modal": {
+      "edit": "Edit subscription plan",
+      "create": "Create new subscription plan",
+      "name": "Plan name *",
+      "description": "Description *",
+      "description_placeholder": "Plan description",
+      "characteristics": "Plan characteristics *",
+      "price": "Price *"
+    },
+    "validations": {
+      "name": "The plan name is required",
+      "description": "The description is required",
+      "price": "The price is required",
+      "features": "You must select at least one feature"
+    }
+  },
+  "users": {
+    "title": "Platform Users",
+    "clear_filters": "Clear Filters",
+    "create": "Create User",
+    "edit": "Edit User",
+    "name": "Full Name",
+    "email": "Email Address",
+    "role": "Role",
+    "status_label": "Status",
+    "client": "Client ID",
+    "created_at": "Creation Date",
+    "select_role": "Select a role",
+    "edit_success": "The user has been successfully updated.",
+    "create_success": "The user has been successfully created.",
+    "error": "An error occurred while processing the user.",
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "filter": "Filter",
+    "filters": "Filters",
+    "field": "Field",
+    "search": "Search",
+    "select_field": "Select the field to search",
+    "search_placeholder": "Search",
+    "field_error": "You must select a field to search",
+    "search_error": "The search field cannot be empty",
+    "apply_filter": "Apply Filter",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "email": "Must be a valid email.",
+      "role": "The role is required.",
+      "client": "The client is required."
+    }
+  }
 }

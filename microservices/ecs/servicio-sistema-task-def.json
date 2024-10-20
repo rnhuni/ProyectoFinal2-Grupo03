@@ -39,6 +39,18 @@
                 {
                     "name": "RDS_DB_NAME",
                     "value": "postgres"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
+                },
+                {
+                    "name": "USER_POOL_ID",
+                    "value": "us-east-1_r6myWLjfj"
+                },
+                {
+                    "name": "CLIENT_ID",
+                    "value": "abcall_users"
                 }
             ],
             "mountPoints": [],

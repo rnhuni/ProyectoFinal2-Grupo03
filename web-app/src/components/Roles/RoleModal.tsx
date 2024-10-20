@@ -12,37 +12,30 @@ import {
   Input,
   Stack,
   FormErrorMessage,
-  Textarea,
+  Badge,
+  Checkbox,
+  HStack,
+  Text,
+  Select,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Role } from "../../interfaces/Role"; // Asegúrate de usar la interfaz correcta aquí
+import { Role } from "../../interfaces/Role";
+import { roleSchema } from "./RolePermissionsSchema";
+import { z } from "zod";
+import usePermissions from "../../hooks/permissions/usePermissions";
+import useRoles from "../../hooks/roles/useRoles";
+import { useTranslation } from "react-i18next";
 
-// Esquema de validación de Zod
-const schema = z.object({
-  roleName: z
-    .string()
-    .min(3, { message: "El nombre del rol debe tener al menos 3 caracteres." }),
-  email: z.string().email({ message: "Debe ser un correo válido." }),
-  role: z.string().nonempty({ message: "El rol es requerido." }),
-  description: z
-    .string()
-    .min(10, { message: "La descripción debe tener al menos 10 caracteres." })
-    .optional(), // La descripción es opcional
-  permissions: z
-    .array(z.number())
-    .min(1, { message: "Debes asignar al menos un permiso." }),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof roleSchema>;
 
 interface RoleModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData?: Role; // Ahora usa la interfaz `Role` correctamente
+  initialData?: Role;
   mode: "create" | "edit";
+  setReloadData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const RoleModal: React.FC<RoleModalProps> = ({
@@ -50,40 +43,158 @@ const RoleModal: React.FC<RoleModalProps> = ({
   onClose,
   initialData,
   mode,
+  setReloadData,
 }) => {
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(roleSchema),
     defaultValues: {
-      roleName: "",
-      description: "",
+      name: "",
       permissions: [],
     },
   });
+  const { t } = useTranslation();
+  const [selectedActions, setSelectedActions] = useState<string[]>([]);
+  const [selectedPermission, setSelectedPermission] = useState<string>("");
+  const checkboxCheckedBg = "white";
+  const [showError, setShowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const { permissions, reloadPermissions } = usePermissions();
+  const { createRole, updateRole } = useRoles();
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
-        roleName: initialData.roleName,
-        description: initialData.description || "", // Asegurarse de manejar un valor vacío
-        permissions: initialData.permissions,
+        id: initialData.id,
+        name: initialData.name,
+        permissions: initialData.permissions?.map((p) => ({
+          id: p.id,
+          actions: p.actions,
+        })),
       });
+
+      const initialActions = (initialData.permissions ?? []).flatMap(
+        (permission) =>
+          permission.actions.map((action) => `${permission.id}-${action}`)
+      );
+      setSelectedActions(initialActions);
+
+      setSelectedPermission("");
     } else {
       reset({
-        roleName: "",
-        description: "",
+        name: "",
         permissions: [],
       });
+      setSelectedActions([]);
+      setSelectedPermission("");
+      setShowError(false);
     }
   }, [initialData, mode, reset]);
 
-  const onSubmit = (data: FormData) => {
-    console.log("Datos enviados:", data);
-    onClose();
+  useEffect(() => {
+    reloadPermissions();
+    setShowError(false);
+  }, []);
+
+  const handleCheckboxChange = (
+    permissionId: string,
+    action: "write" | "read" | "update" | "delete"
+  ) => {
+    const actionId = `${permissionId}-${action}`;
+
+    setSelectedActions((prevState) => {
+      const updatedActions = prevState.includes(actionId)
+        ? prevState.filter((id) => id !== actionId)
+        : [...prevState, actionId];
+      return updatedActions;
+    });
+
+    const currentPermissions = getValues("permissions");
+
+    const permissionIndex = currentPermissions.findIndex(
+      (p: { id: string; actions: string[] }) => p.id === permissionId
+    );
+
+    let updatedPermissions;
+
+    if (permissionIndex !== -1) {
+      const permission = currentPermissions[permissionIndex];
+      const updatedPermission = {
+        ...permission,
+        actions: permission.actions.includes(action)
+          ? permission.actions.filter((a: string) => a !== action)
+          : [...permission.actions, action],
+      };
+
+      updatedPermissions = [
+        ...currentPermissions.slice(0, permissionIndex),
+        updatedPermission,
+        ...currentPermissions.slice(permissionIndex + 1),
+      ];
+    } else {
+      updatedPermissions = [
+        ...currentPermissions,
+        {
+          id: permissionId,
+          actions: [action],
+        },
+      ];
+    }
+
+    setValue("permissions", updatedPermissions);
+  };
+
+  const handlePermissionSelect = (permissionId: string) => {
+    const currentPermissions = getValues("permissions");
+
+    const permissionExists = currentPermissions.some(
+      (p: { id: string }) => p.id === permissionId
+    );
+    if (!permissionExists) {
+      const updatedPermissions = [
+        ...currentPermissions,
+        { id: permissionId, actions: [] },
+      ];
+      setValue("permissions", updatedPermissions);
+    }
+    setSelectedPermission(permissionId);
+  };
+
+  const handleRequest = async (data: FormData) => {
+    let createdRole;
+    if (mode == "edit") {
+      createdRole = await updateRole(data as Role);
+    } else {
+      createdRole = await createRole(data as Role);
+    }
+
+    return createdRole;
+  };
+
+  const onSubmit = async (data: FormData) => {
+    let message = await handleRequest(data);
+
+    if (typeof message === "string") {
+      if (message == "Role already exists") {
+        setErrorMessage("role.validations.exists");
+      } else if (message == "permissions is required") {
+        setErrorMessage("role.validations.permissions_required");
+      } else if (message.includes("list values")) {
+        setErrorMessage("role.validations.permissions_list_values");
+      } else {
+        setErrorMessage("permissions_unknown");
+      }
+      setShowError(true);
+    } else {
+      setReloadData(true);
+      onClose();
+    }
   };
 
   return (
@@ -91,47 +202,123 @@ const RoleModal: React.FC<RoleModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {mode === "edit" ? "Editar Rol" : "Crear Rol"}
+          {mode === "edit" ? t("role.modal.edit") : t("role.modal.create")}
         </ModalHeader>
         <ModalCloseButton aria-label="close" />
         <ModalBody>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          {showError && (
+            <FormControl>
+              <FormLabel color="red.500">{t(`${errorMessage}`)}</FormLabel>
+            </FormControl>
+          )}
+          <form
+            role="form_modal"
+            data-testid="role-modal-form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <Stack spacing={4}>
-              <FormControl isInvalid={!!errors.roleName}>
-                <FormLabel>Nombre del Rol</FormLabel>
-                <Input placeholder="Nombre del Rol" {...register("roleName")} />
-                {errors.roleName && (
-                  <FormErrorMessage>{errors.roleName.message}</FormErrorMessage>
-                )}
-              </FormControl>
-
-              <FormControl isInvalid={!!errors.description}>
-                <FormLabel>Descripción</FormLabel>
-                <Textarea
-                  placeholder="Descripción del rol"
-                  {...register("description")}
-                />
-                {errors.description && (
-                  <FormErrorMessage>
-                    {errors.description.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
-
-              <FormControl isInvalid={!!errors.permissions}>
-                <FormLabel>Permisos (IDs separados por coma)</FormLabel>
+              {/* Nombre del Rol */}
+              <FormControl isInvalid={!!errors.name}>
+                <FormLabel>{t("role.modal.name")}</FormLabel>
                 <Input
-                  placeholder="Permisos (ej: 1, 2, 3)"
-                  {...register("permissions", {
-                    setValueAs: (v) =>
-                      v.split(",").map((n: string) => parseInt(n.trim())),
-                  })}
+                  placeholder={t("role.modal.name")}
+                  {...register("name")}
                 />
-                {errors.permissions && (
+                {errors.name && (
                   <FormErrorMessage>
-                    {errors.permissions.message}
+                    {t(`${errors.name.message}`, { count: 3 })}
                   </FormErrorMessage>
                 )}
+              </FormControl>
+
+              {/* Mostrar permisos actuales con acciones */}
+              {getValues("permissions").length > 0 && (
+                <FormControl>
+                  <FormLabel>{t("role.modal.current_permissions")}</FormLabel>
+                  <Stack spacing={2}>
+                    {getValues("permissions").map((permission) => (
+                      <Badge
+                        color={"white"}
+                        padding={"2"}
+                        key={permission.id}
+                        bg={"blue.500"}
+                      >
+                        {permission.id}
+                        <Stack pl={6} mt={1} spacing={1}>
+                          <HStack spacing={4}>
+                            {["write", "read", "update", "delete"].map(
+                              (action) => (
+                                <Checkbox
+                                  id={`${permission.id}-${action}`}
+                                  key={`${permission.id}-${action}`}
+                                  isChecked={selectedActions.includes(
+                                    `${permission.id}-${action}`
+                                  )}
+                                  onChange={() =>
+                                    handleCheckboxChange(
+                                      permission.id,
+                                      action as
+                                        | "write"
+                                        | "read"
+                                        | "update"
+                                        | "delete"
+                                    )
+                                  }
+                                  colorScheme="green"
+                                  size="md"
+                                  _checked={{
+                                    padding: "0.5em",
+                                    height: "2.5em",
+                                    width: "auto",
+                                    bg: checkboxCheckedBg,
+                                    borderColor: "white",
+                                  }}
+                                  borderRadius="md"
+                                >
+                                  <Text
+                                    textTransform="capitalize"
+                                    fontSize="sm"
+                                    fontWeight="medium"
+                                    color={
+                                      selectedActions.includes(
+                                        `${permission.id}-${action}`
+                                      )
+                                        ? "blue.500"
+                                        : "white"
+                                    }
+                                  >
+                                    {action}
+                                  </Text>
+                                </Checkbox>
+                              )
+                            )}
+                          </HStack>
+                        </Stack>
+                      </Badge>
+                    ))}
+                  </Stack>
+                </FormControl>
+              )}
+
+              {/* Selector para permisos */}
+              <FormControl mt={4}>
+                <FormLabel>{t("role.modal.select_permission")}</FormLabel>
+                <Select
+                  role="select"
+                  placeholder={t("role.modal.select_permission")}
+                  value={selectedPermission}
+                  onChange={(e) => handlePermissionSelect(e.target.value)}
+                >
+                  {permissions.map((permission) => (
+                    <option
+                      role="select_option"
+                      key={permission.id}
+                      value={permission.id}
+                    >
+                      {permission.name}
+                    </option>
+                  ))}
+                </Select>
               </FormControl>
             </Stack>
           </form>
@@ -139,10 +326,16 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" onClick={onClose}>
-            Cancelar
+            {t("common.button.cancel")}
           </Button>
-          <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
-            {mode === "edit" ? "Guardar" : "Crear"}
+          <Button
+            colorScheme="blue"
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+          >
+            {mode === "edit"
+              ? t("common.button.edit")
+              : t("common.button.create")}
           </Button>
         </ModalFooter>
       </ModalContent>

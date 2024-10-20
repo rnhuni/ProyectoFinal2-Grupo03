@@ -4,7 +4,7 @@ from ServicioSistema.commands.role_exists import ExistsRole
 from ServicioSistema.commands.role_get import GetRole
 from ServicioSistema.commands.role_get_all import GetAllRoles
 from ServicioSistema.commands.permission_exists import ExistsPermission
-from ServicioSistema.utils import build_role_id
+from ServicioSistema.commands.role_update import UpdateRole
 
 from ServicioSistema.utils import build_role_id
 
@@ -118,3 +118,52 @@ def get_all_roles():
         return jsonify(result), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving roles. Details: {str(e)}'}), 500
+    
+@roles_bp.route('/roles/<role_id>', methods=['PUT'])
+def edit_role(role_id):
+    try:
+        data = request.get_json()
+        name = data.get('name')
+        permissions = data.get('permissions', [])
+
+        if not name or len(name) < 1:
+            return "Name is required", 400
+
+        role = GetRole(role_id).execute()
+        if not role:
+            return "Role not found", 404
+        
+        new_id = build_role_id(name)
+        if new_id != role_id and (ExistsRole(new_id).execute() or new_id == "role-admin"):
+            return "Role with this name already exists", 400
+
+        valid_permissions = []
+        for perm in permissions:
+            permission_id = perm.get('id')
+            actions = perm.get('actions', [])
+
+            if len(actions) < 1:
+                return f"Permission '{permission_id}' does not have accessLevel list values", 400
+
+            if not ExistsPermission(id=permission_id).execute():
+                return f"Permission '{permission_id}' does not exist", 400
+
+            valid_permissions.append({
+                "permission": permission_id,
+                "actions": actions
+            })
+
+        if len(valid_permissions) < 1:
+            return "permissions is required", 400
+
+        updated_role = UpdateRole(role_id, name, permissions).execute()
+
+        return jsonify({
+            "id": updated_role.id,
+            "name": updated_role.name,
+            "permissions": permissions,
+            "updatedAt": updated_role.updatedAt
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Update role failed. Details: {str(e)}'}), 500

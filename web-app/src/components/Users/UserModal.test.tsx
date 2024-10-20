@@ -1,385 +1,260 @@
-import {
-  render,
-  screen,
-  act,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { UserModal } from "./UserModal";
 import { ChakraProvider } from "@chakra-ui/react";
-import { UserModal } from "./UserModal"; // El nuevo modal combinado
-import "@testing-library/jest-dom";
-import userEvent from "@testing-library/user-event";
+import i18n from "../../../i18nextConfig"; // Importar configuración de internacionalización
+import useUsers from "../../hooks/users/useUser";
+import useRoles from "../../hooks/roles/useRoles";
 import { User } from "../../interfaces/User";
 
-describe("UserModal", () => {
-  it("should render and submit the form in create mode with empty fields", async () => {
-    const onClose = jest.fn(() => console.log("Modal cerrado")); // Mock function para onClose
+// Mock de los hooks
+jest.mock("../../hooks/users/useUser");
+jest.mock("../../hooks/roles/useRoles");
 
-    // Renderizamos el modal en modo de creación (create)
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={onClose} mode="create" />
-      </ChakraProvider>
-    );
+describe("UserModal Component", () => {
+  const onCloseMock = jest.fn();
+  const onSaveMock = jest.fn();
+  const createUserMock = jest.fn();
+  const updateUserMock = jest.fn();
 
-    // Verificamos que los campos estén vacíos
-    expect(screen.getByLabelText(/Nombre/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Correo electrónico/i)).toHaveValue("");
-
-    // Simulamos la entrada de texto
-    userEvent.type(screen.getByLabelText(/Nombre/i), "John Doe");
-    userEvent.type(
-      screen.getByLabelText(/Correo electrónico/i),
-      "john@example.com"
-    );
-    userEvent.type(screen.getByPlaceholderText("Contraseña"), "password123");
-    userEvent.type(
-      screen.getByPlaceholderText("Confirmación de contraseña"),
-      "password123"
-    );
-
-    // Enviamos el formulario
-    const submitButton = screen.getByRole("button", { name: /Crear/i });
-    expect(submitButton).toBeInTheDocument();
-    userEvent.click(submitButton);
-
-    act(() => {
-      onClose(); // Forzamos manualmente el llamado a onClose
+  beforeEach(() => {
+    i18n.changeLanguage("es"); // Cambiar a español para las pruebas
+    jest.clearAllMocks();
+    (useUsers as jest.Mock).mockReturnValue({
+      createUser: createUserMock,
+      updateUser: updateUserMock,
+      error: null,
+      loading: false,
     });
-
-    // Verificamos que onClose haya sido llamado
-    await waitFor(() => expect(onClose).toHaveBeenCalled());
-  });
-
-  it("should render and submit the form in edit mode with pre-filled data", async () => {
-    const onClose = jest.fn(() => console.log("Modal cerrado")); // Mock function con un log
-    const mockUser: User = {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Admin",
-      status: "Active",
-      createdAt: "2023-10-12",
-      roles: [],
-    };
-
-    // Renderizamos el modal en modo de edición (edit)
-    render(
-      <ChakraProvider>
-        <UserModal
-          isOpen={true}
-          onClose={onClose}
-          initialData={mockUser}
-          mode="edit"
-        />
-      </ChakraProvider>
-    );
-
-    // Verificamos que los campos estén llenos con los datos de mockUser
-    expect(screen.getByLabelText(/Nombre/i)).toHaveValue("John Doe");
-    expect(screen.getByLabelText(/Correo electrónico/i)).toHaveValue(
-      "john@example.com"
-    );
-
-    // Simulamos la edición de datos
-    userEvent.clear(screen.getByLabelText(/Nombre/i));
-    userEvent.type(screen.getByLabelText(/Nombre/i), "Jane Doe");
-
-    // Simulamos la entrada de texto en los campos de contraseña
-    userEvent.type(screen.getByPlaceholderText("Contraseña"), "password123");
-    userEvent.type(
-      screen.getByPlaceholderText("Confirmación de contraseña"),
-      "password123"
-    );
-
-    const submitButton = screen.getByRole("button", { name: /Editar/i });
-    expect(submitButton).toBeInTheDocument();
-    userEvent.click(submitButton);
-
-    act(() => {
-      onClose(); // Forzamos manualmente el llamado a onClose
+    (useRoles as jest.Mock).mockReturnValue({
+      roles: [{ id: "role1", name: "Admin" }],
+      reloadRoles: jest.fn(),
+      error: null,
+      loading: false,
     });
-
-    // Verificamos que onClose haya sido llamado
-    expect(onClose).toHaveBeenCalled();
   });
 
-  it("should render the modal when isOpen is true", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Crear Usuario/i)).toBeInTheDocument();
-  });
-
-  it("should not render the modal when isOpen is false", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={false} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.queryByText(/Crear Usuario/i)).not.toBeInTheDocument();
-  });
-
-  it("should pre-fill form fields with initialData in edit mode", () => {
-    const mockUser: User = {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Admin",
-      status: "Active",
-      createdAt: "2023-10-12",
-      roles: [],
-    };
+  test("should display validation errors for empty fields in create mode", async () => {
     render(
       <ChakraProvider>
         <UserModal
           isOpen={true}
-          onClose={jest.fn()}
-          initialData={mockUser}
-          mode="edit"
+          onClose={onCloseMock}
+          onSave={onSaveMock}
+          mode="create"
         />
       </ChakraProvider>
     );
-    expect(screen.getByLabelText(/Nombre/i)).toHaveValue("John Doe");
-    expect(screen.getByLabelText(/Correo electrónico/i)).toHaveValue(
-      "john@example.com"
-    );
-    expect(screen.getByLabelText(/Rol/i)).toHaveValue("Admin");
-  });
 
-  it("should display 'Crear Usuario' and 'Crear' button in create mode", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Crear Usuario/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Crear/i })).toBeInTheDocument();
-  });
-
-  it("should display 'Editar Usuario' and 'Editar' button in edit mode", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="edit" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Editar Usuario/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Editar/i })).toBeInTheDocument();
-  });
-
-  it("should render the modal when isOpen is true", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Crear Usuario/i)).toBeInTheDocument();
-  });
-
-  it("should not render the modal when isOpen is false", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={false} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.queryByText(/Crear Usuario/i)).not.toBeInTheDocument();
-  });
-
-  it("should pre-fill form fields with initialData in edit mode", () => {
-    const mockUser: User = {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Admin",
-      status: "Active",
-      createdAt: "2023-10-12",
-      roles: [],
-    };
-    render(
-      <ChakraProvider>
-        <UserModal
-          isOpen={true}
-          onClose={jest.fn()}
-          initialData={mockUser}
-          mode="edit"
-        />
-      </ChakraProvider>
-    );
-    expect(screen.getByDisplayValue(/John Doe/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(/john@example.com/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(/Admin/i)).toBeInTheDocument();
-  });
-
-  it("should call onClose when the modal is closed", () => {
-    const onClose = jest.fn();
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={onClose} mode="create" />
-      </ChakraProvider>
-    );
-    fireEvent.click(screen.getByRole("button", { name: /close/i }));
-    expect(onClose).toHaveBeenCalled();
-  });
-
-  it("should change header and submit button text based on mode", () => {
-    const { rerender } = render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Crear Usuario/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Crear/i })).toBeInTheDocument();
-
-    rerender(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="edit" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Editar Usuario/i)).toBeInTheDocument();
-  });
-
-  it("should render the modal when isOpen is true", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Crear Usuario/i)).toBeInTheDocument();
-  });
-
-  it("should not render the modal when isOpen is false", () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={false} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.queryByText(/Crear Usuario/i)).not.toBeInTheDocument();
-  });
-
-  it("should pre-fill form fields with initialData in edit mode", () => {
-    const mockUser: User = {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Admin",
-      status: "Active",
-      createdAt: "2023-10-12",
-      roles: [],
-    };
-    render(
-      <ChakraProvider>
-        <UserModal
-          isOpen={true}
-          onClose={jest.fn()}
-          initialData={mockUser}
-          mode="edit"
-        />
-      </ChakraProvider>
-    );
-    expect(screen.getByDisplayValue(/John Doe/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(/john@example.com/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(/Admin/i)).toBeInTheDocument();
-  });
-
-  it("should call onClose when the modal is closed", () => {
-    const onClose = jest.fn();
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={onClose} mode="create" />
-      </ChakraProvider>
-    );
-    fireEvent.click(screen.getByRole("button", { name: /close/i }));
-    expect(onClose).toHaveBeenCalled();
-  });
-
-  it("should change header and submit button text based on mode", () => {
-    const { rerender } = render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-    expect(screen.getByText(/Crear Usuario/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Crear/i })).toBeInTheDocument();
-
-    rerender(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="edit" />
-      </ChakraProvider>
-    );
-
-    expect(screen.getByText(/Editar Usuario/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Editar/i })).toBeInTheDocument();
-  });
-
-  it("should display an error message when passwords do not match", async () => {
-    render(
-      <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
-      </ChakraProvider>
-    );
-
-    // Debug statement to help identify the issue
-    screen.debug();
-
-    fireEvent.change(screen.getByPlaceholderText("Contraseña"), {
-      target: { value: "password123" },
-    });
-    fireEvent.change(
-      screen.getByPlaceholderText("Confirmación de contraseña"),
-      {
-        target: { value: "differentPassword" },
-      }
-    );
-
+    // Simulamos el clic en el botón de crear sin llenar los campos
     fireEvent.click(screen.getByRole("button", { name: /Crear/i }));
 
-    expect(
-      await screen.findByText(/Las contraseñas no coinciden./i)
-    ).toBeInTheDocument();
+    // Esperamos a que aparezcan los mensajes de error
+    await waitFor(() => {
+      expect(screen.getByText("users.validations.name")).toBeInTheDocument();
+      expect(screen.getByText("users.validations.email")).toBeInTheDocument();
+      expect(screen.getByText("users.validations.role")).toBeInTheDocument();
+      expect(screen.getByText("users.validations.client")).toBeInTheDocument();
+    });
   });
 
-  it("should call onClose and log form data on submit", async () => {
-    const onClose = jest.fn();
-    console.log = jest.fn();
-
+  test("should call createUser on form submit in create mode", async () => {
     render(
       <ChakraProvider>
-        <UserModal isOpen={true} onClose={onClose} mode="create" />
+        <UserModal
+          isOpen={true}
+          onClose={onCloseMock}
+          onSave={onSaveMock}
+          mode="create"
+        />
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre"), {
-      target: { value: "John Doe" },
+    // Llenamos los campos
+    fireEvent.change(screen.getByPlaceholderText(/Nombre/i), {
+      target: { value: "Juan Pérez" },
     });
-    fireEvent.change(screen.getByPlaceholderText("Correo electrónico"), {
-      target: { value: "john@example.com" },
+    fireEvent.change(screen.getByPlaceholderText(/Correo electrónico/i), {
+      target: { value: "juan@example.com" },
     });
-    fireEvent.change(screen.getByPlaceholderText("Contraseña"), {
-      target: { value: "password123" },
+    fireEvent.change(screen.getByPlaceholderText(/ID de Cliente/i), {
+      target: { value: "Client1" },
     });
-    fireEvent.change(
-      screen.getByPlaceholderText("Confirmación de contraseña"),
-      {
-        target: { value: "password123" },
-      }
-    );
-    fireEvent.change(screen.getByLabelText("Rol"), {
-      target: { value: "Admin" },
+    fireEvent.change(screen.getByRole("combobox"), {
+      target: { value: "role1" }, // Seleccionamos un rol
     });
 
+    // Simulamos el clic en el botón de crear
     fireEvent.click(screen.getByRole("button", { name: /Crear/i }));
 
-    await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for the onSubmit to be called
+    // Esperamos a que la función `createUser` sea llamada con los valores correctos
+    await waitFor(() => {
+      expect(createUserMock).toHaveBeenCalledWith({
+        name: "Juan Pérez",
+        email: "juan@example.com",
+        role_id: "role1",
+        client_id: "Client1",
+      });
+      expect(onCloseMock).toHaveBeenCalledTimes(1); // Verificamos que el modal se cierre
+    });
+  });
 
-    expect(onClose).toHaveBeenCalled();
-    expect(console.log).toHaveBeenCalledWith("Datos enviados:", {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "password123",
-      confirmPassword: "password123",
-      role: "Admin",
+  test("should display initial values in edit mode", () => {
+    const initialData: User = {
+      name: "Juan Pérez",
+      email: "juan@example.com",
+      role_id: "role1",
+      client_id: "Client1",
+    };
+
+    render(
+      <ChakraProvider>
+        <UserModal
+          isOpen={true}
+          onClose={onCloseMock}
+          onSave={onSaveMock}
+          mode="edit"
+          initialData={initialData}
+        />
+      </ChakraProvider>
+    );
+
+    // Verificamos que los valores iniciales estén en el formulario
+    expect(screen.getByDisplayValue("Juan Pérez")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("juan@example.com")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Client1")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Admin")).toBeInTheDocument(); // El rol se muestra como Admin
+  });
+
+  test("should call updateUser on form submit in edit mode", async () => {
+    const initialData: User = {
+      name: "Juan Pérez",
+      email: "juan@example.com",
+      role_id: "role1",
+      client_id: "Client1",
+    };
+
+    render(
+      <ChakraProvider>
+        <UserModal
+          isOpen={true}
+          onClose={onCloseMock}
+          onSave={onSaveMock}
+          mode="edit"
+          initialData={initialData}
+        />
+      </ChakraProvider>
+    );
+
+    // Cambiamos el valor del campo "name"
+    fireEvent.change(screen.getByPlaceholderText(/Nombre/i), {
+      target: { value: "Pedro Gómez" },
+    });
+
+    // Simulamos el clic en el botón de editar
+    fireEvent.click(screen.getByRole("button", { name: /Editar/i }));
+
+    // Esperamos a que la función `updateUser` sea llamada con los valores actualizados
+    await waitFor(() => {
+      expect(updateUserMock).toHaveBeenCalledWith({
+        name: "Pedro Gómez",
+        email: "juan@example.com",
+        role_id: "role1",
+        client_id: "Client1",
+      });
+      expect(onCloseMock).toHaveBeenCalledTimes(1); // Verificamos que el modal se cierre
+    });
+  });
+
+  test("should display error message if rolesError occurs", () => {
+    (useRoles as jest.Mock).mockReturnValue({
+      roles: [],
+      reloadRoles: jest.fn(),
+      error: "Error loading roles",
+      loading: false,
+    });
+
+    render(
+      <ChakraProvider>
+        <UserModal
+          isOpen={true}
+          onClose={onCloseMock}
+          onSave={onSaveMock}
+          mode="create"
+        />
+      </ChakraProvider>
+    );
+
+    expect(screen.getByText(/Error/i)).toBeInTheDocument();
+  });
+
+  test("should close modal when cancel button is clicked", () => {
+    render(
+      <ChakraProvider>
+        <UserModal
+          isOpen={true}
+          onClose={onCloseMock}
+          onSave={onSaveMock}
+          mode="create"
+        />
+      </ChakraProvider>
+    );
+
+    // Simulamos el clic en el botón de cancelar
+    fireEvent.click(screen.getByText("Cancelar"));
+
+    // Verificamos que la función `onClose` se haya llamado
+    expect(onCloseMock).toHaveBeenCalledTimes(1);
+  });
+
+  test("should display error toast when user creation fails", async () => {
+    // Simulamos que createUser falla
+    const createUserMock = jest
+      .fn()
+      .mockRejectedValueOnce(new Error("Creation failed"));
+
+    (useUsers as jest.Mock).mockReturnValue({
+      createUser: createUserMock,
+      updateUser: jest.fn(),
+      error: null,
+      loading: false,
+    });
+
+    render(
+      <ChakraProvider>
+        <UserModal
+          isOpen={true}
+          onClose={onCloseMock}
+          onSave={onSaveMock}
+          mode="create"
+        />
+      </ChakraProvider>
+    );
+
+    // Llenamos los campos del formulario
+    fireEvent.change(screen.getByPlaceholderText(/Nombre/i), {
+      target: { value: "Juan Pérez" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/Correo electrónico/i), {
+      target: { value: "juan@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/ID de Cliente/i), {
+      target: { value: "Client1" },
+    });
+    fireEvent.change(screen.getByRole("combobox"), {
+      target: { value: "role1" },
+    });
+
+    // Simulamos el clic en el botón de crear
+    fireEvent.click(screen.getByRole("button", { name: /Crear/i }));
+
+    // Esperamos a que se dispare el toast de error
+    await waitFor(() => {
+      expect(createUserMock).toHaveBeenCalled(); // Verificamos que se intentó crear el usuario
+      // Verificamos que el toast de error fue mostrado con los mensajes correctos
+      expect(screen.getByText("Error.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Ocurrió un error al procesar el usuario.")
+      ).toBeInTheDocument();
     });
   });
 });
