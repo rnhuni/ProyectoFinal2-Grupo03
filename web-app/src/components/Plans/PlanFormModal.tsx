@@ -18,6 +18,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plan } from "../../interfaces/Plan";
 import { useEffect, useState } from "react";
+import { featuresList } from "../../data/FeaturesList";
 
 // Define the schema using Zod
 const planSchema = z.object({
@@ -59,24 +60,6 @@ const PlanFormModal = ({
       features: [],
     },
   });
-
-  const featuresList = [
-    "Soporte técnico 24/7",
-    "Acceso a reportes detallados",
-    "Editar perfiles",
-    "Integración con plataformas externas",
-    "Facturación automática",
-    "Usuarios permitidos: 1, 10, ilimitados",
-    "Espacio de almacenamiento",
-    "Actualizaciones de software automáticas",
-    "Acceso móvil",
-    "Modificar usuarios",
-    "Eliminar usuarios",
-    "Varios usuarios al tiempo",
-    "Con publicidad",
-    "Sin publicidad",
-    "Facturación periódica",
-  ];
 
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(
     () =>
