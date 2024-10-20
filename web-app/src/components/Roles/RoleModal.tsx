@@ -26,6 +26,7 @@ import { roleSchema } from "./RolePermissionsSchema";
 import { z } from "zod";
 import usePermissions from "../../hooks/permissions/usePermissions";
 import useRoles from "../../hooks/roles/useRoles";
+import { useTranslation } from "react-i18next";
 
 type FormData = z.infer<typeof roleSchema>;
 
@@ -58,7 +59,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
       permissions: [],
     },
   });
-
+  const { t } = useTranslation();
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<string>("");
   const checkboxCheckedBg = "white";
@@ -185,6 +186,8 @@ const RoleModal: React.FC<RoleModalProps> = ({
         setErrorMessage("role.validations.permissions_required");
       } else if (message.includes("list values")) {
         setErrorMessage("role.validations.permissions_list_values");
+      } else {
+        setErrorMessage("permissions_unknown");
       }
       setShowError(true);
     } else {
@@ -198,13 +201,13 @@ const RoleModal: React.FC<RoleModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {mode === "edit" ? "Editar Rol" : "Crear Rol"}
+          {mode === "edit" ? t("role.modal.edit") : t("role.modal.create")}
         </ModalHeader>
         <ModalCloseButton aria-label="close" />
         <ModalBody>
           {showError && (
             <FormControl>
-              <FormLabel>{errorMessage}</FormLabel>
+              <FormLabel color="red.500">{t(`${errorMessage}`)}</FormLabel>
             </FormControl>
           )}
           <form
@@ -215,17 +218,22 @@ const RoleModal: React.FC<RoleModalProps> = ({
             <Stack spacing={4}>
               {/* Nombre del Rol */}
               <FormControl isInvalid={!!errors.name}>
-                <FormLabel>Nombre del Rol</FormLabel>
-                <Input placeholder="Nombre del Rol" {...register("name")} />
+                <FormLabel>{t("role.modal.name")}</FormLabel>
+                <Input
+                  placeholder={t("role.modal.name")}
+                  {...register("name")}
+                />
                 {errors.name && (
-                  <FormErrorMessage>{errors.name.message}</FormErrorMessage>
+                  <FormErrorMessage>
+                    {t(`${errors.name.message}`, { count: 3 })}
+                  </FormErrorMessage>
                 )}
               </FormControl>
 
               {/* Mostrar permisos actuales con acciones */}
               {getValues("permissions").length > 0 && (
                 <FormControl>
-                  <FormLabel>Permisos actuales</FormLabel>
+                  <FormLabel>{t("role.modal.current_permissions")}</FormLabel>
                   <Stack spacing={2}>
                     {getValues("permissions").map((permission) => (
                       <Badge
@@ -293,10 +301,10 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
               {/* Selector para permisos */}
               <FormControl mt={4}>
-                <FormLabel>Seleccionar Permiso</FormLabel>
+                <FormLabel>{t("role.modal.select_permission")}</FormLabel>
                 <Select
                   role="select"
-                  placeholder="Seleccionar permiso"
+                  placeholder={t("role.modal.select_permission")}
                   value={selectedPermission}
                   onChange={(e) => handlePermissionSelect(e.target.value)}
                 >
@@ -317,14 +325,16 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" onClick={onClose}>
-            Cancelar
+            {t("common.button.cancel")}
           </Button>
           <Button
             colorScheme="blue"
             type="submit"
             onClick={handleSubmit(onSubmit)}
           >
-            {mode === "edit" ? "Guardar" : "Crear"}
+            {mode === "edit"
+              ? t("common.button.edit")
+              : t("common.button.create")}
           </Button>
         </ModalFooter>
       </ModalContent>
