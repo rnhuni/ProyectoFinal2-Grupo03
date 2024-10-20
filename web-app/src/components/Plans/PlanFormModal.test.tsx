@@ -126,21 +126,34 @@ describe("PlanFormModal Component", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  /*
-  test("should send form modal when create button is clicked", () => {
-    renderWithChakra(
-      <PlanFormModal
-        isOpen={true}
-        onClose={onClose}
-        onSave={onSave}
-        plan={null}
-        mode="create"
-      />
-    );
+  // test("should send form modal when create button is clicked", () => {
+  //   renderWithChakra(
+  //     <PlanFormModal
+  //       isOpen={true}
+  //       onClose={onClose}
+  //       onSave={onSave}
+  //       plan={null}
+  //       mode="create"
+  //     />
+  //   );
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+  //   fireEvent.change(screen.getByLabelText("plans.modal.name"), {
+  //     target: { value: "New plan name" },
+  //   });
 
-    expect(onClose).toHaveBeenCalled();
-  });
-  */
+  //   fireEvent.change(screen.getByLabelText("plans.modal.description"), {
+  //     target: { value: "New plan description" },
+  //   });
+
+  //   const firstFeatureCheckbox = screen.getByLabelText(featuresList[0]);
+  //   fireEvent.click(firstFeatureCheckbox);
+
+  //   fireEvent.change(screen.getByLabelText("plans.modal.price"), {
+  //     target: { value: 800000 },
+  //   });
+
+  //   fireEvent.click(
+  //     screen.getByRole("button", { name: "common.button.create" })
+  //   );
+  // });
 });

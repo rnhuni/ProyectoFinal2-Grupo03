@@ -111,6 +111,7 @@ const PlanFormModal = ({
   };
 
   const onSubmit = (data: Plan) => {
+    debugger;
     const selectedFeatures = Object.keys(checkedItems).filter(
       (feature) => checkedItems[feature]
     );
