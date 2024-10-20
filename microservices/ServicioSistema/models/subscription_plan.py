@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, DECIMAL
 from sqlalchemy.orm import relationship
 from .model import Model, Base
 from .subscription_plan_role import SubscriptionPlanRole
+from .role import Role
 
 class SubscriptionPlan(Model):
     __tablename__ = 'subscription_plan'
@@ -13,8 +14,8 @@ class SubscriptionPlan(Model):
     features = Column(String, nullable=True)
 
     roles = relationship(
-        'Role', 
-        secondary='subscription_plan_role', 
+        'Role',
+        secondary='subscription_plan_role',
         back_populates='plans'
     )
 
