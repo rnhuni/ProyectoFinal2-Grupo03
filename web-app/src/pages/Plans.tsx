@@ -209,7 +209,7 @@ const Plans = () => {
               <Td fontWeight="bold">{plan.name}</Td>
               <Td>{plan.description}</Td>
               <Td>
-                <Badge colorScheme="green">{t("status.active")}</Badge>
+                <Badge colorScheme="green">{plan.status}</Badge>
               </Td>
               <Td>
                 {new Intl.NumberFormat("en-US", {

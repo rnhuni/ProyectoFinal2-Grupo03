@@ -38,7 +38,10 @@
     "permissions": "Permisos",
     "validations": {
       "name": "El nombre debe tener al menos {{count}} caracteres.",
-      "description": "La descripción debe tener al menos {{count}} caracteres."
+      "description": "La descripción debe tener al menos {{count}} caracteres.",
+      "exists": "El rol ya existe",
+      "permissions_required": "Se requiere permisos",
+      "permissions_list_values": "El permiso no tiene valores de lista de niveles de acceso"
     },
     "modal": {
       "edit": "Editar Rol",
@@ -55,14 +58,29 @@
     "features": "Características",
     "details": "Detalles",
     "edit": "Editar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "modal": {
+      "edit": "Editar plan de suscripción",
+      "create": "Crear nuevo plan de suscripción",
+      "name": "Nombre del plan *",
+      "description": "Descripción *",
+      "description_placeholder": "Descripción del plan",
+      "characteristics": "Características del plan *",
+      "price": "Precio *"
+    },
+    "validations": {
+      "name": "El nombre del plan es obligatorio",
+      "description": "La descripción es obligatoria",
+      "price": "El precio es obligatorio",
+      "features": "Debes seleccionar al menos una característica"
+    }
   },
   "users": {
     "title": "Usuarios de la Plataforma",
     "clear_filters": "Limpiar Filtros",
     "create": "Crear Usuario",
     "name": "Nombre Completo",
-    "email": "Correo Electrónico",
+    "email": "Dirección de Correo Electrónico",
     "role": "Rol",
     "status_label": "Estado",
     "client": "Cliente",
