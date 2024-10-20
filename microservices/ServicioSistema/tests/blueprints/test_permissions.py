@@ -172,3 +172,109 @@ def test_get_all_permissions_internal_error(client, mocker):
 
     assert response.status_code == 500
     assert "Error retrieving permissions" in response.json['error']
+
+def test_edit_permission_success(client, mocker):
+    
+    mock_permission = MagicMock()
+    mock_permission.id = "permission-id"
+    mock_permission.name = "Test"
+    mock_permission.resource = "TestService"
+    mock_permission.description = "Permission description"
+    mock_permission.updatedAt = "2024-01-01"
+    
+    mocker.patch('ServicioSistema.commands.permission_get.GetPermission.execute', return_value=mock_permission)
+    mocker.patch('ServicioSistema.utils.build_permission_id', return_value="new-permission-id")
+    mocker.patch('ServicioSistema.commands.permission_exists.ExistsPermission.execute', return_value=False)
+        
+    updated_permission = MagicMock()
+    updated_permission.id = "new-permission-id"
+    updated_permission.name = "Updated Test"
+    updated_permission.resource = "UpdatedTestService"
+    updated_permission.description = "Updated description"
+    updated_permission.updatedAt = "2024-10-20"
+
+    mocker.patch('ServicioSistema.commands.permission_update.UpdatePermission.execute', return_value=updated_permission)
+    
+    json_data = {
+        "name": "Updated Test",
+        "resource": "UpdatedTestService",
+        "description": "Updated description"
+    }
+
+    response = client.put('/api/permissions/permission-id', json=json_data)
+    
+    assert response.status_code == 200
+    assert response.json == {
+        "id": "new-permission-id",
+        "name": "Updated Test",
+        "resource": "UpdatedTestService",
+        "description": "Updated description",
+        "updatedAt": "2024-10-20"
+    }
+
+def test_edit_permission_not_found(client, mocker):
+    
+    mocker.patch('ServicioSistema.commands.permission_get.GetPermission.execute', return_value=None)
+    
+    json_data = {
+        "name": "Updated Test",
+        "resource": "UpdatedTestService",
+        "description": "Updated description"
+    }
+
+    response = client.put('/api/permissions/nonexistent-id', json=json_data)
+    
+    assert response.status_code == 404
+    assert response.data == b"Permission not found"
+
+def test_edit_permission_invalid_parameters(client):
+    
+    json_data = {
+        "name": "",
+        "resource": "UpdatedTestService",
+        "description": "Updated description"
+    }
+
+    response = client.put('/api/permissions/permission-id', json=json_data)
+    
+    assert response.status_code == 400
+    assert response.data == b"Invalid parameters"
+
+def test_edit_permission_duplicate_id(client, mocker):
+    
+    mock_permission = MagicMock()
+    mock_permission.id = "permission-id"
+    mock_permission.name = "Test"
+    mock_permission.resource = "TestService"
+    mock_permission.description = "Permission description"
+        
+    mocker.patch('ServicioSistema.commands.permission_get.GetPermission.execute', return_value=mock_permission)   
+    
+    mocker.patch('ServicioSistema.utils.build_permission_id', return_value="duplicate-id")
+    mocker.patch('ServicioSistema.commands.permission_exists.ExistsPermission.execute', return_value=True)
+
+    json_data = {
+        "name": "Duplicate Test",
+        "resource": "DuplicateTestService",
+        "description": "Updated description"
+    }
+
+    response = client.put('/api/permissions/permission-id', json=json_data)
+    
+    assert response.status_code == 400
+    assert response.data == b"Permission with this name and resource already exists"
+
+def test_edit_permission_internal_error(client, mocker):
+    
+    mocker.patch('ServicioSistema.commands.permission_get.GetPermission.execute', side_effect=Exception("Some internal error"))
+    
+    json_data = {
+        "name": "Updated Test",
+        "resource": "UpdatedTestService",
+        "description": "Updated description"
+    }
+
+    response = client.put('/api/permissions/permission-id', json=json_data)
+    
+    assert response.status_code == 500
+    assert "Update permission failed" in response.json['error']

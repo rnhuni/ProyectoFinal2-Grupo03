@@ -33,3 +33,12 @@ class TestExistsPermission():
         self.mock_query.assert_called_once_with(Permission)
         self.mock_query.return_value.get.assert_called_once_with(test_id)
         assert exists is False
+
+    def test_exists_permission_invalid_data(self):
+        """Test when the id provided is invalid (None)"""
+        test_id = None
+
+        with pytest.raises(ValueError, match="Invalid data provided"):
+            ExistsPermission(id=test_id).execute()
+
+        self.mock_query.assert_not_called()
