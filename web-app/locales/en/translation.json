@@ -38,6 +38,7 @@
     "permissions": "Permissions",
     "validations": {
       "name": "The name must be at least {{count}} characters.",
+      "name_requerid": "The name is required",
       "description": "The description must be at least {{count}} characters.",
       "exists": "Role already exists",
       "permissions_required": "permissions is required",

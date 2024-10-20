@@ -37,8 +37,8 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    expect(screen.getByText("Crear Rol")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Nombre del Rol")).toBeInTheDocument();
+    expect(screen.getByText("role.modal.create")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("role.modal.name")).toBeInTheDocument();
   });
 
   test("should render modal in edit mode with initial data", () => {
@@ -60,9 +60,11 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    expect(screen.getByText("Editar Rol")).toBeInTheDocument();
+    expect(screen.getByText("role.modal.edit")).toBeInTheDocument();
     expect(screen.getByDisplayValue(initialData.name)).toBeInTheDocument();
-    expect(screen.getByText("Permisos actuales")).toBeInTheDocument();
+    expect(
+      screen.getByText("role.modal.current_permissions")
+    ).toBeInTheDocument();
   });
 
   test("should call onClose when cancel button is clicked", () => {
@@ -77,7 +79,7 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    const cancelButton = screen.getByText("Cancelar");
+    const cancelButton = screen.getByText("common.button.cancel");
     fireEvent.click(cancelButton);
 
     expect(onCloseMock).toHaveBeenCalledTimes(1);
@@ -95,10 +97,12 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     expect(
-      await screen.findByText("El nombre es requerido")
+      await screen.findByText("permissions.validations.name_requerid")
     ).toBeInTheDocument();
   });
 
@@ -114,11 +118,13 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
       target: { value: "New Role" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     await waitFor(() => {
       expect(createRoleMock).toHaveBeenCalledWith({
@@ -144,11 +150,13 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
       target: { value: "New Role" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     expect(
       await screen.findByText("role.validations.exists")
@@ -171,11 +179,13 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
       target: { value: "New Role" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     expect(
       await screen.findByText("role.validations.permissions_required")
@@ -198,11 +208,13 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
       target: { value: "New Role" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     expect(
       await screen.findByText("role.validations.permissions_list_values")
@@ -223,11 +235,13 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
       target: { value: "Existing Role" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     expect(
       await screen.findByText("role.validations.exists")
