@@ -12,6 +12,8 @@ import {
   FormLabel,
   Checkbox,
   Grid,
+  FormErrorMessage,
+  Text,
 } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -19,15 +21,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plan } from "../../interfaces/Plan";
 import { useEffect, useState } from "react";
 import { featuresList } from "../../data/FeaturesList";
+import { useTranslation } from "react-i18next";
 
 // Define the schema using Zod
 const planSchema = z.object({
-  name: z.string().min(1, "El nombre del plan es requerido"),
-  description: z.string().min(1, "La descripción es requerida"),
-  price: z.number().min(1, "El precio es requerido"),
-  features: z
-    .array(z.string())
-    .nonempty("Debes seleccionar al menos una característica"),
+  name: z.string().min(1, "plans.validations.name"),
+  description: z.string().min(1, "plans.validations.description"),
+  price: z.number().min(1, "plans.validations.price"),
+  features: z.array(z.string()).nonempty("plans.validations.features"),
 });
 
 type PlanFormModalProps = {
@@ -60,7 +61,7 @@ const PlanFormModal = ({
       features: [],
     },
   });
-
+  const { t } = useTranslation();
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(
     () =>
       featuresList.reduce(
@@ -110,6 +111,7 @@ const PlanFormModal = ({
   };
 
   const onSubmit = (data: Plan) => {
+    debugger;
     const selectedFeatures = Object.keys(checkedItems).filter(
       (feature) => checkedItems[feature]
     );
@@ -126,35 +128,46 @@ const PlanFormModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {mode === "edit"
-            ? "Editar plan de suscripción"
-            : "Crear nuevo plan de suscripción"}
+          {mode === "edit" ? t("plans.modal.edit") : t("plans.modal.create")}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormControl isInvalid={!!errors.name} mb={4}>
-              <FormLabel>Nombre del plan *</FormLabel>
+              <FormLabel>{t("plans.modal.name")}</FormLabel>
               <Controller
                 name="name"
                 control={control}
                 render={({ field }) => <Input {...field} />}
               />
+              {errors.name && (
+                <FormErrorMessage>
+                  {t(`${errors.name.message}`)}
+                </FormErrorMessage>
+              )}
             </FormControl>
 
             <FormControl isInvalid={!!errors.description} mb={4}>
-              <FormLabel>Descripción *</FormLabel>
+              <FormLabel>{t("plans.modal.description")}</FormLabel>
               <Controller
                 name="description"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} placeholder="Descripción del plan" />
+                  <Input
+                    {...field}
+                    placeholder={t("plans.modal.description_placeholder")}
+                  />
                 )}
               />
+              {errors.description && (
+                <FormErrorMessage>
+                  {t(`${errors?.description?.message}`)}
+                </FormErrorMessage>
+              )}
             </FormControl>
 
             <FormControl mb={4}>
-              <FormLabel>Características del Plan *</FormLabel>
+              <FormLabel>{t("plans.modal.characteristics")}</FormLabel>
               <Grid templateColumns="repeat(3, 1fr)" gap={2}>
                 {featuresList.map((feature) => (
                   <Checkbox
@@ -167,14 +180,14 @@ const PlanFormModal = ({
                 ))}
               </Grid>
               {errors.features && (
-                <p style={{ color: "red" }}>
-                  {errors.features.message?.toString()}
-                </p>
+                <Text color="red.400" fontSize="sm">
+                  {t(`${errors?.features?.message}`)}
+                </Text>
               )}
             </FormControl>
 
             <FormControl isInvalid={!!errors.price} mb={4}>
-              <FormLabel>Precio *</FormLabel>
+              <FormLabel>{t("plans.modal.price")}</FormLabel>
               <Controller
                 name="price"
                 control={control}
@@ -182,16 +195,23 @@ const PlanFormModal = ({
                   <Input {...field} placeholder="Precio del plan" />
                 )}
               />
+              {errors.price && (
+                <FormErrorMessage>
+                  {t(`${errors?.price?.message}`)}
+                </FormErrorMessage>
+              )}
             </FormControl>
           </form>
         </ModalBody>
 
         <ModalFooter>
           <Button variant="ghost" mr={3} onClick={onClose}>
-            Cancelar
+            {t("common.button.cancel")}
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
-            {mode === "edit" ? "Editar" : "Crear Plan"}
+            {mode === "edit"
+              ? t("common.button.edit")
+              : t("common.button.create")}
           </Button>
         </ModalFooter>
       </ModalContent>

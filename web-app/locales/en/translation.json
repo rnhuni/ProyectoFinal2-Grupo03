@@ -63,7 +63,22 @@
     "features": "Features",
     "details": "Details",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "modal": {
+      "edit": "Edit subscription plan",
+      "create": "Create new subscription plan",
+      "name": "Plan name *",
+      "description": "Description *",
+      "description_placeholder": "Plan description",
+      "characteristics": "Plan characteristics *",
+      "price": "Price *"
+    },
+    "validations": {
+      "name": "The plan name is required",
+      "description": "The description is required",
+      "price": "The price is required",
+      "features": "You must select at least one feature"
+    }
   },
   "users": {
     "title": "Platform Users",

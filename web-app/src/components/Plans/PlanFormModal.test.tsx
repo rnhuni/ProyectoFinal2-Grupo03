@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import { featuresList } from "../../data/FeaturesList";
 import PlanFormModal from "./PlanFormModal";
+import i18n from "../../../i18nextConfig";
 
 // Mock data
 const mockPlan = {
@@ -25,6 +26,7 @@ describe("PlanFormModal Component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    i18n.changeLanguage("es");
   });
 
   test("should render modal elements correctly for create mode", () => {
@@ -38,12 +40,12 @@ describe("PlanFormModal Component", () => {
       />
     );
 
+    expect(screen.getByText("plans.modal.create")).toBeInTheDocument();
+    expect(screen.getByLabelText("plans.modal.name")).toBeInTheDocument();
     expect(
-      screen.getByText("Crear nuevo plan de suscripción")
+      screen.getByLabelText("plans.modal.description")
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("Nombre del plan *")).toBeInTheDocument();
-    expect(screen.getByLabelText("Descripción *")).toBeInTheDocument();
-    expect(screen.getByLabelText("Precio *")).toBeInTheDocument();
+    expect(screen.getByLabelText("plans.modal.price")).toBeInTheDocument();
 
     // Check that all features checkboxes are rendered
     featuresList.forEach((feature) => {
@@ -62,14 +64,14 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    expect(screen.getByText("Editar plan de suscripción")).toBeInTheDocument();
-    expect(screen.getByLabelText("Nombre del plan *")).toHaveValue(
+    expect(screen.getByText("plans.modal.edit")).toBeInTheDocument();
+    expect(screen.getByLabelText("plans.modal.name")).toHaveValue(
       mockPlan.name
     );
-    expect(screen.getByLabelText("Descripción *")).toHaveValue(
+    expect(screen.getByLabelText("plans.modal.description")).toHaveValue(
       mockPlan.description
     );
-    expect(screen.getByLabelText("Precio *")).toHaveValue(
+    expect(screen.getByLabelText("plans.modal.price")).toHaveValue(
       mockPlan.price.toString()
     );
 
@@ -118,9 +120,40 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    const cancelButton = screen.getByText("Cancelar");
+    const cancelButton = screen.getByText("common.button.cancel");
     fireEvent.click(cancelButton);
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  // test("should send form modal when create button is clicked", () => {
+  //   renderWithChakra(
+  //     <PlanFormModal
+  //       isOpen={true}
+  //       onClose={onClose}
+  //       onSave={onSave}
+  //       plan={null}
+  //       mode="create"
+  //     />
+  //   );
+
+  //   fireEvent.change(screen.getByLabelText("plans.modal.name"), {
+  //     target: { value: "New plan name" },
+  //   });
+
+  //   fireEvent.change(screen.getByLabelText("plans.modal.description"), {
+  //     target: { value: "New plan description" },
+  //   });
+
+  //   const firstFeatureCheckbox = screen.getByLabelText(featuresList[0]);
+  //   fireEvent.click(firstFeatureCheckbox);
+
+  //   fireEvent.change(screen.getByLabelText("plans.modal.price"), {
+  //     target: { value: 800000 },
+  //   });
+
+  //   fireEvent.click(
+  //     screen.getByRole("button", { name: "common.button.create" })
+  //   );
+  // });
 });
