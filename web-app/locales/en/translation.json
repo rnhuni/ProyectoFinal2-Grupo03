@@ -64,18 +64,35 @@
     "title": "Platform Users",
     "clear_filters": "Clear Filters",
     "create": "Create User",
+    "edit": "Edit User",
     "name": "Full Name",
     "email": "Email Address",
     "role": "Role",
     "status_label": "Status",
-    "client": "Client",
+    "client": "Client ID",
     "created_at": "Creation Date",
-    "actions": "Actions",
-    "edit": "Edit User",
-    "delete": "Delete User",
+    "select_role": "Select a role",
+    "edit_success": "The user has been successfully updated.",
+    "create_success": "The user has been successfully created.",
+    "error": "An error occurred while processing the user.",
     "statuses": {
       "active": "Active",
       "inactive": "Inactive"
+    },
+    "filter": "Filter",
+    "filters": "Filters",
+    "field": "Field",
+    "search": "Search",
+    "select_field": "Select the field to search",
+    "search_placeholder": "Search",
+    "field_error": "You must select a field to search",
+    "search_error": "The search field cannot be empty",
+    "apply_filter": "Apply Filter",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "email": "Must be a valid email.",
+      "role": "The role is required.",
+      "client": "The client is required."
     }
   }
 }
