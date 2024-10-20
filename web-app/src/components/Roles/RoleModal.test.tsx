@@ -37,8 +37,8 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    expect(screen.getByText("Crear Rol")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Nombre del Rol")).toBeInTheDocument();
+    expect(screen.getByText("role.modal.create")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("role.modal.name")).toBeInTheDocument();
   });
 
   test("should render modal in edit mode with initial data", () => {
@@ -60,9 +60,11 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    expect(screen.getByText("Editar Rol")).toBeInTheDocument();
+    expect(screen.getByText("role.modal.edit")).toBeInTheDocument();
     expect(screen.getByDisplayValue(initialData.name)).toBeInTheDocument();
-    expect(screen.getByText("Permisos actuales")).toBeInTheDocument();
+    expect(
+      screen.getByText("role.modal.current_permissions")
+    ).toBeInTheDocument();
   });
 
   test("should call onClose when cancel button is clicked", () => {
@@ -77,7 +79,7 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    const cancelButton = screen.getByText("Cancelar");
+    const cancelButton = screen.getByText("common.button.cancel");
     fireEvent.click(cancelButton);
 
     expect(onCloseMock).toHaveBeenCalledTimes(1);
@@ -95,10 +97,12 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     expect(
-      await screen.findByText("El nombre es requerido") // role.validations.name
+      await screen.findByText("permissions.validations.name_requerid")
     ).toBeInTheDocument();
   });
 
@@ -114,18 +118,107 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
       target: { value: "New Role" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     await waitFor(() => {
       expect(createRoleMock).toHaveBeenCalledWith({
         name: "New Role",
-        permissions: [], // Reemplaza con los permisos que esperas enviar
+        permissions: [],
       });
     });
+  });
+
+  test("should call createRole on form submit in create mode error role.validations.exists", async () => {
+    (useRoles as jest.Mock).mockReturnValue({
+      createRole: jest.fn().mockResolvedValue("Role already exists"),
+    });
+
+    render(
+      <ChakraProvider>
+        <RoleModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={jest.fn()}
+        />
+      </ChakraProvider>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
+      target: { value: "New Role" },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
+
+    expect(
+      await screen.findByText("role.validations.exists")
+    ).toBeInTheDocument();
+  });
+
+  test("should call createRole on form submit in create mode error role.validations.permissions_required", async () => {
+    (useRoles as jest.Mock).mockReturnValue({
+      createRole: jest.fn().mockResolvedValue("permissions is required"),
+    });
+
+    render(
+      <ChakraProvider>
+        <RoleModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={jest.fn()}
+        />
+      </ChakraProvider>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
+      target: { value: "New Role" },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
+
+    expect(
+      await screen.findByText("role.validations.permissions_required")
+    ).toBeInTheDocument();
+  });
+
+  test("should call createRole on form submit in create mode error role.validations.permissions_list_values", async () => {
+    (useRoles as jest.Mock).mockReturnValue({
+      createRole: jest.fn().mockResolvedValue("list values"),
+    });
+
+    render(
+      <ChakraProvider>
+        <RoleModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={jest.fn()}
+        />
+      </ChakraProvider>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
+      target: { value: "New Role" },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
+
+    expect(
+      await screen.findByText("role.validations.permissions_list_values")
+    ).toBeInTheDocument();
   });
 
   test("should display error message when role already exists", async () => {
@@ -142,50 +235,155 @@ describe("RoleModal", () => {
       </ChakraProvider>
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
+    fireEvent.change(screen.getByPlaceholderText("role.modal.name"), {
       target: { value: "Existing Role" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
 
     expect(
       await screen.findByText("role.validations.exists")
     ).toBeInTheDocument();
   });
+});
 
-  /*
-  test("should call updateRole on form submit in edit mode", async () => {
-    const initialData: Role = {
-      id: "1",
-      name: "Test Role",
-      permissions: [{ id: "1", actions: ["read"] }],
-    };
+describe("RoleModal handleCheckboxChange", () => {
+  let mockSetValue: jest.Mock;
+  let mockGetValues: jest.Mock;
+  let mockReloadPermissions: jest.Mock;
+  let mockCreateRole: jest.Mock;
 
-    render(
+  beforeEach(() => {
+    mockSetValue = jest.fn();
+    mockGetValues = jest.fn(() => [
+      { id: "1", actions: ["read"] },
+      { id: "2", actions: ["write", "update"] },
+    ]);
+
+    mockReloadPermissions = jest.fn();
+    mockCreateRole = jest.fn();
+
+    jest.spyOn(require("react-hook-form"), "useForm").mockReturnValue({
+      register: jest.fn(),
+      handleSubmit: jest.fn(),
+      reset: jest.fn(),
+      setValue: mockSetValue,
+      getValues: mockGetValues,
+      formState: { errors: {} },
+    });
+
+    (usePermissions as jest.Mock).mockReturnValue({
+      permissions: [
+        { id: "1", actions: ["read"] },
+        { id: "2", actions: ["write", "update"] },
+      ],
+      reloadPermissions: mockReloadPermissions,
+    });
+
+    (useRoles as jest.Mock).mockReturnValue({
+      createRole: mockCreateRole,
+    });
+  });
+
+  const setup = () => {
+    return render(
       <ChakraProvider>
         <RoleModal
           isOpen={true}
-          onClose={onCloseMock}
-          initialData={initialData}
+          onClose={jest.fn()}
           mode="edit"
           setReloadData={jest.fn()}
         />
       </ChakraProvider>
     );
+  };
 
-    fireEvent.change(screen.getByPlaceholderText("Nombre del Rol"), {
-      target: { value: "Updated Role" },
+  it("debería agregar una acción si no está seleccionada", () => {
+    const screen = setup();
+    const { getAllByLabelText } = screen;
+
+    const checkboxes = getAllByLabelText("write");
+
+    fireEvent.click(checkboxes[0]);
+  });
+
+  it("debería remover una acción si ya está seleccionada", () => {
+    mockGetValues.mockReturnValue([
+      { id: "1", actions: ["read"] },
+      { id: "2", actions: ["write", "update", "delete"] },
+    ]);
+
+    const screen = setup();
+    const { getAllByLabelText } = screen;
+
+    const checkboxes = getAllByLabelText("delete");
+
+    fireEvent.click(checkboxes[0]);
+  });
+});
+
+describe("RoleModal handlePermissionSelect", () => {
+  let mockSetValue: jest.Mock;
+  let mockGetValues: jest.Mock;
+  let mockReloadPermissions: jest.Mock;
+  let mockCreateRole: jest.Mock;
+
+  beforeEach(() => {
+    mockSetValue = jest.fn();
+    mockGetValues = jest.fn(() => [
+      { id: "permission4", name: "permission4-name", actions: [] },
+      { id: "permission5", name: "permission5-name", actions: [] },
+      { id: "permission6", name: "permission6-name", actions: [] },
+    ]);
+
+    mockReloadPermissions = jest.fn();
+    mockCreateRole = jest.fn();
+
+    jest.spyOn(require("react-hook-form"), "useForm").mockReturnValue({
+      register: jest.fn(),
+      handleSubmit: jest.fn(),
+      reset: jest.fn(),
+      setValue: mockSetValue,
+      getValues: mockGetValues,
+      formState: { errors: {} },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
+    (usePermissions as jest.Mock).mockReturnValue({
+      permissions: [
+        { id: "permission1", name: "permission1-name", actions: [] },
+        { id: "permission2", name: "permission2-name", actions: [] },
+        { id: "permission3", name: "permission3-name", actions: [] },
+      ],
+      reloadPermissions: mockReloadPermissions,
+    });
 
-    await waitFor(() => {
-      expect(createRoleMock).toHaveBeenCalledWith({
-        id: initialData.id, // Asegúrate de que el ID se pase correctamente
-        name: "Updated Role",
-        permissions: [{ id: "1", actions: [] }], // Reemplaza según tu lógica de permisos
-      });
+    (useRoles as jest.Mock).mockReturnValue({
+      createRole: mockCreateRole,
     });
   });
-  */
+
+  const setup = () => {
+    return render(
+      <ChakraProvider>
+        <RoleModal
+          isOpen={true}
+          onClose={jest.fn()}
+          mode="edit"
+          setReloadData={jest.fn()}
+        />
+      </ChakraProvider>
+    );
+  };
+
+  it("debería agregar un nuevo permiso si no existe", () => {
+    const screen = setup();
+
+    const selectElement = screen.getByRole("select");
+
+    console.log(selectElement.innerHTML);
+
+    fireEvent.change(selectElement, { target: { value: "permission1-name" } });
+  });
 });

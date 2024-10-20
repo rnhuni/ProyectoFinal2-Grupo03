@@ -30,3 +30,11 @@ class TestExistsRole():
         self.mock_query.assert_called_once_with(Role)
         self.mock_query.return_value.get.assert_called_once_with(test_id)
         assert exists is False
+
+    def test_exists_role_invalid_id(self):
+        invalid_id = None
+
+        with pytest.raises(ValueError, match="Invalid data provided"):
+            ExistsRole(id=invalid_id).execute()
+
+        self.mock_query.assert_not_called()

@@ -17,11 +17,10 @@ describe("PermissionModal loading state", () => {
   });
 
   test("should display loading message when loading is true", () => {
-    // Mocking the hook to simulate the loading state
     (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
       error: null,
-      loading: true, // Simulamos que está cargando
+      loading: true,
     });
 
     render(
@@ -35,11 +34,10 @@ describe("PermissionModal loading state", () => {
       </ChakraProvider>
     );
 
-    // Verificar que el spinner y el mensaje de carga estén presentes
     expect(
       screen.getByText("permissions.modal.loading_message")
     ).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveClass("chakra-alert"); // Verifica que hay un alert Chakra
+    expect(screen.getByRole("alert")).toHaveClass("chakra-alert");
   });
 });
 
@@ -53,7 +51,6 @@ describe("PermissionModal error handling", () => {
   });
 
   test("should display error message when an error occurs", async () => {
-    // Mocking the hook to return an error
     (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
       error: "An error occurred",
@@ -71,7 +68,6 @@ describe("PermissionModal error handling", () => {
       </ChakraProvider>
     );
 
-    // Verificar que el mensaje de error esté presente
     expect(
       screen.getByText("permissions.modal.error_message")
     ).toBeInTheDocument();
@@ -84,7 +80,6 @@ describe("PermissionModal onSubmit", () => {
   const createPermissionMock = jest.fn();
 
   beforeEach(() => {
-    // Set up mocks
     i18n.changeLanguage("es");
     (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
@@ -105,7 +100,6 @@ describe("PermissionModal onSubmit", () => {
       </ChakraProvider>
     );
 
-    // Simulate filling out the form fields
     fireEvent.change(screen.getByPlaceholderText("permissions.name"), {
       target: { value: "Test Permission" },
     });
@@ -116,12 +110,10 @@ describe("PermissionModal onSubmit", () => {
       target: { value: "Test Resource" },
     });
 
-    // Click the submit button
     fireEvent.click(
       screen.getByRole("button", { name: "common.button.create" })
     );
 
-    // Wait for async actions to complete
     await waitFor(() => {
       expect(createPermissionMock).toHaveBeenCalledWith({
         name: "Test Permission",
@@ -129,7 +121,7 @@ describe("PermissionModal onSubmit", () => {
         resource: "Test Resource",
         id: "",
       });
-      expect(onCloseMock).toHaveBeenCalledTimes(1); // Ensure the modal closes
+      expect(onCloseMock).toHaveBeenCalledTimes(1);
     });
   });
 });
@@ -138,13 +130,13 @@ describe("PermissionModal", () => {
   const onCloseMock = jest.fn();
   const onReloadMock = jest.fn();
   const createPermissionMock = jest.fn();
-  const updatePermissionMock = jest.fn(); // Agrega el mock para updatePermission
+  const updatePermissionMock = jest.fn();
 
   beforeEach(() => {
     i18n.changeLanguage("es");
     (usePermissions as jest.Mock).mockReturnValue({
       createPermission: createPermissionMock,
-      updatePermission: updatePermissionMock, // Mock de updatePermission
+      updatePermission: updatePermissionMock,
       error: null,
       loading: false,
     });
@@ -258,7 +250,6 @@ describe("PermissionModal", () => {
       </ChakraProvider>
     );
 
-    // Simulate filling out the form fields
     fireEvent.change(screen.getByPlaceholderText("permissions.name"), {
       target: { value: "Updated Permission" },
     });
@@ -269,13 +260,11 @@ describe("PermissionModal", () => {
       target: { value: "Updated Resource" },
     });
 
-    // Click the submit button
-    fireEvent.click(screen.getByRole("button", { name: "common.button.edit" })); // Asegúrate de que el texto sea correcto
+    fireEvent.click(screen.getByRole("button", { name: "common.button.edit" }));
 
-    // Wait for async actions to complete
     await waitFor(() => {
       expect(updatePermissionMock).toHaveBeenCalledWith({
-        id: initialData.id, // Asegúrate de que el ID se pase correctamente
+        id: initialData.id,
         name: "Updated Permission",
         description: "Updated Description",
         resource: "Updated Resource",

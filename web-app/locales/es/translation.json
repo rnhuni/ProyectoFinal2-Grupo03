@@ -38,14 +38,19 @@
     "permissions": "Permisos",
     "validations": {
       "name": "El nombre debe tener al menos {{count}} caracteres.",
+      "name_requerid": "El nombre es requerido",
       "description": "La descripción debe tener al menos {{count}} caracteres.",
       "exists": "El rol ya existe",
-      "permissions_required": "Se requiere permisos",
-      "permissions_list_values": "El permiso no tiene valores de lista de niveles de acceso"
+      "permissions_required": "Se requieren permisos",
+      "permissions_list_values": "El permiso no tiene valores de lista de accessLevel",
+      "permissions_unknown": "Error"
     },
     "modal": {
+      "name": "Nombre del rol",
       "edit": "Editar Rol",
-      "create": "Crear Rol"
+      "create": "Crear Rol",
+      "current_permissions": "Permisos Actuales",
+      "select_permission": "Seleccionar Permiso"
     }
   },
   "plans": {

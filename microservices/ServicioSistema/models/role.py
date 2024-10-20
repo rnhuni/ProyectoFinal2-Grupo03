@@ -17,8 +17,8 @@ class Role(Model):
     )
 
     plans = relationship(
-        'SubscriptionPlan', 
-        secondary='subscription_plan_role', 
+        'SubscriptionPlan',
+        secondary='subscription_plan_role',
         back_populates='roles'
     )
 

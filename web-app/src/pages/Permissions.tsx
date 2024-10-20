@@ -49,12 +49,12 @@ const Permissions = () => {
   };
 
   const handleModalClose = () => {
-    onClose(); // Cierra el modal
-    reloadPermissions(); // Recarga los permisos
+    onClose();
+    reloadPermissions();
   };
 
   useEffect(() => {
-    reloadPermissions(); // Carga inicial de permisos
+    reloadPermissions();
   }, [reloadData]);
 
   return (

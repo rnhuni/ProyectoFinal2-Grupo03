@@ -78,7 +78,6 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
   }, [initialData, mode, reset]);
 
   const onSubmit = (data: FormData) => {
-    // console.log("Datos enviados:", data);
     handleSubmitAsyn(data);
     setReloadData(true);
     onClose();
@@ -87,10 +86,8 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
   const handleSubmitAsyn = async (data: FormData) => {
     if (mode === "edit") {
       await updatePermission(data);
-      // console.log("Permiso actualizado:", updatedPermission);
     } else {
       await createPermission(data);
-      // console.log("Permiso creado:", createdPermission);
     }
   };
 

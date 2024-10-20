@@ -45,7 +45,6 @@ const Roles = () => {
     onOpen();
   };
 
-  // Maneja la creación de roles
   const handleCreate = () => {
     setSelectedRole(undefined);
     setMode("create");
