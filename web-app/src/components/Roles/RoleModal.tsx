@@ -65,7 +65,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
   const [showError, setShowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { permissions, reloadPermissions } = usePermissions();
-  const { createRole } = useRoles();
+  const { createRole, updateRole } = useRoles();
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -104,7 +104,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
     permissionId: string,
     action: "write" | "read" | "update" | "delete"
   ) => {
-    debugger;
     const actionId = `${permissionId}-${action}`;
 
     setSelectedActions((prevState) => {
@@ -150,7 +149,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
   };
 
   const handlePermissionSelect = (permissionId: string) => {
-    debugger;
     const currentPermissions = getValues("permissions");
 
     const permissionExists = currentPermissions.some(
@@ -167,13 +165,17 @@ const RoleModal: React.FC<RoleModalProps> = ({
   };
 
   const handleRequest = async (data: FormData) => {
-    const createdRole = await createRole(data as Role);
+    let createdRole;
+    if (mode == "edit") {
+      createdRole = await updateRole(data as Role);
+    } else {
+      createdRole = await createRole(data as Role);
+    }
 
     return createdRole;
   };
 
   const onSubmit = async (data: FormData) => {
-    debugger;
     let message = await handleRequest(data);
 
     if (typeof message === "string") {
