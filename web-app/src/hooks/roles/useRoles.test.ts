@@ -5,234 +5,240 @@ import { AxiosError, CanceledError } from "axios";
 import { Role } from "../../interfaces/Role";
 
 jest.mock("../../services/HttpClient", () => ({
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
 }));
 
 describe("useRoles", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("debe cargar roles al inicializar", async () => {
+    const mockRoles: Role[] = [
+      { id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: "2", name: "User", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    ];
+
+    (httpClient.get as jest.Mock).mockResolvedValueOnce({ data: mockRoles });
+
+    const { result } = renderHook(() => useRoles());
+
+    act(() => {
+      result.current.reloadRoles();
     });
 
-    it("debe cargar roles al inicializar", async () => {
-        const mockRoles: Role[] = [
-            { id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-            { id: "2", name: "User", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        ];
+    await waitFor(() => {
+      expect(result.current.roles).toEqual(mockRoles);
+      expect(result.current.error).toBe("");
+    });
+  });
 
-        (httpClient.get as jest.Mock).mockResolvedValueOnce({ data: mockRoles });
+  it("debe manejar errores al cargar roles", async () => {
+    const errorMessage = "Error al cargar roles";
+    (httpClient.get as jest.Mock).mockRejectedValueOnce(
+      new Error(errorMessage)
+    );
 
-        const { result } = renderHook(() => useRoles());
+    const { result } = renderHook(() => useRoles());
 
-        act(() => {
-            result.current.reloadRoles();
-        });
-
-        await waitFor(() => {
-            expect(result.current.roles).toEqual(mockRoles);
-            expect(result.current.error).toBe("");
-        });
+    act(() => {
+      result.current.reloadRoles();
     });
 
-    it("debe manejar errores al cargar roles", async () => {
-        const errorMessage = "Error al cargar roles";
-        (httpClient.get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
+    await waitFor(() => {
+      expect(result.current.roles).toEqual([]);
+      expect(result.current.error).toBe(errorMessage);
+    });
+  });
 
-        const { result } = renderHook(() => useRoles());
+  it("debe manejar errores de cancelación al cargar roles", async () => {
+    (httpClient.get as jest.Mock).mockRejectedValueOnce(new CanceledError());
 
-        act(() => {
-            result.current.reloadRoles();
-        });
+    const { result } = renderHook(() => useRoles());
 
-        await waitFor(() => {
-            expect(result.current.roles).toEqual([]);
-            expect(result.current.error).toBe(errorMessage);
-        });
+    act(() => {
+      result.current.reloadRoles();
     });
 
-    it("debe manejar errores de cancelación al cargar roles", async () => {
-        (httpClient.get as jest.Mock).mockRejectedValueOnce(new CanceledError());
-
-        const { result } = renderHook(() => useRoles());
-
-        act(() => {
-            result.current.reloadRoles();
-        });
-
-        await waitFor(() => {
-            expect(result.current.roles).toEqual([]);
-            expect(result.current.error).toBe("");
-        });
+    await waitFor(() => {
+      expect(result.current.roles).toEqual([]);
+      expect(result.current.error).toBe("");
     });
+  });
 });
-
 
 describe("create", () => {
-    it("debe crear un nuevo rol", async () => {
-        const mockRole: Role = {
-            id: "1",
-            name: "Admin",
-            permissions: [{ id: "1", actions: ["read", "write"] }],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
+  it("debe crear un nuevo rol", async () => {
+    const mockRole: Role = {
+      id: "1",
+      name: "Admin",
+      permissions: [{ id: "1", actions: ["read", "write"] }],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-        (httpClient.post as jest.Mock).mockResolvedValueOnce({ data: mockRole });
+    (httpClient.post as jest.Mock).mockResolvedValueOnce({ data: mockRole });
 
-        const { result } = renderHook(() => useRoles());
+    const { result } = renderHook(() => useRoles());
 
-        await act(async () => {
-            const newRole = await result.current.createRole(mockRole);
-            expect(newRole).toEqual(mockRole);
-        });
-
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
-            expect(result.current.error).toBe("");
-        });
+    await act(async () => {
+      const newRole = await result.current.createRole(mockRole);
+      expect(newRole).toEqual(mockRole);
     });
 
-    it("debe manejar errores de Axios al crear un rol", async () => {
-        const errorMessage = "Error al crear rol";
-        (httpClient.post as jest.Mock).mockRejectedValueOnce(new AxiosError(errorMessage));
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBe("");
+    });
+  });
 
-        const { result } = renderHook(() => useRoles());
+  it("debe manejar errores de Axios al crear un rol", async () => {
+    const errorMessage = "Error al crear rol";
+    (httpClient.post as jest.Mock).mockRejectedValueOnce(
+      new AxiosError(errorMessage)
+    );
 
-        await act(async () => {
-            await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-        });
+    const { result } = renderHook(() => useRoles());
 
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
-            expect(result.current.error).toBe(errorMessage);
-        });
+    await act(async () => {
+      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     });
 
-    it("debe manejar errores de cancelación al crear un rol", async () => {
-        (httpClient.post as jest.Mock).mockRejectedValueOnce(new CanceledError());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBe(errorMessage);
+    });
+  });
 
-        const { result } = renderHook(() => useRoles());
+  it("debe manejar errores de cancelación al crear un rol", async () => {
+    (httpClient.post as jest.Mock).mockRejectedValueOnce(new CanceledError());
 
-        await act(async () => {
-            await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-        });
+    const { result } = renderHook(() => useRoles());
 
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
-            expect(result.current.error).toBe("");
-        });
+    await act(async () => {
+      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     });
 
-    it("debe establecer loading en true mientras se crea un rol", async () => {
-        (httpClient.post as jest.Mock).mockImplementation(() => new Promise(() => { }));
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBe("");
+    });
+  });
 
-        const { result } = renderHook(() => useRoles());
+  it("debe establecer loading en true mientras se crea un rol", async () => {
+    (httpClient.post as jest.Mock).mockImplementation(
+      () => new Promise(() => { })
+    );
 
-        act(() => {
-            result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-        });
+    const { result } = renderHook(() => useRoles());
 
-        expect(result.current.loading).toBe(true);
+    act(() => {
+      result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     });
 
+    expect(result.current.loading).toBe(true);
+  });
 });
 
-
 describe("useRoles - updateRole", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("debe actualizar un rol correctamente", async () => {
+    const mockRole: Role = {
+      id: "1",
+      name: "Admin",
+      permissions: [{ id: "1", actions: ["read", "write"] }],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    (httpClient.put as jest.Mock).mockResolvedValueOnce({ data: mockRole });
+
+    const { result } = renderHook(() => useRoles());
+
+    await act(async () => {
+      const updatedRole = await result.current.updateRole(mockRole);
+      expect(updatedRole).toEqual(mockRole);
     });
 
-    it("debe actualizar un rol correctamente", async () => {
-        const mockRole: Role = {
-            id: "1",
-            name: "Admin",
-            permissions: [{ id: "1", actions: ["read", "write"] }],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBe("");
+    });
+  });
 
-        (httpClient.put as jest.Mock).mockResolvedValueOnce({ data: mockRole });
+  it("debe manejar errores de Axios al actualizar un rol", async () => {
+    const errorMessage = "Error al actualizar rol";
+    (httpClient.put as jest.Mock).mockRejectedValueOnce(
+      new AxiosError(errorMessage)
+    );
 
-        const { result } = renderHook(() => useRoles());
+    const mockRole: Role = {
+      id: "1",
+      name: "Admin",
+      permissions: [{ id: "1", actions: ["read", "write"] }],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-        await act(async () => {
-            const updatedRole = await result.current.updateRole(mockRole);
-            expect(updatedRole).toEqual(mockRole);
-        });
+    const { result } = renderHook(() => useRoles());
 
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
-            expect(result.current.error).toBe("");
-        });
+    await act(async () => {
+      await result.current.updateRole(mockRole);
     });
 
-    it("debe manejar errores de Axios al actualizar un rol", async () => {
-        const errorMessage = "Error al actualizar rol";
-        (httpClient.put as jest.Mock).mockRejectedValueOnce(new AxiosError(errorMessage));
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBe(errorMessage);
+    });
+  });
 
-        const mockRole: Role = {
-            id: "1",
-            name: "Admin",
-            permissions: [{ id: "1", actions: ["read", "write"] }],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
+  it("debe manejar errores de cancelación al actualizar un rol", async () => {
+    (httpClient.put as jest.Mock).mockRejectedValueOnce(new CanceledError());
 
-        const { result } = renderHook(() => useRoles());
+    const mockRole: Role = {
+      id: "1",
+      name: "Admin",
+      permissions: [{ id: "1", actions: ["read", "write"] }],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-        await act(async () => {
-            await result.current.updateRole(mockRole);
-        });
+    const { result } = renderHook(() => useRoles());
 
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
-            expect(result.current.error).toBe(errorMessage);
-        });
+    await act(async () => {
+      await result.current.updateRole(mockRole);
     });
 
-    it("debe manejar errores de cancelación al actualizar un rol", async () => {
-        (httpClient.put as jest.Mock).mockRejectedValueOnce(new CanceledError());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBe("");
+    });
+  });
 
-        const mockRole: Role = {
-            id: "1",
-            name: "Admin",
-            permissions: [{ id: "1", actions: ["read", "write"] }],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
+  it("debe establecer loading en true mientras se actualiza un rol", async () => {
+    (httpClient.put as jest.Mock).mockImplementation(
+      () => new Promise(() => { })
+    );
 
-        const { result } = renderHook(() => useRoles());
+    const mockRole: Role = {
+      id: "1",
+      name: "Admin",
+      permissions: [{ id: "1", actions: ["read", "write"] }],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-        await act(async () => {
-            await result.current.updateRole(mockRole);
-        });
+    const { result } = renderHook(() => useRoles());
 
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
-            expect(result.current.error).toBe("");
-        });
+    act(() => {
+      result.current.updateRole(mockRole);
     });
 
-    it("debe establecer loading en true mientras se actualiza un rol", async () => {
-        (httpClient.put as jest.Mock).mockImplementation(() => new Promise(() => { }));
-
-        const mockRole: Role = {
-            id: "1",
-            name: "Admin",
-            permissions: [{ id: "1", actions: ["read", "write"] }],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
-        const { result } = renderHook(() => useRoles());
-
-        act(() => {
-            result.current.updateRole(mockRole);
-        });
-
-        expect(result.current.loading).toBe(true);
-    });
-
+    expect(result.current.loading).toBe(true);
+  });
 });
