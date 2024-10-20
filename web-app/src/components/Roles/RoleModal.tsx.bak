@@ -62,7 +62,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
   // Guardar las acciones seleccionadas para cada permiso
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<string>("");
-  const checkboxCheckedBg = "white";
   const [showError, setShowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { permissions, reloadPermissions } = usePermissions();
@@ -233,12 +232,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                   <FormLabel>Permisos actuales</FormLabel>
                   <Stack spacing={2}>
                     {getValues("permissions").map((permission) => (
-                      <Badge
-                        color={"white"}
-                        padding={"2"}
-                        key={permission.id}
-                        bg={"blue.500"}
-                      >
+                      <Badge key={permission.id} colorScheme="blue">
                         {permission.id}
                         <Stack pl={6} mt={1} spacing={1}>
                           <HStack spacing={4}>
@@ -259,29 +253,8 @@ const RoleModal: React.FC<RoleModalProps> = ({
                                         | "delete"
                                     )
                                   }
-                                  colorScheme="green"
-                                  size="md"
-                                  _checked={{
-                                    padding: "0.5em",
-                                    height: "2.5em",
-                                    width: "auto",
-                                    bg: checkboxCheckedBg,
-                                    borderColor: "white",
-                                  }}
-                                  borderRadius="md"
                                 >
-                                  <Text
-                                    textTransform="capitalize"
-                                    fontSize="sm"
-                                    fontWeight="medium"
-                                    color={
-                                      selectedActions.includes(
-                                        `${permission.id}-${action}`
-                                      )
-                                        ? "blue.500"
-                                        : "white"
-                                    }
-                                  >
+                                  <Text textTransform={"lowercase"}>
                                     {action}
                                   </Text>
                                 </Checkbox>
