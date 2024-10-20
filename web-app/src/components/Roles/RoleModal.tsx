@@ -71,6 +71,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
+        id: initialData.id,
         name: initialData.name,
         permissions: initialData.permissions?.map((p) => ({
           id: p.id,
