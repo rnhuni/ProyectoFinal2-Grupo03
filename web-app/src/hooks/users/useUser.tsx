@@ -9,7 +9,7 @@ const useUsers = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const service = "/api/users";
+  const service = "/system/users";
 
   const reloadUsers = () => {
     setLoading(true);
@@ -31,7 +31,7 @@ const useUsers = () => {
     setLoading(true);
 
     try {
-      const res = await httpClient.post<UserTableData>(service, newUser);
+      const res = await httpClient.post<User>(service, newUser);
       return res.data;
     } catch (err) {
       if (err instanceof CanceledError) return;
@@ -43,11 +43,11 @@ const useUsers = () => {
     }
   };
 
-  const updateUser = async (updatedUser: UserTableData) => {
+  const updateUser = async (updatedUser: User) => {
     setLoading(true);
 
     try {
-      const res = await httpClient.put<UserTableData>(
+      const res = await httpClient.put<User>(
         `${service}/${updatedUser.id}`,
         updatedUser
       );
