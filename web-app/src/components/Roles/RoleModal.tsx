@@ -21,7 +21,7 @@ import {
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Role } from "../../interfaces/Role"; // Asegúrate de usar la interfaz correcta aquí
+import { Role } from "../../interfaces/Role";
 import { roleSchema } from "./RolePermissionsSchema";
 import { z } from "zod";
 import usePermissions from "../../hooks/permissions/usePermissions";
@@ -59,7 +59,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
     },
   });
 
-  // Guardar las acciones seleccionadas para cada permiso
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<string>("");
   const checkboxCheckedBg = "white";
@@ -68,7 +67,6 @@ const RoleModal: React.FC<RoleModalProps> = ({
   const { permissions, reloadPermissions } = usePermissions();
   const { createRole } = useRoles();
 
-  // Inicializar o resetear el formulario según el modo
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
@@ -102,30 +100,25 @@ const RoleModal: React.FC<RoleModalProps> = ({
     setShowError(false);
   }, []);
 
-  // Manejar el cambio en los checkboxes para acciones
   const handleCheckboxChange = (
     permissionId: string,
     action: "write" | "read" | "update" | "delete"
   ) => {
     debugger;
     const actionId = `${permissionId}-${action}`;
-    // console.log("Action ID:", actionId);
 
     setSelectedActions((prevState) => {
       const updatedActions = prevState.includes(actionId)
         ? prevState.filter((id) => id !== actionId)
         : [...prevState, actionId];
-      // console.log("Updated Actions:", updatedActions);
       return updatedActions;
     });
 
     const currentPermissions = getValues("permissions");
-    // console.log("Current Permissions:", currentPermissions);
 
     const permissionIndex = currentPermissions.findIndex(
       (p: { id: string; actions: string[] }) => p.id === permissionId
     );
-    // console.log("Permission Index:", permissionIndex);
 
     let updatedPermissions;
 
@@ -153,38 +146,32 @@ const RoleModal: React.FC<RoleModalProps> = ({
       ];
     }
 
-    // console.log("Updated Permissions:", updatedPermissions);
     setValue("permissions", updatedPermissions);
   };
 
-  // Manejar la selección del permiso en el select
   const handlePermissionSelect = (permissionId: string) => {
     debugger;
     const currentPermissions = getValues("permissions");
 
-    // Verificar si el permiso ya existe
     const permissionExists = currentPermissions.some(
       (p: { id: string }) => p.id === permissionId
     );
     if (!permissionExists) {
-      // Si no existe, agregar el nuevo permiso con un array vacío de acciones
       const updatedPermissions = [
         ...currentPermissions,
         { id: permissionId, actions: [] },
       ];
       setValue("permissions", updatedPermissions);
     }
-    setSelectedPermission(permissionId); // Actualizar la selección de permiso
+    setSelectedPermission(permissionId);
   };
 
   const handleRequest = async (data: FormData) => {
     const createdRole = await createRole(data as Role);
 
-    // console.log("--->" + createdRole);
     return createdRole;
   };
 
-  // Función de envío del formulario
   const onSubmit = async (data: FormData) => {
     debugger;
     let message = await handleRequest(data);
