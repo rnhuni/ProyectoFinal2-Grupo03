@@ -15,66 +15,32 @@ import {
   useDisclosure,
   HStack,
   Text,
-  Badge,
 } from "@chakra-ui/react";
 import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { useState } from "react";
-import { UserRole } from "../interfaces/UserRole";
-import { User } from "../interfaces/User"; // Asegúrate de importar User
-import UserRoleModal from "../components/Roles/UserRoleModal";
+import { useEffect, useState } from "react";
+import RoleModal from "../components/Roles/RoleModal";
+import { Role } from "../interfaces/Role";
+import useRoles from "../hooks/roles/useRoles";
+import { useTranslation } from "react-i18next";
 
 const Roles = () => {
-  const [selectedRole, setSelectedRole] = useState<UserRole | undefined>(
-    undefined
-  );
+  const { t } = useTranslation();
+  const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { roles, error, reloadRoles } = useRoles();
+  const [reloadData, setReloadData] = useState<boolean>(false);
 
-  // Lista de usuarios como ejemplo
-  const users: User[] = [
-    {
-      id: 1,
-      name: "Juan Pérez",
-      email: "juan.perez@mail.com",
-      role: "Administrador",
-      status: "Active",
-      createdAt: "Feb 8 2024, 1:11:00 pm",
-      roles: [
-        {
-          id: 1,
-          roleName: "Administrador",
-          status: "Active",
-          permissions: [1, 2],
-          description: "Admin role",
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "María García",
-      email: "maria.garcia@mail.com",
-      role: "Agente",
-      status: "Active",
-      createdAt: "Feb 22 2024, 1:11:00 pm",
-      roles: [],
-    },
-    // ... más usuarios
-  ];
-
-  // Lista de todos los roles disponibles
-  const availableRoles = ["Administrador", "Agente", "Soporte", "Cliente"];
-
-  const handleEdit = (user: User) => {
-    const transformedRole: UserRole = {
-      id: user.id,
-      role: user.role,
-      userId: user.id, // Si necesitas userId como propiedad separada
-      status: user.status,
-      createdAt: user.createdAt,
-      email: user.email,
+  const handleEdit = (rol: Role) => {
+    const role: Role = {
+      id: rol.id,
+      name: rol.name,
+      permissions: rol.permissions,
+      createdAt: rol.createdAt,
+      updatedAt: rol.updatedAt,
     };
 
-    setSelectedRole(transformedRole); // Aquí pasamos el UserRole transformado
+    setSelectedRole(role);
     setMode("edit");
     onOpen();
   };
@@ -86,72 +52,74 @@ const Roles = () => {
     onOpen();
   };
 
-  // Función para mostrar el estado con colores, incluyendo el estado "Completed"
-  const renderStatusBadge = (status: "Active" | "Completed" | "Inactive") => {
-    if (status === "Active") {
-      return <Badge colorScheme="green">Activo</Badge>;
-    }
-    if (status === "Completed") {
-      return <Badge colorScheme="blue">Completado</Badge>;
-    }
-    return <Badge colorScheme="gray">Inactivo</Badge>;
+  useEffect(() => {
+    reloadRoles();
+  }, [reloadData]);
+
+  const handleOnClose = () => {
+    onClose();
+    reloadRoles();
   };
 
   return (
     <Box p={4}>
       <HStack justifyContent="space-between" mb={4}>
         <Text fontSize="2xl" fontWeight="bold">
-          Gestión de Roles
+          {t("role.title")}
         </Text>
         <Button
           colorScheme="blue"
           leftIcon={<AddIcon />}
           onClick={handleCreate}
         >
-          Crear Rol
+          {t("role.create")}
         </Button>
       </HStack>
-
+      {error && <Text color="red.500">{error}</Text>}
       <Table variant="simple" mt={4}>
         <Thead>
           <Tr>
-            <Th>Nombre</Th>
-            <Th>Email</Th>
-            <Th>Estado</Th>
-            <Th>Fecha Creación</Th>
-            <Th>Rol</Th>
-            <Th>Acción</Th>
+            <Th>{t("role.name")}</Th>
+            <Th>{t("role.permissions")}</Th>
+            <Th>{t("common.creation_date")}</Th>
+            <Th>{t("common.edition_date")}</Th>
+            <Th>{t("common.actions")}</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {users.map((user) => (
-            <Tr key={user.id}>
-              <Td>{user.name}</Td>
-              <Td>{user.email}</Td>
-              <Td>{renderStatusBadge(user.status)}</Td>
-              <Td>{user.createdAt || "None"}</Td>
-              <Td>{user.role}</Td>
-              <Td>
-                <Menu>
-                  <MenuButton as={IconButton} icon={<HamburgerIcon />} />
-                  <MenuList>
-                    <MenuItem onClick={() => handleEdit(user)}>Editar</MenuItem>
-                  </MenuList>
-                </Menu>
-              </Td>
-            </Tr>
-          ))}
+          {roles &&
+            roles.map((rol) => (
+              <Tr key={rol.id}>
+                <Td>{rol.name}</Td>
+                <Td>
+                  {(rol.permissions ?? [])
+                    .map((permission: { id: string }) => permission.id)
+                    .join(", ")}
+                </Td>
+                <Td>{rol.createdAt || ""}</Td>
+                <Td>{rol.updatedAt || ""}</Td>
+                <Td>
+                  <Menu>
+                    <MenuButton as={IconButton} icon={<HamburgerIcon />} />
+                    <MenuList>
+                      <MenuItem onClick={() => handleEdit(rol)}>
+                        Editar
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
 
       {/* Modal para asignar o editar roles */}
-      <UserRoleModal
+      <RoleModal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleOnClose}
         initialData={selectedRole}
         mode={mode}
-        users={users} // Pasamos la lista de usuarios al modal
-        availableRoles={availableRoles} // Pasamos la lista de roles disponibles al modal
+        setReloadData={setReloadData}
       />
     </Box>
   );
