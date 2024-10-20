@@ -69,18 +69,35 @@
     "title": "Usuarios de la Plataforma",
     "clear_filters": "Limpiar Filtros",
     "create": "Crear Usuario",
+    "edit": "Editar Usuario",
     "name": "Nombre Completo",
     "email": "Correo Electrónico",
     "role": "Rol",
     "status_label": "Estado",
-    "client": "Cliente",
+    "client": "ID de Cliente",
     "created_at": "Fecha de Creación",
-    "actions": "Acciones",
-    "edit": "Editar Usuario",
-    "delete": "Eliminar Usuario",
+    "select_role": "Selecciona un rol",
+    "edit_success": "El usuario ha sido actualizado exitosamente.",
+    "create_success": "El usuario ha sido creado exitosamente.",
+    "error": "Ocurrió un error al procesar el usuario.",
     "statuses": {
       "active": "Activo",
       "inactive": "Inactivo"
+    },
+    "filter": "Filtrar",
+    "filters": "Filtros",
+    "field": "Campo",
+    "search": "Buscar",
+    "select_field": "Seleccione el campo a buscar",
+    "search_placeholder": "Buscar",
+    "field_error": "Debes seleccionar un campo para buscar",
+    "search_error": "El campo de búsqueda no puede estar vacío",
+    "apply_filter": "Aplicar Filtro",
+    "validations": {
+      "name": "El nombre debe tener al menos {{count}} caracteres.",
+      "email": "Debe ser un correo válido.",
+      "role": "El rol es requerido.",
+      "client": "El cliente es requerido."
     }
   }
 }
