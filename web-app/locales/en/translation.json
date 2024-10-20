@@ -1,51 +1,63 @@
 {
-    "common": {
-        "creation_date": "Creation Date",
-        "edition_date": "Edition Date",
-        "actions": "Actions",
-        "actions_edit": "Edit",
-        "actions_delete": "Delete",
-        "button": {
-            "cancel": "Cancel",
-            "edit": "Edit",
-            "create": "Create"
-        }
-    },
-    "permissions": {
-        "name": "Name",
-        "resource": "Resource",
-        "description": "Description",
-        "title": "Platform Permissions",
-        "create": "Create Permission",
-        "error_message": "Error",
-        "validations": {
-            "name": "The name must be at least {{count}} characters.",
-            "description": "The description must be at least {{count}} characters.",
-            "resource": "The resource must be at least {{count}} characters."
-        },
-        "modal": {
-            "edit": "Edit Permission",
-            "create": "Create Permission",
-            "error_message": "Error",
-            "loading_message": "Loading"
-        }
-    },
-    "role": {
-        "description": "Description",
-        "title": "Role Management",
-        "create": "Create Role",
-        "name": "Name",
-        "permissions": "Permissions",
-        "validations": {
-            "name": "The name must be at least {{count}} characters.",
-            "description": "The description must be at least {{count}} characters.",
-            "exists": "Role already exists",
-            "permissions_required": "permissions is required",
-            "permissions_list_values": "Permission does not have accessLevel list values"
-        },
-        "modal": {
-            "edit": "Edit Role",
-            "create": "Create Role"
-        }
+  "common": {
+    "creation_date": "Creation Date",
+    "edition_date": "Edition Date",
+    "actions": "Actions",
+    "actions_edit": "Edit",
+    "actions_delete": "Delete",
+    "button": {
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "create": "Create"
     }
+  },
+  "permissions": {
+    "name": "Name",
+    "resource": "Resource",
+    "description": "Description",
+    "title": "Platform Permissions",
+    "create": "Create Permission",
+    "error_message": "Error",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "description": "The description must be at least {{count}} characters.",
+      "resource": "The resource must be at least {{count}} characters."
+    },
+    "modal": {
+      "edit": "Edit Permission",
+      "create": "Create Permission",
+      "error_message": "Error",
+      "loading_message": "Loading"
+    }
+  },
+  "role": {
+    "description": "Description",
+    "title": "Role Management",
+    "create": "Create Role",
+    "name": "Name",
+    "permissions": "Permissions",
+    "validations": {
+      "name": "The name must be at least {{count}} characters.",
+      "description": "The description must be at least {{count}} characters.",
+      "exists": "Role already exists",
+      "permissions_required": "permissions is required",
+      "permissions_list_values": "Permission does not have accessLevel list values"
+    },
+    "modal": {
+      "edit": "Edit Role",
+      "create": "Create Role"
+    }
+  },
+  "plans": {
+    "title": "Available Plans",
+    "create": "Create Plan",
+    "name": "Plan Name",
+    "description": "Description",
+    "status": "Status",
+    "price": "Price",
+    "features": "Features",
+    "details": "Details",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
 }

@@ -1,13 +1,17 @@
-import { Role } from "./Role";
-
 export interface User {
-    id: number;
-    name: string; 
-    email: string; 
-    role: string;  
-    status: 'Active' | 'Completed' | 'Inactive'; 
-    createdAt?: string;
-    updatedAt?: string;
-    roles: Role[];
-  }
-  
+  name: string;
+  email: string;
+  role_id: string;
+  client_id: string;
+}
+
+export interface UserTableData {
+  id: string;
+  name: string;
+  email: string;
+  role_id: string;
+  status: string;
+  client_id: string;
+  createdAt: string;
+  updatedAt: string;
+}
