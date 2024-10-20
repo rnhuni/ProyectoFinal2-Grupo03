@@ -18,9 +18,10 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import PlanFilterDrawer from "../components/Plans/PlanFilterDrawer";
 import PlanFormModal from "../components/Plans/PlanFormModal";
-import DeleteConfirmationModal from "../components/Plans/DeleteConfirmationModal";
+
 import { Plan } from "../interfaces/Plan";
 import PlanDetailsModal from "../components/Plans/PlanDetailsModal";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 
 const Plans = () => {
   const { t } = useTranslation();
@@ -266,7 +267,7 @@ const Plans = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
-        planName={selectedPlan?.name || ""}
+        itemName={selectedPlan?.name || ""}
       />
     </Box>
   );

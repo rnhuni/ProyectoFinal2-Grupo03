@@ -59,5 +59,23 @@
     "details": "Details",
     "edit": "Edit",
     "delete": "Delete"
+  },
+  "users": {
+    "title": "Platform Users",
+    "clear_filters": "Clear Filters",
+    "create": "Create User",
+    "name": "Full Name",
+    "email": "Email Address",
+    "role": "Role",
+    "status_label": "Status",
+    "client": "Client",
+    "created_at": "Creation Date",
+    "actions": "Actions",
+    "edit": "Edit User",
+    "delete": "Delete User",
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
   }
 }
