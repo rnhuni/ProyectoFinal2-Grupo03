@@ -124,8 +124,8 @@ export const UserModal: React.FC<UserModalProps> = ({
           isClosable: true,
         });
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error(err);
       toast({
         title: t("common.error", "Error."),
         description: t(
