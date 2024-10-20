@@ -13,12 +13,15 @@ import {
   Select,
   Stack,
   FormErrorMessage,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "../../interfaces/User";
+import useUsers from "../../hooks/users/useUser";
+import useRoles from "../../hooks/roles/useRoles";
 
 const schema = z.object({
   name: z
@@ -61,6 +64,10 @@ export const UserModal: React.FC<UserModalProps> = ({
     },
   });
 
+  const { error: usersError, createUser, updateUser } = useUsers();
+  const { reloadRoles, error: rolesError, roles } = useRoles();
+  const toast = useToast();
+
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
@@ -79,9 +86,50 @@ export const UserModal: React.FC<UserModalProps> = ({
     }
   }, [initialData, mode, reset]);
 
-  const onSubmit = (data: FormData) => {
-    console.log("Datos enviados:", data);
-    onSave(data);
+  useEffect(() => {
+    reloadRoles();
+  }, []);
+
+  const onSubmit = async (data: FormData) => {
+    const userData: User = {
+      name: data.name,
+      email: data.email,
+      role_id: data.role_id,
+      client_id: data.client_id,
+    };
+
+    try {
+      if (mode === "edit" && initialData) {
+        await updateUser({ ...initialData, ...userData });
+        toast({
+          title: "Usuario actualizado.",
+          description: "El usuario ha sido actualizado exitosamente.",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      } else {
+        await createUser(userData);
+        toast({
+          title: "Usuario creado.",
+          description: "El usuario ha sido creado exitosamente.",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error.",
+        description: "Ocurrió un error al procesar el usuario.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+
+    onSave(userData);
     onClose();
   };
 
@@ -119,9 +167,11 @@ export const UserModal: React.FC<UserModalProps> = ({
                 <FormLabel>Rol</FormLabel>
                 <Select {...register("role_id")}>
                   <option value="">Selecciona un rol</option>
-                  <option value="role-1">Admin</option>
-                  <option value="role-2">Usuario</option>
-                  <option value="role-3">Administrador Cliente</option>
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
                 </Select>
                 {errors.role_id && (
                   <FormErrorMessage>{errors.role_id.message}</FormErrorMessage>
@@ -139,6 +189,8 @@ export const UserModal: React.FC<UserModalProps> = ({
               </FormControl>
             </Stack>
           </form>
+          {rolesError && <p style={{ color: "red" }}>Error: {rolesError}</p>}
+          {usersError && <p style={{ color: "red" }}>Error: {usersError}</p>}
         </ModalBody>
 
         <ModalFooter>
