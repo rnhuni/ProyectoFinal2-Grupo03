@@ -13,15 +13,18 @@ import Create from "./pages/Create";
 import Admin from "./pages/Admin";
 import Permissions from "./pages/Permissions";
 import "../i18n";
+import LoginCognito from "./pages/LoginCognito";
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<SignIn />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="" element={<LoginCognito />} />
+        <Route path="/" element={<LoginCognito />} />
+        <Route path="/signin" element={<LoginCognito />} />
+        <Route path="/signup" element={<LoginCognito />} />
+        <Route path="/callback" element={<LoginCognito />} />
 
         {/* Private Routes inside Dashboard */}
         <Route
