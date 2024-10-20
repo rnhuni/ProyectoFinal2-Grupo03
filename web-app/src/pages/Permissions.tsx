@@ -31,6 +31,7 @@ const Permissions = () => {
     Permission | undefined
   >(undefined);
   const [mode, setMode] = useState<"create" | "edit">("create");
+  const [reloadData, setReloadData] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { permissions, error, reloadPermissions } = usePermissions();
@@ -54,7 +55,7 @@ const Permissions = () => {
 
   useEffect(() => {
     reloadPermissions(); // Carga inicial de permisos
-  }, []);
+  }, [reloadData]);
 
   return (
     <Box p={4}>
@@ -90,34 +91,35 @@ const Permissions = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {permissions.map((permission) => (
-            <Tr key={permission.id}>
-              <Td>{permission.name}</Td>
-              <Td>{permission.resource}</Td>
-              <Td>{permission.description}</Td>
-              <Td>{permission.createdAt || "None"}</Td>
-              <Td>{permission.updatedAt || "None"}</Td>
-              <Td>
-                <Menu>
-                  <MenuButton as={IconButton} icon={<HamburgerIcon />} />
-                  <MenuList>
-                    <MenuItem
-                      icon={<EditIcon />}
-                      onClick={() => handleEdit(permission)}
-                    >
-                      {t("common.actions_edit")}
-                    </MenuItem>
-                    <MenuItem
-                      icon={<DeleteIcon />}
-                      onClick={() => console.log("Delete Permission")}
-                    >
-                      {t("common.actions_delete")}
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </Td>
-            </Tr>
-          ))}
+          {permissions &&
+            permissions.map((permission) => (
+              <Tr key={permission.id}>
+                <Td>{permission.name}</Td>
+                <Td>{permission.resource}</Td>
+                <Td>{permission.description}</Td>
+                <Td>{permission.createdAt || "None"}</Td>
+                <Td>{permission.updatedAt || "None"}</Td>
+                <Td>
+                  <Menu>
+                    <MenuButton as={IconButton} icon={<HamburgerIcon />} />
+                    <MenuList>
+                      <MenuItem
+                        icon={<EditIcon />}
+                        onClick={() => handleEdit(permission)}
+                      >
+                        {t("common.actions_edit")}
+                      </MenuItem>
+                      <MenuItem
+                        icon={<DeleteIcon />}
+                        onClick={() => console.log("Delete Permission")}
+                      >
+                        {t("common.actions_delete")}
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
 
@@ -126,6 +128,7 @@ const Permissions = () => {
         onClose={handleModalClose}
         initialData={selectedPermission}
         mode={mode}
+        setReloadData={setReloadData}
       />
     </Box>
   );

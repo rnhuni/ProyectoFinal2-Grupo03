@@ -30,7 +30,7 @@ const useRoles = () => {
     setLoading(true); // Inicia el estado de carga
 
     try {
-      const res = await httpClient.post<Role>(service, newRole);
+      const res = await httpClient.post<Role | string>(service, newRole);
       return res.data; // Retorna el nuevo permiso creado
     } catch (err) {
       if (err instanceof CanceledError) return;
@@ -39,7 +39,7 @@ const useRoles = () => {
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
-      setLoading(false); // Finaliza el estado de carga
+      setLoading(false);
     }
   };
 

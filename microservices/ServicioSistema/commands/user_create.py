@@ -23,9 +23,6 @@ class CreateUser(BaseCommannd):
 
         try:
             client = session.query(Client).get(self.client_id)
-
-            if not self.role:
-                raise ValueError(f"Role does not exist")
             
             if not client:
                 raise ValueError(f"Client with id {self.client_id} does not exist")
@@ -36,7 +33,7 @@ class CreateUser(BaseCommannd):
                 name=self.name,
                 email=self.email,
                 client=str(self.client_id),
-                role=str(self.role),
+                role=str(self.role.id),
                 permissions=permissions_str
             )
             cognito_id = cognito_user['User']['Username']

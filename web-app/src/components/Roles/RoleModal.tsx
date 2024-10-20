@@ -34,6 +34,7 @@ interface RoleModalProps {
   onClose: () => void;
   initialData?: Role;
   mode: "create" | "edit";
+  setReloadData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const RoleModal: React.FC<RoleModalProps> = ({
@@ -41,6 +42,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
   onClose,
   initialData,
   mode,
+  setReloadData,
 }) => {
   const {
     register,
@@ -60,6 +62,9 @@ const RoleModal: React.FC<RoleModalProps> = ({
   // Guardar las acciones seleccionadas para cada permiso
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<string>("");
+  const checkboxCheckedBg = "white";
+  const [showError, setShowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const { permissions, reloadPermissions } = usePermissions();
   const { createRole } = useRoles();
 
@@ -87,12 +92,14 @@ const RoleModal: React.FC<RoleModalProps> = ({
         permissions: [],
       });
       setSelectedActions([]);
-      setSelectedPermission(""); // Limpiar la selección del permiso
+      setSelectedPermission("");
+      setShowError(false);
     }
   }, [initialData, mode, reset]);
 
   useEffect(() => {
-    reloadPermissions(); // Carga inicial de permisos
+    reloadPermissions();
+    setShowError(false);
   }, []);
 
   // Manejar el cambio en los checkboxes para acciones
@@ -100,24 +107,25 @@ const RoleModal: React.FC<RoleModalProps> = ({
     permissionId: string,
     action: "write" | "read" | "update" | "delete"
   ) => {
+    debugger;
     const actionId = `${permissionId}-${action}`;
-    console.log("Action ID:", actionId);
+    // console.log("Action ID:", actionId);
 
     setSelectedActions((prevState) => {
       const updatedActions = prevState.includes(actionId)
         ? prevState.filter((id) => id !== actionId)
         : [...prevState, actionId];
-      console.log("Updated Actions:", updatedActions);
+      // console.log("Updated Actions:", updatedActions);
       return updatedActions;
     });
 
     const currentPermissions = getValues("permissions");
-    console.log("Current Permissions:", currentPermissions);
+    // console.log("Current Permissions:", currentPermissions);
 
     const permissionIndex = currentPermissions.findIndex(
       (p: { id: string; actions: string[] }) => p.id === permissionId
     );
-    console.log("Permission Index:", permissionIndex);
+    // console.log("Permission Index:", permissionIndex);
 
     let updatedPermissions;
 
@@ -145,12 +153,13 @@ const RoleModal: React.FC<RoleModalProps> = ({
       ];
     }
 
-    console.log("Updated Permissions:", updatedPermissions);
+    // console.log("Updated Permissions:", updatedPermissions);
     setValue("permissions", updatedPermissions);
   };
 
   // Manejar la selección del permiso en el select
   const handlePermissionSelect = (permissionId: string) => {
+    debugger;
     const currentPermissions = getValues("permissions");
 
     // Verificar si el permiso ya existe
@@ -168,10 +177,31 @@ const RoleModal: React.FC<RoleModalProps> = ({
     setSelectedPermission(permissionId); // Actualizar la selección de permiso
   };
 
+  const handleRequest = async (data: FormData) => {
+    const createdRole = await createRole(data as Role);
+
+    // console.log("--->" + createdRole);
+    return createdRole;
+  };
+
   // Función de envío del formulario
-  const onSubmit = (data: FormData) => {
-    createRole(data as Role);
-    onClose();
+  const onSubmit = async (data: FormData) => {
+    debugger;
+    let message = await handleRequest(data);
+
+    if (typeof message === "string") {
+      if (message == "Role already exists") {
+        setErrorMessage("role.validations.exists");
+      } else if (message == "permissions is required") {
+        setErrorMessage("role.validations.permissions_required");
+      } else if (message.includes("list values")) {
+        setErrorMessage("role.validations.permissions_list_values");
+      }
+      setShowError(true);
+    } else {
+      setReloadData(true);
+      onClose();
+    }
   };
 
   return (
@@ -183,7 +213,16 @@ const RoleModal: React.FC<RoleModalProps> = ({
         </ModalHeader>
         <ModalCloseButton aria-label="close" />
         <ModalBody>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          {showError && (
+            <FormControl>
+              <FormLabel>{errorMessage}</FormLabel>
+            </FormControl>
+          )}
+          <form
+            role="form_modal"
+            data-testid="role-modal-form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <Stack spacing={4}>
               {/* Nombre del Rol */}
               <FormControl isInvalid={!!errors.name}>
@@ -200,13 +239,19 @@ const RoleModal: React.FC<RoleModalProps> = ({
                   <FormLabel>Permisos actuales</FormLabel>
                   <Stack spacing={2}>
                     {getValues("permissions").map((permission) => (
-                      <Badge key={permission.id} colorScheme="blue">
+                      <Badge
+                        color={"white"}
+                        padding={"2"}
+                        key={permission.id}
+                        bg={"blue.500"}
+                      >
                         {permission.id}
                         <Stack pl={6} mt={1} spacing={1}>
                           <HStack spacing={4}>
                             {["write", "read", "update", "delete"].map(
                               (action) => (
                                 <Checkbox
+                                  id={`${permission.id}-${action}`}
                                   key={`${permission.id}-${action}`}
                                   isChecked={selectedActions.includes(
                                     `${permission.id}-${action}`
@@ -221,8 +266,29 @@ const RoleModal: React.FC<RoleModalProps> = ({
                                         | "delete"
                                     )
                                   }
+                                  colorScheme="green"
+                                  size="md"
+                                  _checked={{
+                                    padding: "0.5em",
+                                    height: "2.5em",
+                                    width: "auto",
+                                    bg: checkboxCheckedBg,
+                                    borderColor: "white",
+                                  }}
+                                  borderRadius="md"
                                 >
-                                  <Text textTransform={"lowercase"}>
+                                  <Text
+                                    textTransform="capitalize"
+                                    fontSize="sm"
+                                    fontWeight="medium"
+                                    color={
+                                      selectedActions.includes(
+                                        `${permission.id}-${action}`
+                                      )
+                                        ? "blue.500"
+                                        : "white"
+                                    }
+                                  >
                                     {action}
                                   </Text>
                                 </Checkbox>
@@ -240,12 +306,17 @@ const RoleModal: React.FC<RoleModalProps> = ({
               <FormControl mt={4}>
                 <FormLabel>Seleccionar Permiso</FormLabel>
                 <Select
+                  role="select"
                   placeholder="Seleccionar permiso"
                   value={selectedPermission}
                   onChange={(e) => handlePermissionSelect(e.target.value)}
                 >
                   {permissions.map((permission) => (
-                    <option key={permission.id} value={permission.id}>
+                    <option
+                      role="select_option"
+                      key={permission.id}
+                      value={permission.id}
+                    >
                       {permission.name}
                     </option>
                   ))}

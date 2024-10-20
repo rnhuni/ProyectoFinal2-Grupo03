@@ -1,6 +1,7 @@
 from  sqlalchemy  import  Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 from .model  import  Model
+from .permission import Permission
 
 class RolePermission(Model):
     __tablename__ = 'role_permission'

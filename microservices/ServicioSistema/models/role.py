@@ -2,6 +2,7 @@ from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 from .model import Model, Base
 from .role_permission import RolePermission
+from .subscription_plan import SubscriptionPlan
 from .subscription_plan_role import SubscriptionPlanRole
 
 class Role(Model):

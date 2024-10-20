@@ -20,30 +20,21 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "../../interfaces/User";
 
-const schema = z
-  .object({
-    name: z
-      .string()
-      .min(3, { message: "El nombre debe tener al menos 3 caracteres." }),
-    email: z.string().email({ message: "Debe ser un correo válido." }),
-    password: z
-      .string()
-      .min(6, { message: "La contraseña debe tener al menos 6 caracteres." }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: "La confirmación de contraseña es requerida." }),
-    role: z.string().nonempty({ message: "El rol es requerido." }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden.",
-    path: ["confirmPassword"],
-  });
+const schema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "El nombre debe tener al menos 3 caracteres." }),
+  email: z.string().email({ message: "Debe ser un correo válido." }),
+  role_id: z.string().nonempty({ message: "El rol es requerido." }),
+  client_id: z.string().nonempty({ message: "El cliente es requerido." }),
+});
 
 type FormData = z.infer<typeof schema>;
 
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: (data: FormData) => void;
   initialData?: User;
   mode: "create" | "edit";
 }
@@ -51,6 +42,7 @@ interface UserModalProps {
 export const UserModal: React.FC<UserModalProps> = ({
   isOpen,
   onClose,
+  onSave,
   initialData,
   mode,
 }) => {
@@ -64,9 +56,8 @@ export const UserModal: React.FC<UserModalProps> = ({
     defaultValues: {
       name: "",
       email: "",
-      password: "",
-      confirmPassword: "",
-      role: "",
+      role_id: "",
+      client_id: "",
     },
   });
 
@@ -75,23 +66,22 @@ export const UserModal: React.FC<UserModalProps> = ({
       reset({
         name: initialData.name,
         email: initialData.email,
-        password: "",
-        confirmPassword: "",
-        role: initialData.role,
+        role_id: initialData.role_id,
+        client_id: initialData.client_id,
       });
     } else {
       reset({
         name: "",
         email: "",
-        password: "",
-        confirmPassword: "",
-        role: "",
+        role_id: "",
+        client_id: "",
       });
     }
   }, [initialData, mode, reset]);
 
   const onSubmit = (data: FormData) => {
     console.log("Datos enviados:", data);
+    onSave(data);
     onClose();
   };
 
@@ -125,42 +115,26 @@ export const UserModal: React.FC<UserModalProps> = ({
                 )}
               </FormControl>
 
-              <FormControl isInvalid={!!errors.password}>
-                <FormLabel>Contraseña</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Contraseña"
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <FormErrorMessage>{errors.password.message}</FormErrorMessage>
-                )}
-              </FormControl>
-
-              <FormControl isInvalid={!!errors.confirmPassword}>
-                <FormLabel>Confirmación de contraseña</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Confirmación de contraseña"
-                  {...register("confirmPassword")}
-                />
-                {errors.confirmPassword && (
-                  <FormErrorMessage>
-                    {errors.confirmPassword.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
-
-              <FormControl isInvalid={!!errors.role}>
+              <FormControl isInvalid={!!errors.role_id}>
                 <FormLabel>Rol</FormLabel>
-                <Select {...register("role")}>
+                <Select {...register("role_id")}>
                   <option value="">Selecciona un rol</option>
-                  <option value="Admin">Administrador</option>
-                  <option value="User">Usuario</option>
-                  <option value="ClientAdmin">Administrador Clientes</option>
+                  <option value="role-1">Admin</option>
+                  <option value="role-2">Usuario</option>
+                  <option value="role-3">Administrador Cliente</option>
                 </Select>
-                {errors.role && (
-                  <FormErrorMessage>{errors.role.message}</FormErrorMessage>
+                {errors.role_id && (
+                  <FormErrorMessage>{errors.role_id.message}</FormErrorMessage>
+                )}
+              </FormControl>
+
+              <FormControl isInvalid={!!errors.client_id}>
+                <FormLabel>ID de Cliente</FormLabel>
+                <Input placeholder="ID de Cliente" {...register("client_id")} />
+                {errors.client_id && (
+                  <FormErrorMessage>
+                    {errors.client_id.message}
+                  </FormErrorMessage>
                 )}
               </FormControl>
             </Stack>
