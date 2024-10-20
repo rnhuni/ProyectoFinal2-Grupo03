@@ -32,6 +32,7 @@ interface PermissionsModalProps {
   onClose: () => void;
   initialData?: Permission;
   mode: "create" | "edit";
+  setReloadData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const PermissionsModal: React.FC<PermissionsModalProps> = ({
@@ -39,6 +40,7 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
   onClose,
   initialData,
   mode,
+  setReloadData,
 }) => {
   const {
     register,
@@ -78,6 +80,7 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
   const onSubmit = (data: FormData) => {
     // console.log("Datos enviados:", data);
     handleSubmitAsyn(data);
+    setReloadData(true);
     onClose();
   };
 

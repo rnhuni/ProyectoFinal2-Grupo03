@@ -9,6 +9,7 @@ jest.mock("../../hooks/permissions/usePermissions");
 
 describe("PermissionModal loading state", () => {
   const onCloseMock = jest.fn();
+  const onReloadMock = jest.fn();
   const createPermissionMock = jest.fn();
 
   beforeEach(() => {
@@ -25,7 +26,12 @@ describe("PermissionModal loading state", () => {
 
     render(
       <ChakraProvider>
-        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={onReloadMock}
+        />
       </ChakraProvider>
     );
 
@@ -39,6 +45,7 @@ describe("PermissionModal loading state", () => {
 
 describe("PermissionModal error handling", () => {
   const onCloseMock = jest.fn();
+  const onReloadMock = jest.fn();
   const createPermissionMock = jest.fn();
 
   beforeEach(() => {
@@ -55,7 +62,12 @@ describe("PermissionModal error handling", () => {
 
     render(
       <ChakraProvider>
-        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={onReloadMock}
+        />
       </ChakraProvider>
     );
 
@@ -68,6 +80,7 @@ describe("PermissionModal error handling", () => {
 
 describe("PermissionModal onSubmit", () => {
   const onCloseMock = jest.fn();
+  const onReloadMock = jest.fn();
   const createPermissionMock = jest.fn();
 
   beforeEach(() => {
@@ -83,7 +96,12 @@ describe("PermissionModal onSubmit", () => {
   test("should call handleSubmitAsyn and onClose on form submit", async () => {
     render(
       <ChakraProvider>
-        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={onReloadMock}
+        />
       </ChakraProvider>
     );
 
@@ -118,6 +136,7 @@ describe("PermissionModal onSubmit", () => {
 
 describe("PermissionModal", () => {
   const onCloseMock = jest.fn();
+  const onReloadMock = jest.fn();
   const createPermissionMock = jest.fn();
   const updatePermissionMock = jest.fn(); // Agrega el mock para updatePermission
 
@@ -134,7 +153,12 @@ describe("PermissionModal", () => {
   test("should render modal in create mode", () => {
     render(
       <ChakraProvider>
-        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={onReloadMock}
+        />
       </ChakraProvider>
     );
 
@@ -160,6 +184,7 @@ describe("PermissionModal", () => {
           onClose={onCloseMock}
           initialData={initialData}
           mode="edit"
+          setReloadData={onReloadMock}
         />
       </ChakraProvider>
     );
@@ -174,7 +199,12 @@ describe("PermissionModal", () => {
   test("should call onClose when cancel button is clicked", () => {
     render(
       <ChakraProvider>
-        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={onReloadMock}
+        />
       </ChakraProvider>
     );
 
@@ -187,7 +217,12 @@ describe("PermissionModal", () => {
   test("should display validation errors", async () => {
     render(
       <ChakraProvider>
-        <PermissionsModal isOpen={true} onClose={onCloseMock} mode="create" />
+        <PermissionsModal
+          isOpen={true}
+          onClose={onCloseMock}
+          mode="create"
+          setReloadData={onReloadMock}
+        />
       </ChakraProvider>
     );
 
@@ -218,6 +253,7 @@ describe("PermissionModal", () => {
           onClose={onCloseMock}
           initialData={initialData}
           mode="edit"
+          setReloadData={onReloadMock}
         />
       </ChakraProvider>
     );

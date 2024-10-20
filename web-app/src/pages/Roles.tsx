@@ -28,7 +28,8 @@ const Roles = () => {
   const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { roles, error, reloadRoles } = useRoles(); // Reemplaza el hook con el nuevo hook
+  const { roles, error, reloadRoles } = useRoles();
+  const [reloadData, setReloadData] = useState<boolean>(false);
 
   const handleEdit = (rol: Role) => {
     const role: Role = {
@@ -53,11 +54,11 @@ const Roles = () => {
 
   useEffect(() => {
     reloadRoles();
-  }, []);
+  }, [reloadData]);
 
   const handleOnClose = () => {
-    reloadRoles();
     onClose();
+    reloadRoles();
   };
 
   return (
@@ -86,26 +87,29 @@ const Roles = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {roles.map((rol) => (
-            <Tr key={rol.id}>
-              <Td>{rol.name}</Td>
-              <Td>
-                {(rol.permissions ?? [])
-                  .map((permission: { id: string }) => permission.id)
-                  .join(", ")}
-              </Td>
-              <Td>{rol.createdAt || ""}</Td>
-              <Td>{rol.updatedAt || ""}</Td>
-              <Td>
-                <Menu>
-                  <MenuButton as={IconButton} icon={<HamburgerIcon />} />
-                  <MenuList>
-                    <MenuItem onClick={() => handleEdit(rol)}>Editar</MenuItem>
-                  </MenuList>
-                </Menu>
-              </Td>
-            </Tr>
-          ))}
+          {roles &&
+            roles.map((rol) => (
+              <Tr key={rol.id}>
+                <Td>{rol.name}</Td>
+                <Td>
+                  {(rol.permissions ?? [])
+                    .map((permission: { id: string }) => permission.id)
+                    .join(", ")}
+                </Td>
+                <Td>{rol.createdAt || ""}</Td>
+                <Td>{rol.updatedAt || ""}</Td>
+                <Td>
+                  <Menu>
+                    <MenuButton as={IconButton} icon={<HamburgerIcon />} />
+                    <MenuList>
+                      <MenuItem onClick={() => handleEdit(rol)}>
+                        Editar
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
 
@@ -115,6 +119,7 @@ const Roles = () => {
         onClose={handleOnClose}
         initialData={selectedRole}
         mode={mode}
+        setReloadData={setReloadData}
       />
     </Box>
   );

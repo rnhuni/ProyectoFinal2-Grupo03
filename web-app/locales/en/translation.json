@@ -38,7 +38,10 @@
         "permissions": "Permissions",
         "validations": {
             "name": "The name must be at least {{count}} characters.",
-            "description": "The description must be at least {{count}} characters."
+            "description": "The description must be at least {{count}} characters.",
+            "exists": "Role already exists",
+            "permissions_required": "permissions is required",
+            "permissions_list_values": "Permission does not have accessLevel list values"
         },
         "modal": {
             "edit": "Edit Role",
