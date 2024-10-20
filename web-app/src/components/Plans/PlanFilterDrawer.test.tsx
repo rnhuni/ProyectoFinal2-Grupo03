@@ -1,13 +1,6 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PlanFilterDrawer from "./PlanFilterDrawer";
 import { ChakraProvider } from "@chakra-ui/react";
-import userEvent from "@testing-library/user-event";
 
 // Mock de la función applyFilters
 const applyFiltersMock = jest.fn();
