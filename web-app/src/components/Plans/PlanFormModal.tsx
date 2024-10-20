@@ -49,7 +49,6 @@ const PlanFormModal = ({
     control,
     reset,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm<Plan>({
     resolver: zodResolver(planSchema),

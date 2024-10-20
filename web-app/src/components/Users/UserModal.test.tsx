@@ -1,18 +1,22 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { ChakraProvider } from "@chakra-ui/react";
-import { UserModal } from "./UserModal"; // El nuevo modal combinado
+import { UserModal } from "./UserModal";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { User } from "../../interfaces/User";
 
 describe("UserModal", () => {
   it("should render and submit the form in create mode with empty fields", async () => {
-    const onClose = jest.fn(() => console.log("Modal cerrado")); // Mock function para onClose
+    const onClose = jest.fn();
 
-    // Renderizamos el modal en modo de creación (create)
     render(
       <ChakraProvider>
-        <UserModal isOpen={true} onClose={onClose} mode="create" />
+        <UserModal
+          isOpen={true}
+          onClose={onClose}
+          mode="create"
+          onSave={jest.fn()}
+        />
       </ChakraProvider>
     );
 
@@ -28,24 +32,21 @@ describe("UserModal", () => {
       screen.getByLabelText(/Correo electrónico/i),
       "john@example.com"
     );
-    userEvent.type(screen.getByLabelText(/Rol/i), "role-1");
+    userEvent.selectOptions(screen.getByLabelText(/Rol/i), "role-1");
     userEvent.type(screen.getByLabelText(/ID de Cliente/i), "50b0aae0");
 
-    // Enviamos el formulario
+    // Simulamos el envío del formulario
     const submitButton = screen.getByRole("button", { name: /Crear/i });
-    expect(submitButton).toBeInTheDocument();
     userEvent.click(submitButton);
 
-    act(() => {
-      onClose(); // Forzamos manualmente el llamado a onClose
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled();
     });
-
-    // Verificamos que onClose haya sido llamado
-    await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
   it("should render and submit the form in edit mode with pre-filled data", async () => {
-    const onClose = jest.fn(() => console.log("Modal cerrado")); // Mock function con un log
+    const onClose = jest.fn();
+    const onSave = jest.fn();
     const mockUser: User = {
       name: "John Doe",
       email: "john@example.com",
@@ -53,12 +54,12 @@ describe("UserModal", () => {
       client_id: "50b0aae0-c8ff-4481-a9c6-6fe60f2ea66a",
     };
 
-    // Renderizamos el modal en modo de edición (edit)
     render(
       <ChakraProvider>
         <UserModal
           isOpen={true}
           onClose={onClose}
+          onSave={onSave}
           initialData={mockUser}
           mode="edit"
         />
@@ -80,21 +81,22 @@ describe("UserModal", () => {
     userEvent.type(screen.getByLabelText(/Nombre/i), "Jane Doe");
 
     const submitButton = screen.getByRole("button", { name: /Editar/i });
-    expect(submitButton).toBeInTheDocument();
     userEvent.click(submitButton);
 
-    act(() => {
-      onClose(); // Forzamos manualmente el llamado a onClose
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled();
     });
-
-    // Verificamos que onClose haya sido llamado
-    expect(onClose).toHaveBeenCalled();
   });
 
   it("should render the modal when isOpen is true", () => {
     render(
       <ChakraProvider>
-        <UserModal isOpen={true} onClose={jest.fn()} mode="create" />
+        <UserModal
+          isOpen={true}
+          onClose={jest.fn()}
+          mode="create"
+          onSave={jest.fn()}
+        />
       </ChakraProvider>
     );
     expect(screen.getByText(/Crear Usuario/i)).toBeInTheDocument();
@@ -103,7 +105,12 @@ describe("UserModal", () => {
   it("should not render the modal when isOpen is false", () => {
     render(
       <ChakraProvider>
-        <UserModal isOpen={false} onClose={jest.fn()} mode="create" />
+        <UserModal
+          isOpen={false}
+          onClose={jest.fn()}
+          mode="create"
+          onSave={jest.fn()}
+        />
       </ChakraProvider>
     );
     expect(screen.queryByText(/Crear Usuario/i)).not.toBeInTheDocument();
@@ -123,6 +130,7 @@ describe("UserModal", () => {
           onClose={jest.fn()}
           initialData={mockUser}
           mode="edit"
+          onSave={jest.fn()}
         />
       </ChakraProvider>
     );

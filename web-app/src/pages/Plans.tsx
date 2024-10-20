@@ -32,7 +32,7 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: 10000.5, // Ahora es un número con decimales
-      features: "24/7 Technical support, 1TB Storage",
+      features: ["24/7 Technical support", "1TB Storage"],
     },
     {
       id: "2",
@@ -40,7 +40,7 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: 35000.75, // Número con decimales
-      features: "24/7 Technical support, Advanced Analytics",
+      features: ["24/7 Technical support", "Advanced Analytics"],
     },
     {
       id: "3",
@@ -48,7 +48,11 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: 65000.99, // Número con decimales
-      features: "24/7 Technical support, Premium Integration, Custom Reporting",
+      features: [
+        "24/7 Technical support",
+        "Premium Integration",
+        "Custom Reporting",
+      ],
     },
     {
       id: "4",
@@ -56,7 +60,11 @@ const Plans = () => {
       description: "Limited access to essential functions.",
       status: "Active",
       price: 85000.25, // Número con decimales
-      features: "Priority Support 24/7, Unlimited Users, Real-Time Monitoring",
+      features: [
+        "Priority Support 24/7",
+        "Unlimited Users",
+        "Real-Time Monitoring",
+      ],
     },
   ]);
 

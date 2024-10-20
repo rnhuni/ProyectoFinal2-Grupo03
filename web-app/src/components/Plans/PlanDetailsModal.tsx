@@ -16,7 +16,7 @@ import { Plan } from "../../interfaces/Plan";
 interface PlanDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  plan: Plan | null; // Puede ser nulo si no hay plan seleccionado
+  plan: Plan | null;
 }
 
 const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
@@ -25,7 +25,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
   plan,
 }) => {
   if (!plan) {
-    return null; // No renderizar el modal si no hay plan seleccionado
+    return null;
   }
 
   return (
@@ -40,8 +40,8 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
           </Text>
           <List spacing={2}>
             {/* Lista de características del plan */}
-            {plan.features?.split(",").map((feature, index) => (
-              <ListItem key={index}>• {feature.trim()}</ListItem>
+            {plan.features?.map((feature, index) => (
+              <ListItem key={index}>• {feature}</ListItem>
             ))}
           </List>
         </ModalBody>

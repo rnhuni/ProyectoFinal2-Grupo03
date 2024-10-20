@@ -34,6 +34,7 @@ type FormData = z.infer<typeof schema>;
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: (data: FormData) => void;
   initialData?: User;
   mode: "create" | "edit";
 }
@@ -41,6 +42,7 @@ interface UserModalProps {
 export const UserModal: React.FC<UserModalProps> = ({
   isOpen,
   onClose,
+  onSave,
   initialData,
   mode,
 }) => {
@@ -79,6 +81,7 @@ export const UserModal: React.FC<UserModalProps> = ({
 
   const onSubmit = (data: FormData) => {
     console.log("Datos enviados:", data);
+    onSave(data);
     onClose();
   };
 
