@@ -56,5 +56,23 @@
     "details": "Detalles",
     "edit": "Editar",
     "delete": "Eliminar"
+  },
+  "users": {
+    "title": "Usuarios de la Plataforma",
+    "clear_filters": "Limpiar Filtros",
+    "create": "Crear Usuario",
+    "name": "Nombre Completo",
+    "email": "Correo Electrónico",
+    "role": "Rol",
+    "status_label": "Estado",
+    "client": "Cliente",
+    "created_at": "Fecha de Creación",
+    "actions": "Acciones",
+    "edit": "Editar Usuario",
+    "delete": "Eliminar Usuario",
+    "statuses": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
   }
 }

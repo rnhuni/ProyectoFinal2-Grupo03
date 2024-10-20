@@ -23,6 +23,7 @@ import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 
 const Users = () => {
   const { t } = useTranslation();
+
   const [users, setUsers] = useState<UserTableData[]>([
     {
       id: "1",
@@ -72,10 +73,10 @@ const Users = () => {
     } else if (formMode === "create") {
       const newUser: UserTableData = {
         ...updatedUser,
-        id: (users.length + 1).toString(), // Generar un ID de ejemplo
-        status: "Active", // Asignar un estado predeterminado
-        createdAt: new Date().toISOString(), // Fecha de creación
-        updatedAt: new Date().toISOString(), // Fecha de actualización
+        id: (users.length + 1).toString(),
+        status: "ACTIVE",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       setUsers((prevUsers) => [...prevUsers, newUser]);
@@ -161,7 +162,7 @@ const Users = () => {
             <Th>{t("users.name", "Nombre Completo")}</Th>
             <Th>{t("users.email", "Correo Electrónico")}</Th>
             <Th>{t("users.role", "Rol")}</Th>
-            <Th>{t("users.status", "Estado")}</Th>
+            <Th>{t("users.status_label", "Estado")}</Th>
             <Th>{t("users.client", "Cliente")}</Th>
             <Th>{t("users.created_at", "Fecha de Creación")}</Th>
             <Th>{t("users.actions", "Acciones")}</Th>
@@ -178,20 +179,23 @@ const Users = () => {
               <Td>{user.role_id}</Td>
               <Td>
                 <Badge colorScheme={user.status === "ACTIVE" ? "green" : "red"}>
-                  {user.status}
+                  {t(
+                    `users.statuses.${user.status.toLowerCase()}`,
+                    user.status
+                  )}
                 </Badge>
               </Td>
               <Td>{user.client_id}</Td>
               <Td>{new Date(user.createdAt).toLocaleDateString()}</Td>
               <Td>
                 <IconButton
-                  aria-label="Edit user"
+                  aria-label={t("users.edit", "Editar Usuario")}
                   icon={<EditIcon />}
                   onClick={() => handleEdit(user)}
                   variant="ghost"
                 />
                 <IconButton
-                  aria-label="Delete user"
+                  aria-label={t("users.delete", "Eliminar Usuario")}
                   icon={<DeleteIcon />}
                   onClick={() => handleDelete(user)}
                   variant="ghost"
