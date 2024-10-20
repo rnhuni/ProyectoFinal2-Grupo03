@@ -17,31 +17,32 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserModal } from "../components/Users/UserModal";
-import { User } from "../interfaces/User";
+import { UserTableData } from "../interfaces/UserTableData"; // Nueva interfaz
 
 const Users = () => {
-  const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+  const [selectedUser, setSelectedUser] = useState<UserTableData | undefined>(
+    undefined
+  );
   const [mode, setMode] = useState<"create" | "edit">("create");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const users: User[] = [
-    {
-      name: "nicohug",
-      email: "nicohug@gmail.com",
-      role_id: "role-1",
-      client_id: "50b0aae0-c8ff-4481-a9c6-6fe60f2ea66a",
-    },
-    {
-      name: "janedoe",
-      email: "jane@example.com",
-      role_id: "role-2",
-      client_id: "70b0aae0-c8ff-4481-a9c6-6fe60f2ea66b",
-    },
-  ];
+  // Estado para manejar la lista de usuarios
+  const [users, setUsers] = useState<UserTableData[]>([]);
 
-  const handleEdit = (user: User) => {
+  // Simulando la llamada al endpoint de usuarios
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await fetch("/api/users"); // Reemplaza con tu URL real de la API
+      const data = await response.json();
+      setUsers(data);
+    };
+
+    fetchUsers();
+  }, []);
+
+  const handleEdit = (user: UserTableData) => {
     setSelectedUser(user);
     setMode("edit");
     onOpen();
@@ -75,16 +76,20 @@ const Users = () => {
             <Th>Correo Electrónico</Th>
             <Th>Rol</Th>
             <Th>Cliente</Th>
+            <Th>Estado</Th>
+            <Th>Fecha de Creación</Th>
             <Th>Acciones</Th>
           </Tr>
         </Thead>
         <Tbody>
           {users.map((user) => (
-            <Tr key={user.client_id}>
+            <Tr key={user.id}>
               <Td>{user.name}</Td>
               <Td>{user.email}</Td>
               <Td>{user.role_id}</Td>
               <Td>{user.client_id}</Td>
+              <Td>{user.status}</Td>
+              <Td>{new Date(user.createdAt).toLocaleDateString()}</Td>
               <Td>
                 <Menu>
                   <MenuButton as={IconButton} icon={<HamburgerIcon />} />

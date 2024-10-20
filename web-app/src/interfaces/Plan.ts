@@ -4,5 +4,5 @@ export interface Plan {
   description: string;
   status: string;
   price: number;
-  features: string;
+  features: string[];
 }

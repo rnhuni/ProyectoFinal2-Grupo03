@@ -23,7 +23,10 @@ import { useEffect, useState } from "react";
 const planSchema = z.object({
   name: z.string().min(1, "El nombre del plan es requerido"),
   description: z.string().min(1, "La descripción es requerida"),
-  price: z.string().min(1, "El precio es requerido"),
+  price: z.number().min(1, "El precio es requerido"),
+  features: z
+    .array(z.string())
+    .nonempty("Debes seleccionar al menos una característica"),
 });
 
 type PlanFormModalProps = {
@@ -45,13 +48,16 @@ const PlanFormModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm<Plan>({
     resolver: zodResolver(planSchema),
     defaultValues: {
       name: "",
       description: "",
-      price: "0",
+      price: 0,
+      features: [],
     },
   });
 
@@ -73,41 +79,63 @@ const PlanFormModal = ({
     "Facturación periódica",
   ];
 
-  const [checkedItems, setCheckedItems] = useState<boolean[]>(
-    featuresList.map(() => false)
+  const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(
+    () =>
+      featuresList.reduce(
+        (acc, feature) => ({ ...acc, [feature]: false }),
+        {} as { [key: string]: boolean }
+      )
   );
 
   useEffect(() => {
     if (plan) {
-      reset(plan);
-      const planFeatures = plan.features.split(", ").map((f) => f.trim());
+      reset({
+        ...plan,
+        features: Array.isArray(plan.features) ? plan.features : [], // Aseguramos que features siempre sea un array
+      });
+      const initialFeatures = plan.features || [];
       setCheckedItems(
-        featuresList.map((feature) => planFeatures.includes(feature))
+        featuresList.reduce((acc, feature) => {
+          acc[feature] = initialFeatures.includes(feature);
+          return acc;
+        }, {} as { [key: string]: boolean })
       );
     } else {
       reset({
         name: "",
         description: "",
-        price: "0",
+        price: 0,
+        features: [], // Reseteamos como un array vacío
       });
-      setCheckedItems(featuresList.map(() => false));
+      setCheckedItems(
+        featuresList.reduce(
+          (acc, feature) => ({ ...acc, [feature]: false }),
+          {} as { [key: string]: boolean }
+        )
+      );
     }
   }, [plan, reset]);
 
-  const handleFeatureChange = (index: number) => {
-    setCheckedItems((prev) =>
-      prev.map((item, i) => (i === index ? !item : item))
-    );
+  const handleCheckboxChange = (feature: string) => {
+    setCheckedItems((prev) => {
+      const updated = { ...prev, [feature]: !prev[feature] };
+      const selectedFeatures = Object.keys(updated).filter(
+        (key) => updated[key]
+      );
+      setValue("features", selectedFeatures); // Actualizamos el valor del campo 'features' en el formulario
+      return updated;
+    });
   };
 
   const onSubmit = (data: Plan) => {
-    const selectedFeatures = featuresList.filter(
-      (_, index) => checkedItems[index]
+    const selectedFeatures = Object.keys(checkedItems).filter(
+      (feature) => checkedItems[feature]
     );
     const updatedPlan = {
       ...data,
-      features: selectedFeatures.join(", "),
+      features: selectedFeatures, // Guardamos las características seleccionadas como un array
     };
+    console.log("Objeto final que se enviará:", updatedPlan);
     onSave(updatedPlan);
   };
 
@@ -146,16 +174,21 @@ const PlanFormModal = ({
             <FormControl mb={4}>
               <FormLabel>Características del Plan *</FormLabel>
               <Grid templateColumns="repeat(3, 1fr)" gap={2}>
-                {featuresList.map((feature, index) => (
+                {featuresList.map((feature) => (
                   <Checkbox
                     key={feature}
-                    isChecked={checkedItems[index]}
-                    onChange={() => handleFeatureChange(index)}
+                    isChecked={checkedItems[feature]} // Estado individual para cada checkbox
+                    onChange={() => handleCheckboxChange(feature)} // Cambia el estado de cada checkbox de manera independiente
                   >
                     {feature}
                   </Checkbox>
                 ))}
               </Grid>
+              {errors.features && (
+                <p style={{ color: "red" }}>
+                  {errors.features.message?.toString()}
+                </p>
+              )}
             </FormControl>
 
             <FormControl isInvalid={!!errors.price} mb={4}>
