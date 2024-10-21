@@ -1,10 +1,10 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ChakraProvider } from "@chakra-ui/react";
-import { featuresList } from "../../data/FeaturesList";
 import PlanFormModal from "./PlanFormModal";
 import i18n from "../../../i18nextConfig";
+import { featuresList } from "../../data/FeaturesList";
 
 // Mock data
 const mockPlan = {
@@ -14,16 +14,18 @@ const mockPlan = {
   price: 100,
   features: [featuresList[0], featuresList[2]],
   status: "active",
+  roles: [],
 };
+
+// Mock funciones
+const onSave = jest.fn();
+const onClose = jest.fn();
 
 const renderWithChakra = (ui: React.ReactNode) => {
   return render(<ChakraProvider>{ui}</ChakraProvider>);
 };
 
 describe("PlanFormModal Component", () => {
-  const onSave = jest.fn();
-  const onClose = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
     i18n.changeLanguage("es");
@@ -47,7 +49,7 @@ describe("PlanFormModal Component", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("plans.modal.price")).toBeInTheDocument();
 
-    // Check that all features checkboxes are rendered
+    // Verificar que se rendericen todas las características
     featuresList.forEach((feature) => {
       expect(screen.getByText(feature)).toBeInTheDocument();
     });
@@ -75,7 +77,7 @@ describe("PlanFormModal Component", () => {
       mockPlan.price.toString()
     );
 
-    // Check that the correct checkboxes are checked based on the features
+    // Verificar que los checkboxes correctos estén marcados
     featuresList.forEach((feature) => {
       const checkbox = screen.getByLabelText(feature) as HTMLInputElement;
       if (mockPlan.features.includes(feature)) {
@@ -86,7 +88,6 @@ describe("PlanFormModal Component", () => {
     });
   });
 
-  // Nueva prueba para verificar el cambio de estado de los checkboxes
   test("should update plan features on checkbox change", () => {
     renderWithChakra(
       <PlanFormModal
@@ -126,34 +127,64 @@ describe("PlanFormModal Component", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  // test("should send form modal when create button is clicked", () => {
-  //   renderWithChakra(
-  //     <PlanFormModal
-  //       isOpen={true}
-  //       onClose={onClose}
-  //       onSave={onSave}
-  //       plan={null}
-  //       mode="create"
-  //     />
-  //   );
+  test("should submit form when create button is clicked", async () => {
+    renderWithChakra(
+      <PlanFormModal
+        isOpen={true}
+        onClose={onClose}
+        onSave={onSave}
+        plan={null}
+        mode="create"
+      />
+    );
 
-  //   fireEvent.change(screen.getByLabelText("plans.modal.name"), {
-  //     target: { value: "New plan name" },
-  //   });
+    fireEvent.change(screen.getByLabelText("plans.modal.name"), {
+      target: { value: "Nuevo plan" },
+    });
 
-  //   fireEvent.change(screen.getByLabelText("plans.modal.description"), {
-  //     target: { value: "New plan description" },
-  //   });
+    fireEvent.change(screen.getByLabelText("plans.modal.description"), {
+      target: { value: "Descripción del nuevo plan" },
+    });
 
-  //   const firstFeatureCheckbox = screen.getByLabelText(featuresList[0]);
-  //   fireEvent.click(firstFeatureCheckbox);
+    fireEvent.change(screen.getByLabelText("plans.modal.price"), {
+      target: { value: 200 },
+    });
 
-  //   fireEvent.change(screen.getByLabelText("plans.modal.price"), {
-  //     target: { value: 800000 },
-  //   });
+    const firstFeatureCheckbox = screen.getByLabelText(featuresList[0]);
+    fireEvent.click(firstFeatureCheckbox);
 
-  //   fireEvent.click(
-  //     screen.getByRole("button", { name: "common.button.create" })
-  //   );
-  // });
+    fireEvent.click(
+      screen.getByRole("button", { name: "common.button.create" })
+    );
+
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  test("should submit form when edit button is clicked", async () => {
+    renderWithChakra(
+      <PlanFormModal
+        isOpen={true}
+        onClose={onClose}
+        onSave={onSave}
+        plan={mockPlan}
+        mode="edit"
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText("plans.modal.name"), {
+      target: { value: "Plan Editado" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "common.button.edit" }));
+
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Plan Editado" })
+      );
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
 });

@@ -10,18 +10,15 @@ const usePermissions = () => {
   const service = "/system/permissions";
 
   const reloadPermissions = () => {
-
     httpClient
       .get<Permission[]>("/system/permissions")
       .then((res) => {
-        console.log(res);
         setPermissions(res.data);
       })
       .catch((err) => {
         if (err instanceof CanceledError) return;
         setError(err.message);
       });
-
   };
 
   const createPermission = async (newPermission: Permission) => {
@@ -44,7 +41,10 @@ const usePermissions = () => {
     setLoading(true);
 
     try {
-      const res = await httpClient.put<Permission>(service + `/${aPermission.id}`, aPermission);
+      const res = await httpClient.put<Permission>(
+        service + `/${aPermission.id}`,
+        aPermission
+      );
       return res.data;
     } catch (err) {
       if (err instanceof CanceledError) return;
@@ -56,7 +56,14 @@ const usePermissions = () => {
     }
   };
 
-  return { permissions, loading, error, reloadPermissions, updatePermission, createPermission };
+  return {
+    permissions,
+    loading,
+    error,
+    reloadPermissions,
+    updatePermission,
+    createPermission,
+  };
 };
 
 export default usePermissions;

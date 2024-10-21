@@ -11,11 +11,9 @@ const useRoles = () => {
   const service = "/system/roles";
 
   const reloadRoles = () => {
-
     httpClient
       .get<Role[]>(service)
       .then((res) => {
-        console.log(res);
         setRoles(res.data);
       })
 
@@ -23,7 +21,6 @@ const useRoles = () => {
         if (err instanceof CanceledError) return;
         setError(err.message);
       });
-
   };
 
   const createRole = async (newRole: Role) => {
@@ -57,7 +54,6 @@ const useRoles = () => {
       setLoading(false);
     }
   };
-
 
   return { roles, loading, error, reloadRoles, createRole, updateRole };
 };

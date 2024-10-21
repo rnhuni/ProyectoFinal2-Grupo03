@@ -12,69 +12,50 @@ import {
   Text,
   Checkbox,
   Stack,
+  Spinner,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { AddIcon, EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PlanFilterDrawer from "../components/Plans/PlanFilterDrawer";
 import PlanFormModal from "../components/Plans/PlanFormModal";
-
 import { Plan } from "../interfaces/Plan";
 import PlanDetailsModal from "../components/Plans/PlanDetailsModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import usePlans from "../hooks/plans/usePlans"; // Importamos el hook usePlans
 
 const Plans = () => {
   const { t } = useTranslation();
 
-  const [plans, setPlans] = useState<Plan[]>([
-    {
-      id: "1",
-      name: "Basic Plan",
-      description: "Limited access to essential functions.",
-      status: "Active",
-      price: 10000.5, // Ahora es un número con decimales
-      features: ["24/7 Technical support", "1TB Storage"],
-    },
-    {
-      id: "2",
-      name: "Advanced Plan",
-      description: "Limited access to essential functions.",
-      status: "Active",
-      price: 35000.75, // Número con decimales
-      features: ["24/7 Technical support", "Advanced Analytics"],
-    },
-    {
-      id: "3",
-      name: "Premium Plan",
-      description: "Limited access to essential functions.",
-      status: "Active",
-      price: 65000.99, // Número con decimales
-      features: [
-        "24/7 Technical support",
-        "Premium Integration",
-        "Custom Reporting",
-      ],
-    },
-    {
-      id: "4",
-      name: "Pro Plan",
-      description: "Limited access to essential functions.",
-      status: "Active",
-      price: 85000.25, // Número con decimales
-      features: [
-        "Priority Support 24/7",
-        "Unlimited Users",
-        "Real-Time Monitoring",
-      ],
-    },
-  ]);
+  // Usamos el hook usePlans para interactuar con la API
+  const {
+    plans,
+    loading,
+    error,
+    reloadPlans,
+    createPlan,
+    updatePlan,
+    deletePlan,
+  } = usePlans();
 
-  const [filteredPlans, setFilteredPlans] = useState<Plan[]>(plans);
+  const [filteredPlans, setFilteredPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
+
+  // Cargamos los planes cuando el componente se monta
+  useEffect(() => {
+    reloadPlans();
+  }, []);
+
+  // Sincronizamos filteredPlans con plans cuando cambia el estado
+  useEffect(() => {
+    setFilteredPlans(plans);
+  }, [plans]);
 
   const handleEdit = (plan: Plan) => {
     setSelectedPlan(plan);
@@ -88,25 +69,19 @@ const Plans = () => {
     setIsFormModalOpen(true);
   };
 
-  const handleSave = (updatedPlan: Plan) => {
+  const handleSave = async (updatedPlan: Plan) => {
     if (formMode === "edit") {
-      setPlans((prevPlans) =>
-        prevPlans.map((p) => (p.id === updatedPlan.id ? updatedPlan : p))
-      );
+      await updatePlan(updatedPlan);
+      reloadPlans();
     } else if (formMode === "create") {
-      setPlans((prevPlans) => [
-        ...prevPlans,
-        { ...updatedPlan, id: (prevPlans.length + 1).toString() },
-      ]);
+      await createPlan(updatedPlan);
+      reloadPlans();
     }
     setIsFormModalOpen(false);
   };
 
   const applyFilters = (filters: { field: string; searchValue: string }) => {
-    console.log("Aplicando filtros: ", filters);
-
     const { field, searchValue } = filters;
-
     if (!searchValue) {
       setFilteredPlans(plans);
       return;
@@ -141,11 +116,9 @@ const Plans = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (selectedPlan) {
-      setPlans((prevPlans) =>
-        prevPlans.filter((plan) => plan.id !== selectedPlan.id)
-      );
+      await deletePlan(selectedPlan.id);
       setFilteredPlans((prevPlans) =>
         prevPlans.filter((plan) => plan.id !== selectedPlan.id)
       );
@@ -165,7 +138,7 @@ const Plans = () => {
         mb={4}
       >
         <Text fontSize="2xl" fontWeight="bold">
-          {t("plans.title")}
+          {t("plans.title", "Planes de suscripción")}
         </Text>
         <Stack direction="row" spacing={4}>
           <PlanFilterDrawer applyFilters={applyFilters} />
@@ -179,75 +152,98 @@ const Plans = () => {
             leftIcon={<AddIcon />}
             onClick={handleCreate}
           >
-            {t("plans.create")}
+            {t("plans.create", "Crear Plan")}
           </Button>
         </Stack>
       </Stack>
 
-      <Table variant="simple" mt={4}>
-        <Thead>
-          <Tr>
-            <Th>
-              <Checkbox />
-            </Th>
-            <Th>{t("plans.name")}</Th>
-            <Th>{t("plans.description")}</Th>
-            <Th>{t("plans.status")}</Th>
-            <Th>{t("plans.price")}</Th>
-            <Th>{t("plans.features")}</Th>
-            <Th>{t("plans.details")}</Th>
-            <Th>{t("plans.edit")}</Th>
-            <Th>{t("plans.delete")}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredPlans.map((plan) => (
-            <Tr key={plan.id}>
-              <Td>
+      {/* Mostrar spinner cuando está cargando */}
+      {loading && <Spinner size="xl" />}
+
+      {/* Mostrar mensaje de error si ocurre */}
+      {error && (
+        <Alert status="error" mb={4}>
+          <AlertIcon />
+          {error}
+        </Alert>
+      )}
+
+      {/* Mostrar la tabla solo si no hay carga ni error */}
+      {!loading && !error && (
+        <Table variant="simple" mt={4}>
+          <Thead>
+            <Tr>
+              <Th>
                 <Checkbox />
-              </Td>
-              <Td fontWeight="bold">{plan.name}</Td>
-              <Td>{plan.description}</Td>
-              <Td>
-                <Badge colorScheme="green">{plan.status}</Badge>
-              </Td>
-              <Td>
-                {new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(plan.price)}
-              </Td>
-              <Td>{plan.features}</Td>
-              <Td>
-                <IconButton
-                  aria-label="View details"
-                  icon={<ViewIcon />}
-                  onClick={() => handleViewDetails(plan)}
-                  variant="ghost"
-                />
-              </Td>
-              <Td>
-                <IconButton
-                  aria-label="Edit plan"
-                  icon={<EditIcon />}
-                  onClick={() => handleEdit(plan)}
-                  variant="ghost"
-                />
-              </Td>
-              <Td>
-                <IconButton
-                  aria-label="Delete plan"
-                  icon={<DeleteIcon />}
-                  onClick={() => handleDelete(plan)}
-                  variant="ghost"
-                />
-              </Td>
+              </Th>
+              <Th>{t("plans.name", "Nombre del Plan")}</Th>
+              <Th>{t("plans.description", "Descripción")}</Th>
+              <Th>{t("plans.status", "Estado")}</Th>
+              <Th>{t("plans.price", "Precio")}</Th>
+              <Th>{t("plans.features", "Características")}</Th>
+              <Th>{t("plans.details", "Detalles")}</Th>
+              <Th>{t("plans.edit", "Editar")}</Th>
+              <Th>{t("plans.delete", "Eliminar")}</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {filteredPlans.map((plan) => (
+              <Tr key={plan.id}>
+                <Td>
+                  <Checkbox />
+                </Td>
+                <Td fontWeight="bold">{plan.name}</Td>
+                <Td>{plan.description}</Td>
+                <Td>
+                  <Badge colorScheme="green">{plan.status}</Badge>
+                </Td>
+                <Td>
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(plan.price)}
+                </Td>
+                <Td>
+                  {Array.isArray(plan.features)
+                    ? plan.features.join(", ")
+                    : plan.features
+                    ? plan.features.split(", ").join(", ")
+                    : t(
+                        "plans.no_features",
+                        "No hay características disponibles"
+                      )}
+                </Td>
+                <Td>
+                  <IconButton
+                    aria-label="View details"
+                    icon={<ViewIcon />}
+                    onClick={() => handleViewDetails(plan)}
+                    variant="ghost"
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    aria-label="Edit plan"
+                    icon={<EditIcon />}
+                    onClick={() => handleEdit(plan)}
+                    variant="ghost"
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    aria-label="Delete plan"
+                    icon={<DeleteIcon />}
+                    onClick={() => handleDelete(plan)}
+                    variant="ghost"
+                  />
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
 
       <PlanDetailsModal
         isOpen={isDetailsModalOpen}

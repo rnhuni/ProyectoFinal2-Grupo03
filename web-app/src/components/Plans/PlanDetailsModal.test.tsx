@@ -13,6 +13,7 @@ describe("PlanDetailsModal", () => {
     price: 99.99,
     status: "Active",
     description: "",
+    roles: [],
   };
 
   test("should not render modal when plan is null", () => {
@@ -39,8 +40,13 @@ describe("PlanDetailsModal", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(mockPlan.name)).toBeInTheDocument();
 
+    // Convertimos las características en un array, separándolas por comas si es un string
+    const featuresArray = Array.isArray(mockPlan.features)
+      ? mockPlan.features
+      : mockPlan.features.split(", ");
+
     // Verificar que las características se muestren
-    mockPlan.features.forEach((feature) => {
+    featuresArray.forEach((feature) => {
       expect(screen.getByText(`• ${feature}`)).toBeInTheDocument();
     });
   });
