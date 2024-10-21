@@ -28,6 +28,12 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
     return null;
   }
 
+  // Convertir features a un array si es un string separado por comas
+  const featuresArray =
+    typeof plan.features === "string"
+      ? plan.features.split(",").map((feature: string) => feature.trim())
+      : plan.features;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
@@ -40,9 +46,13 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
           </Text>
           <List spacing={2}>
             {/* Lista de características del plan */}
-            {plan.features?.map((feature, index) => (
-              <ListItem key={index}>• {feature}</ListItem>
-            ))}
+            {Array.isArray(featuresArray) ? (
+              featuresArray.map((feature, index) => (
+                <ListItem key={index}>• {feature}</ListItem>
+              ))
+            ) : (
+              <ListItem>No features available</ListItem>
+            )}
           </List>
         </ModalBody>
         <ModalFooter>
