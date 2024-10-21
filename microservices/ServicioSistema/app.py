@@ -15,6 +15,12 @@ register_blueprints(app)
 
 initdb()
 
-cors = CORS(app)
+CORS(app, resources={r"/*": {
+    "origins": "https://abcallg03.com",
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"],
+    "supports_credentials": True
+}})
+
 if __name__ == '__main__':
     print("ServicioSistema is running on 5000")
