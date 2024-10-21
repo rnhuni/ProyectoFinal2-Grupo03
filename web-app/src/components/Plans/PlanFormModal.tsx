@@ -14,6 +14,7 @@ import {
   Grid,
   FormErrorMessage,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -22,8 +23,9 @@ import { Plan } from "../../interfaces/Plan";
 import { useEffect, useState } from "react";
 import { featuresList } from "../../data/FeaturesList";
 import { useTranslation } from "react-i18next";
+import usePlans from "../../hooks/plans/usePlans"; // Importamos el hook de usePlans
 
-// Define the schema using Zod
+// Definimos el esquema usando Zod
 const planSchema = z.object({
   name: z.string().min(1, "plans.validations.name"),
   description: z.string().min(1, "plans.validations.description"),
@@ -61,7 +63,11 @@ const PlanFormModal = ({
       features: [],
     },
   });
+
   const { t } = useTranslation();
+  const { createPlan, updatePlan, error: planError } = usePlans(); // Usamos usePlans para manejar planes
+  const toast = useToast();
+
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(
     () =>
       featuresList.reduce(
@@ -70,11 +76,12 @@ const PlanFormModal = ({
       )
   );
 
+  // Reset del formulario cuando se carga un plan para edición o se limpia para crear
   useEffect(() => {
     if (plan) {
       reset({
         ...plan,
-        features: Array.isArray(plan.features) ? plan.features : [], // Aseguramos que features siempre sea un array
+        features: Array.isArray(plan.features) ? plan.features : [],
       });
       const initialFeatures = plan.features || [];
       setCheckedItems(
@@ -88,7 +95,7 @@ const PlanFormModal = ({
         name: "",
         description: "",
         price: 0,
-        features: [], // Reseteamos como un array vacío
+        features: [],
       });
       setCheckedItems(
         featuresList.reduce(
@@ -110,17 +117,60 @@ const PlanFormModal = ({
     });
   };
 
-  const onSubmit = (data: Plan) => {
-    debugger;
+  const onSubmit = async (data: Plan) => {
     const selectedFeatures = Object.keys(checkedItems).filter(
       (feature) => checkedItems[feature]
     );
+
+    const featuresString = selectedFeatures.join(", ");
+
     const updatedPlan = {
       ...data,
-      features: selectedFeatures, // Guardamos las características seleccionadas como un array
+      id: plan?.id || "",
+      features: featuresString,
+      roles:
+        mode === "create"
+          ? [
+              {
+                id: "role-rol-13",
+                name: "Administrador",
+              },
+            ]
+          : plan?.roles || [],
     };
-    console.log("Objeto final que se enviará:", updatedPlan);
-    onSave(updatedPlan);
+
+    try {
+      if (mode === "edit" && plan) {
+        await updatePlan(updatedPlan);
+        toast({
+          title: t("plans.modal.edit_success"),
+          description: t("plans.modal.edit_success_message"),
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      } else {
+        await createPlan(updatedPlan);
+        toast({
+          title: t("plans.modal.create_success"),
+          description: t("plans.modal.create_success_message"),
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
+      onSave(updatedPlan);
+      onClose();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      toast({
+        title: t("plans.modal.error"),
+        description: t("plans.modal.error_message"),
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -172,8 +222,8 @@ const PlanFormModal = ({
                 {featuresList.map((feature) => (
                   <Checkbox
                     key={feature}
-                    isChecked={checkedItems[feature]} // Estado individual para cada checkbox
-                    onChange={() => handleCheckboxChange(feature)} // Cambia el estado de cada checkbox de manera independiente
+                    isChecked={checkedItems[feature]}
+                    onChange={() => handleCheckboxChange(feature)}
                   >
                     {feature}
                   </Checkbox>
@@ -192,7 +242,14 @@ const PlanFormModal = ({
                 name="price"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} placeholder="Precio del plan" />
+                  <Input
+                    {...field}
+                    placeholder="Precio del plan"
+                    value={field.value || ""}
+                    onChange={(e) =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                  />
                 )}
               />
               {errors.price && (
@@ -202,6 +259,11 @@ const PlanFormModal = ({
               )}
             </FormControl>
           </form>
+          {planError && (
+            <Text color="red.500" fontSize="sm">
+              {t("common.error")}: {planError}
+            </Text>
+          )}
         </ModalBody>
 
         <ModalFooter>
