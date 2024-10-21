@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "/v1",
+  baseURL: "https://api.abcallg03.com/v1",
 });
