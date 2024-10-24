@@ -46,11 +46,15 @@
                 },
                 {
                     "name": "USER_POOL_ID",
-                    "value": "us-east-1_r6myWLjfj"
+                    "value": "us-east-1_X4SlUF0z0"
                 },
                 {
                     "name": "CLIENT_ID",
                     "value": "abcall_users"
+                },
+                {
+                    "name": "BASE_URL",
+                    "value": "/system/v1"
                 }
             ],
             "mountPoints": [],

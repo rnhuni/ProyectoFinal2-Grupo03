@@ -1,4 +1,10 @@
 export default {
+  coverageReporters: ["text-summary", "html"],
+  coverageThreshold: {
+    global: {
+      lines: 90
+    },
+  },
   testEnvironment: "jest-environment-jsdom",
   transform: {
     "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",

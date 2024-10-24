@@ -4,6 +4,7 @@ from ServicioSistema.commands.user_get import GetUser
 from ServicioSistema.commands.user_get_all import GetAllUsers
 from ServicioSistema.commands.user_update import UpdateUser
 from ServicioSistema.commands.role_get import GetRole
+from ServicioSistema.commands.client_get import GetClient
 from ServicioSistema.commands.client_exists import ExistsClient
 from ServicioSistema.commands.user_exists_by_email import ExistsUserByEmail
 
@@ -37,16 +38,27 @@ def create_user():
         if not role:
             return f"Role '{role_id}' does not exist", 400
 
-        if not ExistsClient(client_id).execute():
+        client = GetClient(client_id).execute()
+        if client is None:
             return f"Client '{client_id}' does not exist", 400
+        
+        client = GetClient(client_id).execute()
+        if client is None:
+            return f"Client '{client_id}' does not exist", 400
+        
+        if client.active_subscription_plan is None:
+            return f"Client '{client_id}' does not active subscription_plan", 400
+        
+        features = client.active_subscription_plan.features
 
-        user = CreateUser(name, email, role, client_id).execute()
+        user = CreateUser(name, email, role, features, client_id).execute()
 
         return jsonify({
             "id": user.id,
             "name": user.name,
             "email": user.email,
             "role_id": user.role_id,
+            "features":user.features,
             "status": user.status,
             "client_id": user.client_id,
             "createdAt": user.createdAt,

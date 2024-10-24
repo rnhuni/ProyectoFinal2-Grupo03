@@ -21,8 +21,8 @@ class TestCreateUser:
         test_role = MagicMock(spec=Role)
         test_role.id = "role-1"
         test_role.permissions = []
-
         test_client_id = "client-1"
+        test_features = ["feature1", "feature2"]
 
         mock_client = MagicMock(spec=Client)
         self.mock_cognito_service.return_value.register_user.return_value = {
@@ -33,17 +33,17 @@ class TestCreateUser:
         }
 
         mocker.patch('ServicioSistema.commands.user_create.cognito_service', new=self.mock_cognito_service.return_value)
-
         mocker.patch.object(session, 'query', return_value=MagicMock(get=MagicMock(return_value=mock_client)))
 
-        user_created = CreateUser(test_name, test_email, test_role, test_client_id).execute()
+        user_created = CreateUser(test_name, test_email, test_role, test_features, test_client_id).execute()
 
         self.mock_cognito_service.return_value.register_user.assert_called_once_with(
             name=test_name,
             email=test_email,
             client=str(test_client_id),
             role=str(test_role.id),
-            permissions=""
+            permissions="",
+            features=str(test_features)
         )
 
         self.mock_add.assert_called_once()
@@ -62,12 +62,12 @@ class TestCreateUser:
         test_email = "test@example.com"
         test_role = MagicMock(spec=Role)
         test_client_id = "client-1"
+        test_features = ["feature1"]
 
-        # Simular que el cliente no existe
         mocker.patch.object(session, 'query', return_value=MagicMock(get=MagicMock(return_value=None)))
 
         with pytest.raises(ValueError, match=f"Client with id {test_client_id} does not exist"):
-            CreateUser(test_name, test_email, test_role, test_client_id).execute()
+            CreateUser(test_name, test_email, test_role, test_features, test_client_id).execute()
 
         self.mock_add.assert_not_called()
         self.mock_commit.assert_not_called()
@@ -75,18 +75,19 @@ class TestCreateUser:
     def test_create_user_role_not_found(self, mocker):
         test_name = "Test User"
         test_email = "test@example.com"
-        test_role = None  # Role no existe
+        test_role = None
         test_client_id = "client-1"
+        test_features = ["feature1"]
 
         with pytest.raises(ValueError, match="Invalid data provided"):
-            CreateUser(test_name, test_email, test_role, test_client_id).execute()
+            CreateUser(test_name, test_email, test_role, test_features, test_client_id).execute()
 
         self.mock_add.assert_not_called()
         self.mock_commit.assert_not_called()
 
     def test_create_user_invalid_data(self):
         with pytest.raises(ValueError, match="Invalid data provided"):
-            CreateUser("", "test@example.com", MagicMock(spec=Role), "client-1").execute()
+            CreateUser("", "test@example.com", MagicMock(spec=Role), ["feature1"], "client-1").execute()
 
         self.mock_add.assert_not_called()
         self.mock_commit.assert_not_called()
@@ -97,6 +98,7 @@ class TestCreateUser:
         test_role = MagicMock(spec=Role)
         test_role.id = "role-1"
         test_client_id = "client-1"
+        test_features = ["feature1"]
 
         mocker.patch('ServicioSistema.commands.user_create.cognito_service', new=self.mock_cognito_service.return_value)
 
@@ -106,7 +108,7 @@ class TestCreateUser:
         mocker.patch.object(session, 'query', return_value=MagicMock(get=MagicMock(return_value=mock_client)))
 
         with pytest.raises(Exception, match="Cognito error"):
-            CreateUser(test_name, test_email, test_role, test_client_id).execute()
+            CreateUser(test_name, test_email, test_role, test_features, test_client_id).execute()
 
         self.mock_add.assert_not_called()
         self.mock_commit.assert_not_called()
@@ -125,7 +127,7 @@ class TestCreateUser:
 
         test_role.permissions = [permission_1, permission_2]
 
-        create_user_command = CreateUser("Test User", "test@example.com", test_role, "client-1")
+        create_user_command = CreateUser("Test User", "test@example.com", test_role, ["feature1"], "client-1")
         permissions_str = create_user_command._convert_permissions_to_string(test_role.permissions)
 
         assert permissions_str == "permission-1:read;permission-2:write"

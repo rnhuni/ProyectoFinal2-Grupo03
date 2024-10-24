@@ -95,7 +95,7 @@ jobs:
       - name: Run tests for ServicioSistema
         working-directory: ./microservices/ServicioSistema
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=80          
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
 
       - name: Run SonarCloud Scan for ServicioSistema
         uses: SonarSource/sonarcloud-github-action@v2
@@ -150,6 +150,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.render-servicio-sistema.outputs.task-definition }}
-          service: ServicioSistema
+          service: ClusterABCall
           cluster: ServicioSistema
           wait-for-service-stability: false
