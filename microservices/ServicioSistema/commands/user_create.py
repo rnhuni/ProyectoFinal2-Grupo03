@@ -11,10 +11,11 @@ if os.getenv('ENV') != 'test':
     cognito_service = CognitoService()
 
 class CreateUser(BaseCommannd):
-    def __init__(self, name, email, role, client_id):
+    def __init__(self, name, email, role, features, client_id):
         self.name = name
         self.email = email
         self.role = role
+        self.features = features
         self.client_id = client_id
 
     def execute(self):
@@ -34,7 +35,9 @@ class CreateUser(BaseCommannd):
                 email=self.email,
                 client=str(self.client_id),
                 role=str(self.role.id),
-                permissions=permissions_str
+                permissions=permissions_str,
+                features=str(self.features)
+
             )
             cognito_id = cognito_user['User']['Username']
 
@@ -49,6 +52,7 @@ class CreateUser(BaseCommannd):
             )
 
             user.status = status
+            user.features = self.features
 
             session.add(user)
             session.commit()

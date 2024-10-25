@@ -1,12 +1,10 @@
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 from .model import Model, Base
-import uuid
-from sqlalchemy.dialects.postgresql import UUID
 
 class Client(Model):
     __tablename__ = 'client'
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, nullable=False, primary_key=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     email = Column(String, nullable=False)
@@ -19,4 +17,4 @@ class Client(Model):
         self.name = name
         self.description = description
         self.email = email
-        self.active_subscription_plan = subscription_plan_id
+        self.subscription_plan_id = subscription_plan_id

@@ -1,9 +1,17 @@
 import re
 import unicodedata
 
+def build_features_id(name):
+    slug = generate_slug(name)
+    return f"frt-{slug}" if not slug.startswith("frt-") else slug
+
 def build_plan_id(name):
     slug = generate_slug(name)
     return f"plan-{slug}" if not slug.startswith("plan-") else slug
+
+def build_client_id(name):
+    slug = generate_slug(name)
+    return f"cli-{slug}" if not slug.startswith("cli-") else slug
 
 def build_role_id(name):
     slug = generate_slug(name)
