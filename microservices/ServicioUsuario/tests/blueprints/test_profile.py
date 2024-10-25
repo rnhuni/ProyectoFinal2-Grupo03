@@ -1,7 +1,7 @@
 import pytest
 import jwt
-from flask import Flask, Blueprint
-from unittest.mock import patch
+from flask import Flask
+from unittest.mock import patch, MagicMock
 from ServicioUsuario.blueprints.profile.routes import profile_bp
 
 @pytest.fixture
@@ -24,9 +24,10 @@ def test_get_profile_success(client, mocker):
     token = jwt.encode(token_payload, "secret", algorithm="HS256")
 
     mocker.patch('jwt.decode', return_value=token_payload)
+    mocker.patch('ServicioUsuario.services.cognito_service.CognitoService.get_user_status', return_value="ACTIVE")
 
     response = client.get('/profile', headers={"Authorization": f"Bearer {token}"})
-    
+
     assert response.status_code == 200
     assert response.json["user"]["id"] == "user-1"
     assert response.json["user"]["name"] == "Test User"
@@ -51,3 +52,4 @@ def test_get_profile_invalid_token(client, mocker):
     mocker.patch('jwt.decode', side_effect=jwt.InvalidTokenError("Token mal formado"))
     response = client.get('/profile', headers={"Authorization": "Bearer invalid.token.ddd.dd"})
     assert response.status_code == 500
+    assert response.json == {"error": "Error retrieving profile. Details: Token mal formado"}

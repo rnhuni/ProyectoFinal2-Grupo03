@@ -1,5 +1,7 @@
+import os
 import jwt
 from flask import Blueprint, request, jsonify
+from ServicioUsuario.services.cognito_service import CognitoService
 
 profile_bp = Blueprint('profile_bp', __name__)
 
@@ -39,6 +41,8 @@ def get_profile():
         for item in structured_permissions.values():
             item["actions"] = list(item["actions"])
             views.append(item)
+
+        cognito_status = CognitoService().get_user_status(token_payload["email"])
             
         return {
             "user":
@@ -46,6 +50,7 @@ def get_profile():
                 "id": token_payload["sub"],
                 "name": token_payload["name"],
                 "email": token_payload["email"],
+                "status":cognito_status,
                 "client": token_payload["custom:client"],
                 "role": token_payload["custom:role"]             
             },
