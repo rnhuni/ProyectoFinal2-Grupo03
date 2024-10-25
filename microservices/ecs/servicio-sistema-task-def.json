@@ -50,7 +50,7 @@
                 },
                 {
                     "name": "CLIENT_ID",
-                    "value": "abcall_users"
+                    "value": "abcall-users"
                 },
                 {
                     "name": "BASE_URL",

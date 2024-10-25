@@ -1,13 +1,13 @@
 {
-    "family": "TareaServicioUsuario",
+    "family": "TareaServicioIncidente",
     "containerDefinitions": [
         {
-            "name": "servicio-usuario",
-            "image": "203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-usuario:latest",
+            "name": "servicio-incidente",
+            "image": "203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-incidente:latest",
             "cpu": 0,
             "portMappings": [
                 {
-                    "name": "servicio-usuario-5000-tcp",
+                    "name": "servicio-incidente-5000-tcp",
                     "containerPort": 5000,
                     "hostPort": 5000,
                     "protocol": "tcp",
@@ -17,6 +17,10 @@
             "essential": true,
             "environment": [
                 {
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
+                },
+                {
                     "name": "RDS_HOSTNAME",
                     "value": "database-1.cfkqo6ysa345.us-east-1.rds.amazonaws.com"
                 },
@@ -25,36 +29,32 @@
                     "value": "c3yEJfBk4XqfdnDibHp5"
                 },
                 {
-                    "name": "ENV",
-                    "value": "prod"
+                    "name": "CLIENT_ID",
+                    "value": "abcall-users"
                 },
                 {
                     "name": "RDS_PORT",
                     "value": "5432"
                 },
                 {
-                    "name": "RDS_USERNAME",
-                    "value": "postgres"
-                },
-                {
                     "name": "RDS_DB_NAME",
                     "value": "postgres"
                 },
                 {
-                    "name": "AWS_REGION",
-                    "value": "us-east-1"
+                    "name": "BASE_URL",
+                    "value": "/incident/v1"
+                },
+                {
+                    "name": "ENV",
+                    "value": "prod"
                 },
                 {
                     "name": "USER_POOL_ID",
                     "value": "us-east-1_X4SlUF0z0"
                 },
                 {
-                    "name": "CLIENT_ID",
-                    "value": "abcall-users"
-                },
-                {
-                    "name": "BASE_URL",
-                    "value": "/user/v1"
+                    "name": "RDS_USERNAME",
+                    "value": "postgres"
                 }
             ],
             "mountPoints": [],
@@ -62,7 +62,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/TareaServicioUsuario",
+                    "awslogs-group": "/ecs/TareaServicioIncidente",
                     "mode": "non-blocking",
                     "awslogs-create-group": "true",
                     "max-buffer-size": "25m",
@@ -87,5 +87,6 @@
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
-    }
+    },
+    "enableFaultInjection": false
 }
