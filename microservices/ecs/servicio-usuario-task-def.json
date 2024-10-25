@@ -1,0 +1,91 @@
+{
+    "family": "TareaServicioUsuario",
+    "containerDefinitions": [
+        {
+            "name": "servicio-usuario",
+            "image": "203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-usuario:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "servicio-usuario-5000-tcp",
+                    "containerPort": 5000,
+                    "hostPort": 5000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "RDS_HOSTNAME",
+                    "value": "database-1.cfkqo6ysa345.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "RDS_PASSWORD",
+                    "value": "c3yEJfBk4XqfdnDibHp5"
+                },
+                {
+                    "name": "ENV",
+                    "value": "prod"
+                },
+                {
+                    "name": "RDS_PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "RDS_USERNAME",
+                    "value": "postgres"
+                },
+                {
+                    "name": "RDS_DB_NAME",
+                    "value": "postgres"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
+                },
+                {
+                    "name": "USER_POOL_ID",
+                    "value": "us-east-1_X4SlUF0z0"
+                },
+                {
+                    "name": "CLIENT_ID",
+                    "value": "abcall_users"
+                },
+                {
+                    "name": "BASE_URL",
+                    "value": "/user/v1"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/TareaServicioUsuario",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::203918887101:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::203918887101:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    }
+}
