@@ -73,5 +73,8 @@ yarn-error.log
 !.yarn/sdks
 !.yarn/versions
 
-# Ignorar la carpeta de configuración de Visual Studio Code
+
 .vscode/
+
+
+package-lock.json
