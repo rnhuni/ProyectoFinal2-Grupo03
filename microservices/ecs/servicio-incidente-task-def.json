@@ -17,10 +17,6 @@
             "essential": true,
             "environment": [
                 {
-                    "name": "AWS_REGION",
-                    "value": "us-east-1"
-                },
-                {
                     "name": "RDS_HOSTNAME",
                     "value": "database-1.cfkqo6ysa345.us-east-1.rds.amazonaws.com"
                 },
@@ -29,36 +25,36 @@
                     "value": "c3yEJfBk4XqfdnDibHp5"
                 },
                 {
-                    "name": "CLIENT_ID",
-                    "value": "abcall-users"
+                    "name": "ENV",
+                    "value": "prod"
                 },
                 {
                     "name": "RDS_PORT",
                     "value": "5432"
                 },
                 {
+                    "name": "RDS_USERNAME",
+                    "value": "postgres"
+                },
+                {
                     "name": "RDS_DB_NAME",
                     "value": "postgres"
                 },
                 {
-                    "name": "BASE_URL",
-                    "value": "/incident/v1"
-                },
-                {
-                    "name": "ENV",
-                    "value": "prod"
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
                 },
                 {
                     "name": "USER_POOL_ID",
                     "value": "us-east-1_X4SlUF0z0"
                 },
                 {
-                    "name": "RDS_USERNAME",
-                    "value": "postgres"
+                    "name": "CLIENT_ID",
+                    "value": "abcall-users"
                 },
                 {
                     "name": "BASE_URL",
-                    "value": "/incident/v1"
+                    "value": "/system/v1"
                 },
                 {
                     "name": "ORIGIN",
@@ -95,6 +91,5 @@
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
-    },
-    "enableFaultInjection": false
+    }
 }
