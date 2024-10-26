@@ -1,30 +1,27 @@
-import boto3
 import os
+import boto3
 
-class CognitoService:
+class S3Service:
     def __init__(self):
-        self.cognito_client = boto3.client('cognito-idp', region_name=os.getenv('AWS_REGION'))
-        self.user_pool_id = os.getenv('USER_POOL_ID')
+        if os.getenv('ENV') != 'test':
+            self.s3_client = boto3.client('s3')
+        self.bucket_name = os.getenv('BUCKET_NAME')
 
-    def register_user(self, name, email, client, role, permissions):
-        response = self.cognito_client.admin_create_user(
-            UserPoolId=self.user_pool_id,
-            Username=name,
-            UserAttributes=[
-                {'Name': 'email', 'Value': email},
-                {'Name': 'custom:client', 'Value': client},
-                {'Name': 'custom:role', 'Value': role},
-                {'Name': 'custom:permissions', 'Value': permissions}
-            ]
+    def generate_upload_url(self, object_name, file_name, content_type, expiration):
+        return self.s3_client.generate_presigned_url('put_object',\
+                Params={
+                        'Bucket': self.bucket_name,
+                        'Key': object_name,
+                        'ContentType': content_type,
+                        'Metadata': {
+                            'filename': file_name
+                        }
+                            
+                }, ExpiresIn=expiration)
+    
+    def generate_download_url(self, object_name, expiration):
+        return self.s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': self.bucket_name, 'Key': object_name},
+            ExpiresIn=expiration
         )
-
-        return response
-
-    def get_user_status(self, email):
-        response = self.cognito_client.admin_get_user(
-            UserPoolId=self.user_pool_id,
-            Username=email
-        )
-        
-        user_status = response.get('UserStatus', 'UNKNOWN')
-        return user_status

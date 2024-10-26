@@ -31,8 +31,10 @@ def commit_or_rollback(response):
         session.rollback()
     return response
 
+origins = os.getenv("ORIGINS", "")
+
 CORS(app, resources={r"/*": {
-    "origins": "https://abcallg03.com",
+    "origins": origins,
     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization"],
     "supports_credentials": True
