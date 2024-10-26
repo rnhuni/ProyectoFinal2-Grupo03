@@ -55,6 +55,10 @@
                 {
                     "name": "BASE_URL",
                     "value": "/system/v1"
+                },
+                {
+                    "name": "ORIGIN",
+                    "value": "https://abcallg03.com"
                 }
             ],
             "mountPoints": [],
