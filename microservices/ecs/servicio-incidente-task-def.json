@@ -59,6 +59,10 @@
                 {
                     "name": "ORIGIN",
                     "value": "https://abcallg03.com"
+                },
+                {
+                    "name": "BUCKET_NAME",
+                    "value": "abcall-media"
                 }
             ],
             "mountPoints": [],
