@@ -55,6 +55,14 @@
                 {
                     "name": "RDS_USERNAME",
                     "value": "postgres"
+                },
+                {
+                    "name": "BASE_URL",
+                    "value": "/incident/v1"
+                },
+                {
+                    "name": "ORIGIN",
+                    "value": "https://abcallg03.com"
                 }
             ],
             "mountPoints": [],

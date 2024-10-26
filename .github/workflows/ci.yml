@@ -8,6 +8,7 @@ on:
       - 'web-app/**'
       - 'microservices/ServicioSistema/**'
       - 'microservices/ServicioUsuario/**'
+      - 'microservices/ServicioIncidente/**'
 
   push:
     branches:
@@ -16,6 +17,7 @@ on:
       - 'web-app/**'
       - 'microservices/ServicioSistema/**'
       - 'microservices/ServicioUsuario/**'
+      - 'microservices/ServicioIncidente/**'
 
 jobs:
   determine-changes:
@@ -24,6 +26,7 @@ jobs:
       web_app_changed: ${{ steps.filter.outputs.web_app }}
       servicio_sistema_changed: ${{ steps.filter.outputs.servicio_sistema }}
       servicio_usuario_changed: ${{ steps.filter.outputs.servicio_usuario }}
+      servicio_incidente_changed: ${{ steps.filter.outputs.servicio_incidente }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -235,5 +238,86 @@ jobs:
         with:
           task-definition: ${{ steps.render-servicio-usuario.outputs.task-definition }}
           service: ServicioUsuario
+          cluster: ClusterABCall
+          wait-for-service-stability: false
+
+  test-and-deploy-servicio-incidente:
+    if: needs.determine-changes.outputs.servicio_incidente_changed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [determine-changes]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Testing for Servi cioIncidente
+      - name: Install dependencies for ServicioIncidente
+        working-directory: ./microservices/ServicioIncidente
+        run: pip install -r requirements.txt
+
+      - name: Run tests for ServicioIncidente
+        working-directory: ./microservices/ServicioIncidente
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
+
+      - name: Run SonarCloud Scan for ServicioIncidente
+        uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
+        with:
+          projectBaseDir: ./microservices/ServicioIncidente
+          args: >
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03
+            -Dsonar.organization=rnhuni
+            -Dsonar.exclusions=**/tests/**,**/__init__.py,**/app.py
+            -Dsonar.sources=.
+            -Dsonar.python.coverage.reportPaths=./coverage.xml
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # Configure AWS deploy
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Build and push Docker
+      - name: Build, tag, and push ServicioIncidente image to ECR
+        id: build-servicio-incidente
+        working-directory: ./microservices/ServicioIncidente
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: servicio-incidente
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # Build ECS task definition
+      - name: Render ECS task definition for ServicioIncidente
+        id: render-servicio-incidente
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./microservices/ecs/servicio-incidente-task-def.json
+          container-name: servicio-incidente
+          image: ${{ steps.build-servicio-incidente.outputs.image }}
+
+      # ECS deploy
+      - name: Deploy to ECS ServicioIncidente
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-servicio-incidente.outputs.task-definition }}
+          service: ServicioIncidente
           cluster: ClusterABCall
           wait-for-service-stability: false
