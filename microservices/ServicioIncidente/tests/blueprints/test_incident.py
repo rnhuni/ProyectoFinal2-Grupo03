@@ -513,3 +513,324 @@ def test_update_incident_invalid_type(client, mocker):
     
     assert response.status_code == 400
     assert response.json == {"error": "Invalid type parameter"}
+
+def test_get_all_attachments_success(client, mocker):
+    # Mockear usuario autenticado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User",
+        "email": "testuser@example.com"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    # Mockear adjuntos simulados
+    attachment_1 = MagicMock(id="attachment123", file_name="file1.jpg", file_uri="http://example.com/file1.jpg",
+                             content_type="image/jpeg", user_attacher_id="user123", user_attacher_name="Test User",
+                             createdAt="2024-01-01T00:00:00Z", updatedAt="2024-01-01T00:00:00Z")
+    attachment_2 = MagicMock(id="attachment124", file_name="file2.jpg", file_uri="http://example.com/file2.jpg",
+                             content_type="image/jpeg", user_attacher_id="user123", user_attacher_name="Test User",
+                             createdAt="2024-01-02T00:00:00Z", updatedAt="2024-01-02T00:00:00Z")
+
+    mocker.patch('ServicioIncidente.commands.attachment_get_all.GetAllAttachments.execute', return_value=[attachment_1, attachment_2])
+
+    headers = generate_headers()
+    incident_id = 'incident123'
+    
+    response = client.get(f'/api/incidents/{incident_id}/attachments', headers=headers)
+    
+    assert response.status_code == 200
+    assert response.json == [
+        {
+            "id": attachment_1.id,
+            "file_name": attachment_1.file_name,
+            "file_uri": attachment_1.file_uri,
+            "content_type": attachment_1.content_type,
+            "user_attacher_id": attachment_1.user_attacher_id,
+            "user_attacher_name": attachment_1.user_attacher_name,
+            "createdAt": attachment_1.createdAt,
+            "updatedAt": attachment_1.updatedAt
+        },
+        {
+            "id": attachment_2.id,
+            "file_name": attachment_2.file_name,
+            "file_uri": attachment_2.file_uri,
+            "content_type": attachment_2.content_type,
+            "user_attacher_id": attachment_2.user_attacher_id,
+            "user_attacher_name": attachment_2.user_attacher_name,
+            "createdAt": attachment_2.createdAt,
+            "updatedAt": attachment_2.updatedAt
+        }
+    ]
+
+def test_get_attachment_success(client, mocker):
+    # Mockear usuario autenticado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User",
+        "email": "testuser@example.com"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    # Mockear un adjunto simulado
+    mock_attachment = MagicMock(id="attachment123", file_name="file1.jpg", file_uri="http://example.com/file1.jpg",
+                                content_type="image/jpeg", user_attacher_id="user123", user_attacher_name="Test User",
+                                createdAt="2024-01-01T00:00:00Z", updatedAt="2024-01-01T00:00:00Z")
+
+    mocker.patch('ServicioIncidente.commands.attachment_get.GetAttachment.execute', return_value=mock_attachment)
+
+    headers = generate_headers()
+    incident_id = 'incident123'
+    attachment_id = 'attachment123'
+    
+    response = client.get(f'/api/incidents/{incident_id}/attachments/{attachment_id}', headers=headers)
+    
+    assert response.status_code == 200
+    assert response.json == {
+        "id": mock_attachment.id,
+        "file_name": mock_attachment.file_name,
+        "file_uri": mock_attachment.file_uri,
+        "content_type": mock_attachment.content_type,
+        "user_attacher_id": mock_attachment.user_attacher_id,
+        "user_attacher_name": mock_attachment.user_attacher_name,
+        "createdAt": mock_attachment.createdAt,
+        "updatedAt": mock_attachment.updatedAt
+    }
+
+def test_get_all_attachments_exception(client, mocker):
+    # Mockear usuario autenticado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User",
+        "email": "testuser@example.com"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+    # Simular una excepción en GetAllAttachments
+    mocker.patch('ServicioIncidente.commands.attachment_get_all.GetAllAttachments.execute', side_effect=Exception("Database error"))
+
+    headers = generate_headers()
+    incident_id = 'incident123'
+    
+    response = client.get(f'/api/incidents/{incident_id}/attachments', headers=headers)
+    
+    assert response.status_code == 500
+    assert 'Failed to retrieve attachments. Details: Database error' in response.json['error']
+
+def test_get_attachment_not_found(client, mocker):
+    # Mockear usuario autenticado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User",
+        "email": "testuser@example.com"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+    
+    # Simular que el adjunto no existe
+    mocker.patch('ServicioIncidente.commands.attachment_get.GetAttachment.execute', return_value=None)
+
+    headers = generate_headers()
+    incident_id = 'incident123'
+    attachment_id = 'nonexistent_attachment'
+    
+    response = client.get(f'/api/incidents/{incident_id}/attachments/{attachment_id}', headers=headers)
+    
+    assert response.status_code == 404
+    assert response.json == {"error": "Attachment not found"}
+
+def test_get_attachment_exception(client, mocker):
+    # Mockear usuario autenticado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User",
+        "email": "testuser@example.com"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+    
+    # Simular una excepción en GetAttachment
+    mocker.patch('ServicioIncidente.commands.attachment_get.GetAttachment.execute', side_effect=Exception("Database error"))
+
+    headers = generate_headers()
+    incident_id = 'incident123'
+    attachment_id = 'attachment123'
+    
+    response = client.get(f'/api/incidents/{incident_id}/attachments/{attachment_id}', headers=headers)
+    
+    assert response.status_code == 500
+    assert 'Failed to retrieve attachment. Details: Database error' in response.json['error']
+
+def test_get_all_attachments_missing_authorization_header(client):
+    # No se proporciona el encabezado de autorización
+    incident_id = 'incident123'
+    response = client.get(f'/api/incidents/{incident_id}/attachments')
+
+    # Validar que el status es 401 y se muestra el mensaje adecuado
+    assert response.status_code == 401
+    assert response.json == {"error": "Authorization header missing"}
+
+def test_get_all_attachments_unauthorized_user(client, mocker):
+    # Simular un encabezado de autorización, pero el usuario no está autorizado
+    headers = generate_headers()
+    
+    # Simular que `decode_user` devuelve None, indicando un usuario no autorizado
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=None)
+
+    incident_id = 'incident123'
+    response = client.get(f'/api/incidents/{incident_id}/attachments', headers=headers)
+
+    # Validar que el status es 401 y se muestra el mensaje adecuado
+    assert response.status_code == 401
+    assert response.json == {"error": "Unauthorized"}
+
+def test_get_attachment_missing_authorization_header(client):
+    # No se proporciona el encabezado de autorización
+    incident_id = 'incident123'
+    attachment_id = 'attachment123'
+    response = client.get(f'/api/incidents/{incident_id}/attachments/{attachment_id}')
+
+    # Validar que el status es 401 y se muestra el mensaje adecuado
+    assert response.status_code == 401
+    assert response.json == {"error": "Authorization header missing"}
+
+def test_get_attachment_unauthorized_user(client, mocker):
+    # Simular un encabezado de autorización, pero el usuario no está autorizado
+    headers = generate_headers()
+    
+    # Simular que `decode_user` devuelve None, indicando un usuario no autorizado
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=None)
+
+    incident_id = 'incident123'
+    attachment_id = 'attachment123'
+    response = client.get(f'/api/incidents/{incident_id}/attachments/{attachment_id}', headers=headers)
+
+    # Validar que el status es 401 y se muestra el mensaje adecuado
+    assert response.status_code == 401
+    assert response.json == {"error": "Unauthorized"}
+
+def test_update_incident_with_contact(client, mocker):
+    # Configurar usuario autorizado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    # Mockear el incidente actualizado con un contacto no vacío
+    updated_incident = MagicMock()
+    updated_incident.id = "incident123"
+    updated_incident.type = "type1"
+    updated_incident.description = "Updated description"
+    updated_incident.contact = '{"phone": "123456789"}'  # Contacto en formato JSON
+    updated_incident.user_issuer_id = mock_user["id"]
+    updated_incident.user_issuer_name = mock_user["name"]
+    updated_incident.createdAt = "2024-01-01T00:00:00Z"
+    updated_incident.updatedAt = "2024-01-02T00:00:00Z"
+
+    mocker.patch('ServicioIncidente.commands.incident_update.UpdateIncident.execute', return_value=updated_incident)
+
+    # Realizar la solicitud con un contacto válido
+    headers = generate_headers()
+    data = {
+        'type': 'type1',
+        'description': 'Updated description',
+        'contact': {'phone': '123456789'}  # Contacto como diccionario
+    }
+
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+
+    # Verificar respuesta
+    assert response.status_code == 200
+    assert response.json == {
+        "id": updated_incident.id,
+        "type": updated_incident.type,
+        "description": updated_incident.description,
+        "contact": json.loads(updated_incident.contact),  # Se convierte desde JSON
+        "user_issuer_id": updated_incident.user_issuer_id,
+        "user_issuer_name": updated_incident.user_issuer_name,
+        "createdAt": updated_incident.createdAt,
+        "updatedAt": updated_incident.updatedAt
+    }
+
+def test_update_incident_without_contact(client, mocker):
+    # Configurar usuario autorizado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    # Mockear el incidente actualizado con contacto en None
+    updated_incident = MagicMock()
+    updated_incident.id = "incident123"
+    updated_incident.type = "type1"
+    updated_incident.description = "Updated description"
+    updated_incident.contact = None  # Contacto es None
+    updated_incident.user_issuer_id = mock_user["id"]
+    updated_incident.user_issuer_name = mock_user["name"]
+    updated_incident.createdAt = "2024-01-01T00:00:00Z"
+    updated_incident.updatedAt = "2024-01-02T00:00:00Z"
+
+    mocker.patch('ServicioIncidente.commands.incident_update.UpdateIncident.execute', return_value=updated_incident)
+
+    # Realizar la solicitud sin contacto
+    headers = generate_headers()
+    data = {
+        'type': 'type1',
+        'description': 'Updated description'
+    }
+
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+
+    # Verificar respuesta
+    assert response.status_code == 200
+    assert response.json == {
+        "id": updated_incident.id,
+        "type": updated_incident.type,
+        "description": updated_incident.description,
+        "contact": None,  # Contacto es None en la respuesta
+        "user_issuer_id": updated_incident.user_issuer_id,
+        "user_issuer_name": updated_incident.user_issuer_name,
+        "createdAt": updated_incident.createdAt,
+        "updatedAt": updated_incident.updatedAt
+    }
+
+def test_create_incident_with_non_empty_contact(client, mocker):
+    # Mockear usuario autenticado
+    mock_user = {
+        "id": "user123",
+        "name": "Test User",
+        "email": "testuser@example.com"
+    }
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    # Mockear el resultado de la creación del incidente
+    mock_incident = MagicMock()
+    mock_incident.id = "TKT-230101-123456789"
+    mock_incident.type = "incident_type"
+    mock_incident.description = "Incident description"
+    mock_incident.contact = '{"phone": "123456789"}'
+    mock_incident.user_issuer_id = "user123"
+    mock_incident.user_issuer_name = "Test User"
+    mock_incident.createdAt = "2024-01-01T00:00:00Z"
+    mock_incident.updatedAt = "2024-01-01T00:00:00Z"
+    mocker.patch('ServicioIncidente.commands.incident_create.CreateIncident.execute', return_value=mock_incident)
+
+    headers = generate_headers()
+    data = {
+        'type': 'incident_type',
+        'description': 'Incident description',
+        'contact': {'phone': '123456789'}  # Contacto no vacío para activar la línea 31
+    }
+    
+    response = client.post('/api/incidents', json=data, headers=headers)
+    
+    # Validar respuesta
+    assert response.status_code == 201
+    assert response.json == {
+        "id": mock_incident.id,
+        "type": mock_incident.type,
+        "description": mock_incident.description,
+        "contact": json.loads(mock_incident.contact),
+        "user_issuer_id": mock_incident.user_issuer_id,
+        "user_issuer_name": mock_incident.user_issuer_name,
+        "createdAt": mock_incident.createdAt,
+        "updatedAt": mock_incident.updatedAt
+    }

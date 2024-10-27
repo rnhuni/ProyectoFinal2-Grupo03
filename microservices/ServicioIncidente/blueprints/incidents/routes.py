@@ -7,6 +7,8 @@ from ServicioIncidente.commands.incident_get import GetIncident
 from ServicioIncidente.commands.incident_update import UpdateIncident
 from ServicioIncidente.commands.attachment_exists import ExistsAttachment
 from ServicioIncidente.commands.attachment_create import CreateAttachment
+from ServicioIncidente.commands.attachment_get_all import GetAllAttachments
+from ServicioIncidente.commands.attachment_get import GetAttachment
 from ServicioIncidente.utils import decode_user, build_incident_id
 
 incidents_bp = Blueprint('incident_bp', __name__)
@@ -183,3 +185,61 @@ def update_incident(incident_id):
         
     except Exception as e:
         return jsonify({'error': f'Update incident failed. Details: {str(e)}'}), 500
+
+@incidents_bp.route('/incidents/<incident_id>/attachments', methods=['GET'])
+def get_all_attachments(incident_id):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({"error": "Authorization header missing"}), 401
+
+    try:
+        user = decode_user(auth_header)
+        if not user: 
+            return jsonify({"error": "Unauthorized"}), 401
+
+        attachments = GetAllAttachments(incident_id).execute()
+        result = [
+            {
+                "id": attachment.id,
+                "file_name": attachment.file_name,
+                "file_uri": attachment.file_uri,
+                "content_type": attachment.content_type,
+                "user_attacher_id": attachment.user_attacher_id,
+                "user_attacher_name": attachment.user_attacher_name,
+                "createdAt": attachment.createdAt,
+                "updatedAt": attachment.updatedAt
+            }
+            for attachment in attachments
+        ]
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to retrieve attachments. Details: {str(e)}"}), 500
+
+@incidents_bp.route('/incidents/<incident_id>/attachments/<attachment_id>', methods=['GET'])
+def get_attachment(incident_id, attachment_id):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({"error": "Authorization header missing"}), 401
+
+    try:
+        user = decode_user(auth_header)
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        attachment = GetAttachment(incident_id, attachment_id).execute()
+        if not attachment:
+            return jsonify({"error": "Attachment not found"}), 404
+
+        result = {
+            "id": attachment.id,
+            "file_name": attachment.file_name,
+            "file_uri": attachment.file_uri,
+            "content_type": attachment.content_type,
+            "user_attacher_id": attachment.user_attacher_id,
+            "user_attacher_name": attachment.user_attacher_name,
+            "createdAt": attachment.createdAt,
+            "updatedAt": attachment.updatedAt
+        }
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to retrieve attachment. Details: {str(e)}"}), 500

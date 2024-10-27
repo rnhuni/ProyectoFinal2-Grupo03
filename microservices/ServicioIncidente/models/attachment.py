@@ -16,7 +16,7 @@ class Attachment(Model):
     incidents = relationship(
         "Incident",
         secondary="incident_attachment",
-        back_populates="attachments"  # Cambiar a back_populates
+        back_populates="attachments"
     )
 
     def __init__(self, id, file_name, file_uri, content_type, user_attacher_id, user_attacher_name):
