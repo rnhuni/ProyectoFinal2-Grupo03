@@ -16,4 +16,11 @@ module.exports = {
     '^.+\\.(js|ts|tsx)$': 'babel-jest',
   },
   testPathIgnorePatterns: ['/node_modules/', '/build/'], // Ignorar node_modules y build
+
+  // Configuración de umbrales de cob ertura
+  coverageThreshold: {
+    global: {
+      lines: 90,
+    },
+  },
 };

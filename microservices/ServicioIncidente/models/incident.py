@@ -13,10 +13,10 @@ class Incident(Model):
     user_issuer_name = Column(String, nullable=False)
 
     attachments = relationship(
-        'IncidentAttachment', 
-        backref='incident_attachments',
-        cascade="all, delete-orphan",
-        lazy='joined'
+        'Attachment',
+        secondary='incident_attachment',
+        back_populates='incidents',
+        lazy='joined',
     )
 
     def __init__(self, id, type, description, contact, user_issuer_id, user_issuer_name):

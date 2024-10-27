@@ -13,6 +13,12 @@ class Attachment(Model):
     user_attacher_id = Column(String, nullable=False)
     user_attacher_name = Column(String, nullable=False)
 
+    incidents = relationship(
+        "Incident",
+        secondary="incident_attachment",
+        back_populates="attachments"
+    )
+
     def __init__(self, id, file_name, file_uri, content_type, user_attacher_id, user_attacher_name):
         Model.__init__(self)
         self.id = id

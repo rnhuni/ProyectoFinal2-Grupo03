@@ -1,0 +1,20 @@
+import 'react-native';
+import React from 'react';
+import {render} from '@testing-library/react-native';
+import {StackNavigator} from '../../src/Presentation/Routes/StackNavigator';
+import {NavigationContainer} from '@react-navigation/native';
+
+// Mock de las pantallas
+jest.mock('../../src/Presentation/Screens/Home/HomeScreen', () => () => <></>);
+
+describe('StackNavigator', () => {
+  it('renders correctly', () => {
+    const {toJSON} = render(
+      <NavigationContainer>
+        <StackNavigator />
+      </NavigationContainer>,
+    );
+
+    expect(toJSON()).toBeTruthy();
+  });
+});
