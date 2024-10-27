@@ -9,7 +9,7 @@ class IncidentAttachment(Model):
     incident_id = Column('incident_id', String, ForeignKey('incident.id'), primary_key=True)
     attachment_id = Column('attachment_id', UUID(as_uuid=True), ForeignKey('attachment.id'), primary_key=True)
     
-    attachment = relationship("Attachment", backref="incident_attachment")
+    #attachment = relationship("Attachment", backref="incident_attachment")
     
     def  __init__(self, incident_id, attachment_id):
         Model.__init__(self)

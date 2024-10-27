@@ -12,6 +12,20 @@ def client():
     with app.test_client() as client:
         yield client
 
+def generate_headers():
+    token_payload = {
+        "sub": "user123",
+        "name": "Test User",
+        "email": "test@example.com",
+        "custom:client": "client-1",
+        "custom:role": "role-1",
+        "custom:permissions": "pem-menu1-view:view;pem-menu2-edit:edit",
+        "custom:features": "feature1;feature2"
+    }
+    token = jwt.encode(token_payload, "secret", algorithm="HS256")
+    headers = {'Authorization': f'Bearer {token}'}
+    return headers
+
 def test_create_incident_success(client, mocker):
     mock_user = {
         "id": "user123",
@@ -293,3 +307,209 @@ def test_create_attachment_exception(client, mocker):
     
     assert response.status_code == 500
     assert 'Create attachment failed. Details: Database error' in response.json['error']
+
+def test_get_all_incidents_success(client, mocker):
+    # Crear un incidente simulado usando MagicMock
+    mock_incident = MagicMock()
+    mock_incident.id = "incident123"
+    mock_incident.type = "type1"
+    mock_incident.description = "Test description"
+    mock_incident.contact = json.dumps({"email": "test@example.com"})
+    mock_incident.user_issuer_id = "user123"
+    mock_incident.user_issuer_name = "John Doe"
+    mock_incident.createdAt = "2024-01-01T00:00:00Z"
+    mock_incident.updatedAt = "2024-01-01T00:00:00Z"
+    mock_incident.attachments = []
+
+    # Usar una lista de mocks en lugar de diccionarios
+    mocker.patch('ServicioIncidente.commands.incident_get_all.GetAllIncidents.execute', return_value=[mock_incident])
+
+    # Realizar la solicitud
+    response = client.get('/api/incidents')
+
+    # Comprobar la respuesta
+    assert response.status_code == 200
+    assert response.json == [
+        {
+            "id": mock_incident.id,
+            "type": mock_incident.type,
+            "description": mock_incident.description,
+            "contact": {"email": "test@example.com"},
+            "user_issuer_id": mock_incident.user_issuer_id,
+            "user_issuer_name": mock_incident.user_issuer_name,
+            "createdAt": mock_incident.createdAt,
+            "updatedAt": mock_incident.updatedAt,
+            "attachments": mock_incident.attachments
+        }
+    ]
+
+def test_get_all_incidents_exception(client, mocker):
+    # Simula una excepción en GetAllIncidents para ver cómo se maneja el error
+    mocker.patch('ServicioIncidente.commands.incident_get_all.GetAllIncidents.execute', side_effect=Exception("Database error"))
+
+    response = client.get('/api/incidents')
+
+    assert response.status_code == 500
+    assert 'Get all incidents failed. Details: Database error' in response.json['error']
+
+def test_get_incident_not_found(client, mocker):
+    # Simula que el incidente no existe
+    mocker.patch('ServicioIncidente.commands.incident_get.GetIncident.execute', return_value=None)
+
+    response = client.get('/api/incidents/incident123')
+
+    assert response.status_code == 404
+    assert response.get_data(as_text=True) == "Incident not found"
+
+def test_get_incident_exception(client, mocker):
+    # Simula una excepción al obtener un incidente específico
+    mocker.patch('ServicioIncidente.commands.incident_get.GetIncident.execute', side_effect=Exception("Database error"))
+
+    response = client.get('/api/incidents/incident123')
+
+    assert response.status_code == 500
+    assert 'Get incident failed. Details: Database error' in response.json['error']
+
+def test_update_incident_invalid_description(client, mocker):
+    token_payload = {
+        "sub": "user123",
+        "name": "Test User",
+        "email": "test@example.com",
+        "custom:client": "client-1",
+        "custom:role": "role-1",
+        "custom:permissions": "pem-menu1-view:view;pem-menu2-edit:edit",
+        "custom:features": "feature1;feature2"
+    }
+    token = jwt.encode(token_payload, "secret", algorithm="HS256")
+    
+    headers = {'Authorization': f'Bearer {token}'}
+    data = {
+        'description': ''  # Descripción vacía, que es inválida
+    }
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+
+    assert response.status_code == 400
+    assert response.json == {"error": "Invalid description parameter"}
+
+def test_get_incident_with_empty_contact(client, mocker):
+    # Crear un incidente simulado usando MagicMock
+    mock_incident = MagicMock()
+    mock_incident.id = "incident123"
+    mock_incident.type = "type1"
+    mock_incident.description = "Test description"
+    mock_incident.contact = None  # Contacto vacío para cubrir la línea 124
+    mock_incident.user_issuer_id = "user123"
+    mock_incident.user_issuer_name = "John Doe"
+    mock_incident.createdAt = "2024-01-01T00:00:00Z"
+    mock_incident.updatedAt = "2024-01-01T00:00:00Z"
+    mock_incident.attachments = []
+
+    # Parchear el método GetIncident para que devuelva el incidente simulado
+    mocker.patch('ServicioIncidente.commands.incident_get.GetIncident.execute', return_value=mock_incident)
+
+    # Realizar la solicitud
+    response = client.get('/api/incidents/incident123')
+
+    # Comprobar la respuesta
+    assert response.status_code == 200
+    assert response.json == {
+        "id": mock_incident.id,
+        "type": mock_incident.type,
+        "description": mock_incident.description,
+        "contact": None,  # Validar que el contacto es None en la respuesta
+        "user_issuer_id": mock_incident.user_issuer_id,
+        "user_issuer_name": mock_incident.user_issuer_name,
+        "createdAt": mock_incident.createdAt,
+        "updatedAt": mock_incident.updatedAt,
+        "attachments": []
+    }
+
+def test_update_incident_invalid_contact_format(client, mocker):
+    headers = generate_headers()
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value={
+        "id": "user123",
+        "name": "Test User"
+    })
+    
+    data = {
+        'contact': 'invalid_contact_format'  # Contacto en formato incorrecto (debe ser un diccionario)
+    }
+    
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+    
+    assert response.status_code == 400
+    assert response.json == {"error": "Invalid contact format, must be a dictionary"}
+
+def test_update_incident_not_found(client, mocker):
+    headers = generate_headers()
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value={
+        "id": "user123",
+        "name": "Test User"
+    })
+    # Simular que el incidente no existe lanzando un ValueError con el mensaje esperado
+    mocker.patch('ServicioIncidente.commands.incident_update.UpdateIncident.execute', side_effect=ValueError("Incident not found"))
+    
+    data = {
+        'type': 'new_type',
+        'description': 'Updated description'
+    }
+    
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+    
+    assert response.status_code == 404
+    assert response.json == {"error": "Incident not found"}
+
+def test_update_incident_value_error(client, mocker):
+    headers = generate_headers()
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value={
+        "id": "user123",
+        "name": "Test User"
+    })
+    # Simular otro tipo de ValueError que no sea "Incident not found"
+    mocker.patch('ServicioIncidente.commands.incident_update.UpdateIncident.execute', side_effect=ValueError("Some other error"))
+    
+    data = {
+        'type': 'new_type',
+        'description': 'Updated description'
+    }
+    
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+    
+    assert response.status_code == 400
+    assert response.json == {"error": "Update incident failed. Details: Some other error"}
+
+def test_update_incident_generic_exception(client, mocker):
+    headers = generate_headers()
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value={
+        "id": "user123",
+        "name": "Test User"
+    })
+    # Simular una excepción genérica al ejecutar la actualización
+    mocker.patch('ServicioIncidente.commands.incident_update.UpdateIncident.execute', side_effect=Exception("Unexpected error"))
+    
+    data = {
+        'type': 'new_type',
+        'description': 'Updated description'
+    }
+    
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+    
+    assert response.status_code == 500
+    assert response.json == {"error": "Update incident failed. Details: Unexpected error"}
+
+def test_update_incident_invalid_type(client, mocker):
+    headers = generate_headers()
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value={
+        "id": "user123",
+        "name": "Test User"
+    })
+    
+    data = {
+        'type': '',  # Tipo inválido (cadena vacía)
+        'description': 'Valid description'
+    }
+    
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+    
+    assert response.status_code == 400
+    assert response.json == {"error": "Invalid type parameter"}
