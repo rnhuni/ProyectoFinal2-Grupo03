@@ -17,7 +17,7 @@ module.exports = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/build/'], // Ignorar node_modules y build
 
-  // Configuración de umbrales de cob ertura
+  // Configuración de umbrales de cobertura
   coverageThreshold: {
     global: {
       lines: 90,
