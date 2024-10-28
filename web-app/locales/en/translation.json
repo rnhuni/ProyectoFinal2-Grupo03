@@ -114,5 +114,48 @@
       "role": "The role is required.",
       "client": "The client is required."
     }
+  },
+  "incidentScreen": {
+    "tittle": "Create Incident Record",
+    "subTittle": "Please complete the following form with the required information.",
+    "incidentType": "Type of incident",
+    "incidentTypePlaceholder": "Select an incident",
+    "incidentTypeSelectOne": "Technical Issues",
+    "incidentTypeSelectTwo": "Billing Incidents",
+    "incidentTypeSelectThree": "General Inquiries",
+    "incidentTypeSelectFour": "Security Issues",
+    "incidentTypeSelectFive": "Maintenance Requests",
+    "incidentDescription": "Incident Description",
+    "incidentDescriptionPlaceholder": "Describe the incident",
+    "contactData": "Contact information",
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "mail": "Email",
+    "mailPlaceholder": "Enter your email",
+    "phone": "Phone",
+    "phonePlaceholder": "Enter your phone number",
+    "attachment": "Attach files",
+    "createIncident": "Create incident",
+    "modalAttachment": {
+      "tittle": "Attach your files",
+      "selectFiles": "What file types are allowed? ",
+      "dropFiles": "Drop the file here or <highlight>Select the file</highlight> to upload",
+      "selectedFile": "Seleccione un archivo",
+      "supportedFiles": "Supported formats: CVS, XLS, XLSX",
+      "cancelButton": "Cancel",
+      "attachmentButton": "Attach"
+    },
+    "toast": {
+      "success": "Incident successfully logged with ticket number #0098632",
+      "error": "Error logging incident"
+    },
+    "errors": {
+      "incidentTypeRequired": "Incident type is required",
+      "incidentTypeInvalid": "Invalid incident type",
+      "incidentDescriptionRequired": "Incident description is required",
+      "incidentDescriptionMaxLength": "Incident description must be 200 characters or less",
+      "attachmentFileSize": "File size must be 10MB or less",
+      "attachmentFileType": "Invalid file type"
+    }
   }
 }
