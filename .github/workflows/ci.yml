@@ -28,7 +28,7 @@ jobs:
       servicio_sistema_changed: ${{ steps.filter.outputs.servicio_sistema }}
       servicio_usuario_changed: ${{ steps.filter.outputs.servicio_usuario }}
       servicio_incidente_changed: ${{ steps.filter.outputs.servicio_incidente }}
-      mobile_app_changed: ${{ steps.filter.outputs.mobile_app_changed }}
+      mobile_app_changed: ${{ steps.filter.outputs.mobile_app }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
