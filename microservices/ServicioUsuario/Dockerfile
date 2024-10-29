@@ -6,7 +6,14 @@ COPY requirements.txt ./
 
 RUN pip install -r requirements.txt
 
-COPY . /ServicioUsuario
+COPY app.py ./
+COPY __init__.py ./
+COPY blueprints/ ./blueprints/
+COPY services/ ./services/
+COPY utils/ ./utils/
+
+RUN useradd -m appuser && chown -R appuser /ServicioUsuario
+USER appuser
 
 EXPOSE 5000
 
