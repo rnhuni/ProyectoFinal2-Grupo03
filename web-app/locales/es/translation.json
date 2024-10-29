@@ -114,5 +114,47 @@
       "role": "El rol es requerido.",
       "client": "El cliente es requerido."
     }
+  },
+  "incidentScreen": {
+    "tittle": "Crear registro de incidente",
+    "subTittle": "Complete el siguiente formulario con la información requerida.",
+    "incidentType": "Tipo de incidente",
+    "incidentTypePlaceholder": "Seleccione un incidente",
+    "incidentTypeSelectOne": "Problemas Técnicos",
+    "incidentTypeSelectTwo": "Incidencias de Facturación",
+    "incidentTypeSelectThree": "Consultas Generales",
+    "incidentTypeSelectFour": "Problemas de Seguridad",
+    "incidentTypeSelectFive": "Solicitudes de Mantenimiento",
+    "incidentDescription": "Descripción del incidente",
+    "incidentDescriptionPlaceholder": "Describa el incidente",
+    "contactData": "Datos de contacto",
+    "name": "Nombre",
+    "namePlaceholder": "Ingresa tu nombre",
+    "mail": "Correo electrónico",
+    "mailPlaceholder": "Ingresa tu correo electrónico",
+    "phone": "Teléfono",
+    "phonePlaceholder": "Ingresa tu número de teléfono",
+    "attachment": "Adjuntar archivos",
+    "createIncident": "Crear incidente",
+    "modalAttachment": {
+      "tittle": "Adjunte sus archivos",
+      "selectFiles": "¿Que tipo de archivo son permitidos? ",
+      "dropFiles": "Suelte el archivo aquí o <highlight>Seleccione el archivo</highlight> a cargar",
+      "supportedFiles": "Formatos soportados: CVS, XLS, XLSX",
+      "cancelButton": "Cancelar",
+      "attachmentButton": "Adjuntar"
+    },
+    "toast": {
+      "success": "Incidente regisrado exitosamente con el numero de ticket #0098632",
+      "error": "Error al registrar el incidente"
+    },
+    "errors": {
+      "incidentTypeRequired": "El tipo de incidente es obligatorio",
+      "incidentTypeInvalid": "Tipo de incidente no válido",
+      "incidentDescriptionRequired": "La descripción del incidente es obligatoria",
+      "incidentDescriptionMaxLength": "La descripción del incidente debe tener 200 caracteres o menos",
+      "attachmentFileSize": "El tamaño del archivo debe ser de 10MB o menos",
+      "attachmentFileType": "Tipo de archivo no válido"
+    }
   }
 }

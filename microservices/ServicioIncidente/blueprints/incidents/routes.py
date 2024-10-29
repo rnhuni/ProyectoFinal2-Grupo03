@@ -44,8 +44,11 @@ def create_incident():
             "createdAt": data.createdAt,
             "updatedAt": data.updatedAt
         }), 201
+    except KeyError:
+        return "Invalid parameters", 400
     except Exception as e:
         return jsonify({'error': f'Create incident failed. Details: {str(e)}'}), 500
+
     
 @incidents_bp.route('/incidents/<incident_id>/attachments', methods=['PUT'])
 def create_attachment(incident_id):

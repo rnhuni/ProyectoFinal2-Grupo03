@@ -16,3 +16,4 @@ pytest-cov
 pytest-mock
 pytest-env
 pyjwt
+cryptography

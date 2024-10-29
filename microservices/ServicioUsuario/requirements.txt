@@ -16,4 +16,4 @@ pytest-cov
 pytest-mock
 pytest-env
 pyjwt
-requests
+cryptography

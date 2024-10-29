@@ -2,8 +2,12 @@ import os
 import jwt
 from flask import Blueprint, request, jsonify
 from ServicioUsuario.services.cognito_service import CognitoService
+from jwt import PyJWKClient
 
 profile_bp = Blueprint('profile_bp', __name__)
+
+COGNITO_SIGN_URL=os.getenv('COGNITO_SIGN_URL')
+COGNITO_AUDIENCE=os.getenv('COGNITO_AUDIENCE')
 
 @profile_bp.route('/profile', methods=['GET'])
 def get_profile():
@@ -12,14 +16,12 @@ def get_profile():
         return jsonify({"error": "Token de autorización no encontrado o inválido"}), 400
 
     token = auth_header.split(" ")[1].strip()
-    parts = token.split(".")
-    if len(parts) >= 3:
-        token = ".".join(parts[:3])
-    else:
-        return jsonify({"error": "Formato de token inválido"}), 400
+    jwk_client = PyJWKClient(COGNITO_SIGN_URL)
 
     try:
-        token_payload = jwt.decode(token, options={"verify_signature": False})
+        signing_key = jwk_client.get_signing_key_from_jwt(token)
+        token_payload = jwt.decode(token, key=signing_key.key, algorithms=["RS256"], audience=COGNITO_AUDIENCE)
+
         permissions = token_payload["custom:permissions"].split(';')
         structured_permissions = {}
 
@@ -50,13 +52,15 @@ def get_profile():
                 "id": token_payload["sub"],
                 "name": token_payload["name"],
                 "email": token_payload["email"],
-                "status":cognito_status,
+                "status": cognito_status,
                 "client": token_payload["custom:client"],
                 "role": token_payload["custom:role"]             
             },
             "views": views,
-            "features":token_payload["custom:features"].split(';')
-
+            "features": token_payload["custom:features"].split(';')
         }, 200
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Formato de token inválido"}), 400
     except Exception as e:
         return jsonify({'error': f'Error retrieving profile. Details: {str(e)}'}), 500
+
