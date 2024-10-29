@@ -10,7 +10,7 @@ const LoginCognito = () => {
   // Obtenemos las propiedades desde el archivo JSON
   const cognitoLoginUrl = `https://abcallg03.auth.us-east-1.amazoncognito.com/login?client_id=${
     config.cognito.clientId
-  }&response_type=code&scope=email+openid+profile&redirect_uri=${encodeURIComponent(
+  }&response_type=code&scope=openid&redirect_uri=${encodeURIComponent(
     config.cognito.redirectUri
   )}`;
   const cognitoTokenUrl = config.cognito.url;
