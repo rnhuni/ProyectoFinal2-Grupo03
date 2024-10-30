@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-WORKDIR /ServicioIncidente
+WORKDIR /ServicioFacturacion
 
 COPY requirements.txt ./
 
