@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+*.log
+*.out
+*.err
+
+*.sqlite3
+*.db
+
+coverage/
+.coverage
+
+__init__.pyc
