@@ -16,6 +16,7 @@ import "../i18n";
 import SuscriptionSummary from "./pages/SuscriptionSummary";
 import UserPlan from "./pages/UserPlan";
 import TestHooks from "./pages/TestHooks";
+import SubscriptionPage from "./pages/SuscriptionPage";
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function App() {
           <Route path="create" element={<Create />} />
           <Route path="admin" element={<Admin />} />
           <Route path="permissions" element={<Permissions />} />
-          <Route path="suscription" element={<SuscriptionSummary />} />
+          <Route path="suscription" element={<SubscriptionPage />} />
           <Route path="suscription-user" element={<SuscriptionSummary />} />
           <Route path="user-plan" element={<UserPlan />} />
           <Route path="hooks" element={<TestHooks />} />
