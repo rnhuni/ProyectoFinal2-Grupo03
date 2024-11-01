@@ -13,6 +13,9 @@ import Create from "./pages/Create";
 import Admin from "./pages/Admin";
 import Permissions from "./pages/Permissions";
 import "../i18n";
+import SuscriptionSummary from "./pages/SuscriptionSummary";
+import UserPlan from "./pages/UserPlan";
+import TestHooks from "./pages/TestHooks";
 
 function App() {
   return (
@@ -41,6 +44,10 @@ function App() {
           <Route path="create" element={<Create />} />
           <Route path="admin" element={<Admin />} />
           <Route path="permissions" element={<Permissions />} />
+          <Route path="suscription" element={<SuscriptionSummary />} />
+          <Route path="suscription-user" element={<SuscriptionSummary />} />
+          <Route path="user-plan" element={<UserPlan />} />
+          <Route path="hooks" element={<TestHooks />} />
         </Route>
       </Routes>
     </Router>
