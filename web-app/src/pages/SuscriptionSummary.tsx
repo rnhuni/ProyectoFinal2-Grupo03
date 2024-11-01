@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { SettingsIcon } from "@chakra-ui/icons";
 import StatusBadge from "../components/StatusBadge";
+import UpdatePlanModal from "../components/Plans/UpdatePlanModal";
 
 // Interface para los detalles de suscripción
 interface Subscription {
@@ -34,7 +35,7 @@ interface Subscription {
 const useSubscriptionDetails = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   useEffect(() => {
     // Simulación de llamada a API
@@ -176,6 +177,12 @@ const SuscriptionSummary = () => {
           </Tbody>
         </Table>
       )}
+
+      <UpdatePlanModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        subscription={selectedSubscription}
+      />
     </Box>
   );
 };
