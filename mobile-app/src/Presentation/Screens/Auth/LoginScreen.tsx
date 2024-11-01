@@ -1,6 +1,6 @@
-import {StackScreenProps} from '@react-navigation/stack';
-import React, {useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -11,29 +11,27 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {RootStackParamList} from '../../Routes/StackNavigator';
+import { RootStackParamList } from '../../Routes/StackNavigator';
+import { loginUser } from '../../../services/authService';
 
-interface LoginScreenProps
-  extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
+interface LoginScreenProps extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
 
-export const LoginScreen = ({navigation}: LoginScreenProps) => {
-  const {t, i18n} = useTranslation();
+export const LoginScreen = ({ navigation }: LoginScreenProps) => {
+  const { t, i18n } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === '123') {
-      Alert.alert(
-        t('loginScreen.loginSuccess'),
-        t('loginScreen.welcomeMessage'),
-      );
+  const handleLogin = async () => {
+    try {
+      const authResult = await loginUser(username, password);
+      console.log('Resultado de autenticación:', authResult);
+      Alert.alert(t('loginScreen.loginSuccess'), t('loginScreen.welcomeMessage'));
+      // Aquí podrías navegar a otra pantalla o almacenar los tokens
       navigation.navigate('HomeScreen');
-    } else {
-      Alert.alert(
-        t('loginScreen.loginFailed'),
-        t('loginScreen.invalidCredentials'),
-      );
+    } catch (error) {
+      console.log('LOGIN ERROR: ', error);
+      Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidCredentials'));
     }
   };
 
@@ -87,7 +85,8 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
             t('loginScreen.forgotPassword'),
             t('loginScreen.navigateToForgotPassword'),
           )
-        }>
+        }
+      >
         <Text style={styles.link}>{t('loginScreen.forgotPassword')}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
