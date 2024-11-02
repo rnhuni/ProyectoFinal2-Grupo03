@@ -1,11 +1,16 @@
 import json
 import uuid
 from flask import Blueprint, request, jsonify
+from ServicioFacturacion.commands.active_subscription_get import GetActiveSubscription
+from ServicioFacturacion.commands.period_create import CreatePeriod
+from ServicioFacturacion.commands.period_update import UpdatePeriod
+from ServicioFacturacion.commands.period_exists import ExistsPeriod
+from ServicioFacturacion.commands.period_get import GetPeriod
 
 periods_bp = Blueprint('periods', __name__)
 
 @periods_bp.route('/periods', methods=['GET'])
-def getAll_periods():
+def get_all_periods():
     #auth_header = request.headers.get('Authorization')
     
     try:
@@ -63,7 +68,7 @@ def getAll_periods():
     
 
 @periods_bp.route('/periods/active', methods=['GET'])
-def getCurrent_periods():
+def get_current_periods():
     try:        
         return jsonify(
             {
@@ -83,3 +88,36 @@ def getCurrent_periods():
             }), 200
     except Exception as e:
         return jsonify({'error': f'"Failed to retrieve current periods. Details: {str(e)}'}), 500
+    
+
+@periods_bp.route('/periods', methods=['POST'])
+def create_period():
+    try:
+        data = request.get_json()
+        client_id = data.get('clientId')
+        period_date = data.get('periodDate')
+        active_subscription_id = data.get('activeSubscriptionId')
+        status = data.get('status')
+
+        if not client_id or not period_date or not active_subscription_id or\
+           not status:
+            return "Invalid parameters", 400
+        
+        subscription = GetActiveSubscription(active_subscription_id).execute()
+        if not subscription:
+            return "Active subscription not found", 404
+        
+        period = GetPeriod(client_id=client_id, period_date=period_date).execute()
+
+        if period:            
+            period = UpdatePeriod(period, subscription, status).execute()
+        else:
+            period = CreatePeriod(client_id, period_date, subscription, status).execute()
+
+        return jsonify({
+            "id": period.id,
+            "periodStatus": period.status,
+            "periodDate": period.date
+        }), 200
+    except Exception as e:
+        return jsonify({'error': f'"Create period failed. Details: {str(e)}'}), 500

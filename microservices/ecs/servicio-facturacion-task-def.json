@@ -71,6 +71,10 @@
                 {
                     "name": "COGNITO_SIGN_URL",
                     "value": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_X4SlUF0z0/.well-known/jwks.json"
+                },
+                {
+                    "name": "SYSTEM_SERVICE_URI",
+                    "value": "https://api.abcallg03.com/v1/system"
                 }
             ],
             "mountPoints": [],

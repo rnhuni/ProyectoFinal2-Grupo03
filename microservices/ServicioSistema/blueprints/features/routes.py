@@ -12,6 +12,7 @@ def get_all_features():
             "id": perm.id,
             "name": perm.name,
             "description": perm.description,
+            "price": float(perm.price),
             "createdAt": perm.createdAt,
             "updatedAt": perm.updatedAt
         } for perm in features]), 200

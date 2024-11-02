@@ -2,6 +2,11 @@ import json
 import uuid
 from flask import Blueprint, request, jsonify
 from ServicioFacturacion.utils import decode_user
+from ServicioFacturacion.commands.active_subscription_exists import ActiveSubscriptionExists
+from ServicioFacturacion.commands.active_subscription_get import GetActiveSubscription
+from ServicioFacturacion.services.system_service import SystemService
+from ServicioFacturacion.commands.active_subscription_create import CreateActiveSubscription
+from ServicioFacturacion.commands.active_subscription_update import UpdateActiveSubscription
 
 subscriptions_bp = Blueprint('subscriptions', __name__)
 
@@ -171,3 +176,61 @@ def get_suscriptions_history():
         ]), 200
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve subscription active history. Details: {str(e)}'}), 500
+    
+@subscriptions_bp.route('/subscriptions/active', methods=['POST'])
+def create_active_subscription():
+    auth_header = request.headers.get('Authorization')
+
+    try:
+        user = decode_user(auth_header)
+
+        if not user:
+            return "Unautorized", 401
+        
+        client_id = user["client"]
+        
+        data = request.get_json()        
+        base_subscription_id = data.get('subscriptionBaseId')
+        active_features = data.get('features')
+        notify_by_email = data.get('notifyByEmail', False)
+        
+        if not base_subscription_id or not active_features:
+            return "Invalid parameters", 400
+        
+        base_subscription = SystemService().get_subscription(base_subscription_id)
+        if not base_subscription:
+            return "Base subscription not fount", 404
+        
+        features = SystemService().get_features()
+
+        new_active_features = []
+        for af in active_features:
+            for f in features:
+                if af == f["id"]:
+                    new_active_features.append(f)
+                    break
+
+        active_subscription = GetActiveSubscription(client_id=client_id, status="request_open").execute()
+
+        if active_subscription:            
+            active_subscription = UpdateActiveSubscription(active_subscription, base_subscription, new_active_features, notify_by_email).execute()
+        else:
+            active_subscription = CreateActiveSubscription(client_id, base_subscription, new_active_features, notify_by_email).execute()
+
+        return jsonify({
+            "id": active_subscription.id,
+            "baseId": active_subscription.base_id,
+            "baseName": active_subscription.base_name,
+            "description": active_subscription.description,
+            "notifyByEmail": active_subscription.notify_by_email,
+            "price": active_subscription.price,
+            "features": [
+                    {
+                        "id": feature.feature_id,
+                        "name": feature.feature_name,
+                        "price": feature.feature_price
+                    } for feature in (active_subscription.features or [])
+                ]
+        }), 200
+    except Exception as e:
+        return jsonify({'error': f'"Create active subscription failed. Details: {str(e)}'}), 500
