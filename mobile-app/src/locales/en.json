@@ -104,6 +104,7 @@
   "resumeIncidentScreen": {
     "ticketNumber": "Ticket Number",
     "searchPlaceholder": "Search",
+    "loading": "Loading...",
     "table": {
       "ticket": "# Ticket",
       "incidentType": "Incident Type",

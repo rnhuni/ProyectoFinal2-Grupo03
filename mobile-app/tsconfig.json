@@ -4,6 +4,17 @@
     "types": [
       "jest",
       "node"
-    ]
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src"
+    ],
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
