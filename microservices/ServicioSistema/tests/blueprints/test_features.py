@@ -27,6 +27,7 @@ def test_get_all_features_success(client, mocker):
         "id": "feature-1",
         "name": "Feature 1",
         "description": "Description for Feature 1",
+        'price': 1.0,
         "createdAt": "2024-01-01T00:00:00Z",
         "updatedAt": "2024-01-02T00:00:00Z"
     }]
