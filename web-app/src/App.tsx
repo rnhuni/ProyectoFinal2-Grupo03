@@ -24,8 +24,8 @@ function App() {
         {/* Public Routes */}
         <Route path="" element={<LoginCognito />} />
         <Route path="/" element={<LoginCognito />} />
-        <Route path="/signin" element={<LoginCognito />} />
-        <Route path="/signup" element={<LoginCognito />} />
+        <Route path="/signin" element={<Dashboard />} />
+        <Route path="/signup" element={<Dashboard />} />
         <Route path="/callback" element={<LoginCognito />} />
 
         {/* Private Routes inside Dashboard */}

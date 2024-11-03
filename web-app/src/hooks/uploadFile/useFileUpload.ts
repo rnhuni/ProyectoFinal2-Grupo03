@@ -38,16 +38,22 @@ const useFileUpload = () => {
     setError("");
     setUploadProgress(0);
     setLoading(true);
+
     try {
-      await httpClient.put(url, file, {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(url, {
+        method: "PUT",
+        body: formData,
         headers: {
           "Content-Type": file.type,
         },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = progressEvent.total ? Math.round((progressEvent.loaded * 100) / progressEvent.total) : 0;
-          setUploadProgress(percentCompleted);
-        },
       });
+
+      if (!response.ok) {
+        throw new Error("File upload failed");
+      }
       return true;
     } catch (err) {
       const axiosError = err as AxiosError;
