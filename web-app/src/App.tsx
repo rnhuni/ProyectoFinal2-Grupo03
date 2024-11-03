@@ -46,9 +46,9 @@ function App() {
           <Route path="create" element={<Create />} />
           <Route path="admin" element={<Admin />} />
           <Route path="permissions" element={<Permissions />} />
-          <Route path="suscription" element={<SubscriptionPage />} />
-          <Route path="suscription-user" element={<SuscriptionSummary />} />
-          <Route path="user-plan" element={<UserPlan />} />
+          <Route path="user-plan" element={<SubscriptionPage />} />
+          <Route path="suscriptions" element={<SuscriptionSummary />} />
+          <Route path="manage-plan" element={<UserPlan />} />
           <Route path="hooks" element={<TestHooks />} />
         </Route>
       </Routes>
