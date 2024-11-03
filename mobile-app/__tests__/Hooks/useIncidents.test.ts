@@ -174,7 +174,7 @@ describe('useIncidents', () => {
 
         await act(async () => {
             const incident = await result.current.createIncident(newIncident);
-            expect(incident).toBeUndefined(); // Asegúrate de que no se devuelve nada
+            expect(incident).toBeUndefined();
         });
     });
 
@@ -202,7 +202,7 @@ describe('useIncidents', () => {
             }
         };
 
-        mockPut.mockResolvedValueOnce(mockResponse); // Simula respuesta exitosa
+        mockPut.mockResolvedValueOnce(mockResponse);
 
         const mockReloadIncidents = jest.fn();
 
@@ -227,7 +227,7 @@ describe('useIncidents', () => {
         };
 
         const axiosError = new AxiosError('Error de actualización', 'ERR_UPDATE');
-        mockPut.mockRejectedValueOnce(axiosError); // Simula error en la API
+        mockPut.mockRejectedValueOnce(axiosError);
 
         const mockReloadIncidents = jest.fn();
 
@@ -252,7 +252,7 @@ describe('useIncidents', () => {
         };
 
         const canceledError = new CanceledError('Request canceled');
-        mockPut.mockRejectedValueOnce(canceledError); // Simula un CanceledError
+        mockPut.mockRejectedValueOnce(canceledError);
 
         const mockReloadIncidents = jest.fn();
 

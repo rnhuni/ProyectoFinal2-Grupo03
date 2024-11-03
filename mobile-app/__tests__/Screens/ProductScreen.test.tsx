@@ -6,7 +6,6 @@ describe('AboutScreen', () => {
   it('renders correctly', () => {
     const {getByText} = render(<ProductScreen />);
 
-    // Verificar que el texto "ProductScreen" esté en el componente
     expect(getByText('ProductScreen')).toBeTruthy();
   });
 });
