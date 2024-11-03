@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 from sqlalchemy import create_engine, Column, DateTime
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session
 import logging
 
 from . import CONNECTION_STRING
@@ -25,5 +25,4 @@ def initdb():
     Base.metadata.create_all(engine)
     logging.getLogger('sqlalchemy.engine').setLevel(logging.ERROR)
     
-Session = sessionmaker(bind=engine)
-session = Session()
+session = scoped_session(sessionmaker(bind=engine))
