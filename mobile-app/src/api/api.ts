@@ -10,25 +10,43 @@ const api: AxiosInstance = axios.create({
 
 let token: string | null = null;
 
-export const setToken = (newToken: string) => {
-    token = newToken;
+// export const setToken = (newToken: string) => {
+//     token = newToken;
+// };
+
+export const setToken = (token: string) => {
+    if (token) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        token = token;
+    } else {
+        delete api.defaults.headers.common['Authorization'];
+    }
 };
 
 
 // Interceptor para las solicitudes
-api.interceptors.request.use(
-    (config) => {
-        // Aquí puedes acceder a la URL de la solicitud
-        // console.log('Request URL:', config.url); // Imprime la URL de la solicitud
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        // Maneja el error de la solicitud
-        return Promise.reject(error);
-    }
-);
+// api.interceptors.request.use(
+//     (config) => {
+//         // console.log('Request URL:', config.url); // Imprime la URL de la solicitud
+//         // console.log(`token>[${token}]`);
+//         if (token) {
+//             config.headers.Authorization = `Bearer ${token}`;
+//         }
+//         return config;
+//     },
+//     (error) => {
+//         return Promise.reject(error);
+//     }
+// );
+
+// Interceptor para las respuestas
+// api.interceptors.response.use(
+//     (response) => {
+//         return response;
+//     },
+//     (error) => {
+//         return Promise.reject(error);
+//     }
+// );
 
 export default api;

@@ -12,16 +12,16 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTranslation} from 'react-i18next';
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
-import useIncidents from '../../../hooks/incidents/useIncidents';
 import {Contact, Incident} from '../../../interfaces/Indicents';
+import useIncidents from '../../../hooks/incidents/useIncidents';
 
 export const IncidentReportScreen = () => {
   const {t} = useTranslation(); // Usamos el hook para acceder a las traducciones
   const [incidentType, setIncidentType] = useState<string>(
     t('incidentReportScreen.incidentType.placeholder'),
   );
-  const [phoneNumber, setPhoneNumber] = useState('3007072375');
-  const [description, setDescription] = useState('Oscar Incident Created');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [description, setDescription] = useState('');
   const {incidents, loading, error, createIncident} = useIncidents();
 
   const handleRegisterIncident = async () => {

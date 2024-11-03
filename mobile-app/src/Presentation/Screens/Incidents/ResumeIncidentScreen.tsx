@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,6 +15,7 @@ import {useTranslation} from 'react-i18next';
 import useIncidents from '../../../hooks/incidents/useIncidents';
 import DetailModal from '../../Components/Incidents/DetailModal';
 import Loading from '../../Components/Loading';
+import {useFocusEffect} from '@react-navigation/native';
 
 export const ResumeIncidentScreen = () => {
   const {t} = useTranslation();
@@ -26,10 +27,12 @@ export const ResumeIncidentScreen = () => {
   const [modalLoading, setModalLoading] = useState(false);
   const {incidents, loading, error, reloadIncidents} = useIncidents();
 
-  useEffect(() => {
-    reloadIncidents();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      console.log('Incidents: reload');
+      reloadIncidents();
+    }, []),
+  );
   const handleRowPress = async (item: any) => {
     setModalLoading(true);
     setSelectedIncident(item);
@@ -48,6 +51,11 @@ export const ResumeIncidentScreen = () => {
       <Text style={styles.tableCell}>{item.type}</Text>
     </TouchableOpacity>
   );
+
+  const handledetailModalClose = () => {
+    reloadIncidents();
+    setModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -118,7 +126,7 @@ export const ResumeIncidentScreen = () => {
         {selectedIncident && (
           <DetailModal
             visible={modalVisible}
-            onClose={() => setModalVisible(false)}
+            onClose={handledetailModalClose}
             data={selectedIncident}
           />
         )}

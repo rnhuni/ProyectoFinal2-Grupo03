@@ -30,7 +30,7 @@ interface DetailModalProps {
 
 const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
   return (
-    <Modal visible={visible} transparent={true} animationType="slide">
+    <Modal visible={visible} transparent={true} animationType="slide" testID='detail-modal'>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>Incident Details</Text>

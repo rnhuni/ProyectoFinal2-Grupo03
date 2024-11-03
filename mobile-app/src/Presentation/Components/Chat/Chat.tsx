@@ -51,14 +51,16 @@ const Chat: React.FC = () => {
     scrollViewRef.current?.scrollToEnd({animated: true});
   }, [messages]);
 
+  const handleContentSizeChange = () => {
+    scrollViewRef.current?.scrollToEnd({animated: true});
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.chatWindow}
         ref={scrollViewRef}
-        onContentSizeChange={() =>
-          scrollViewRef.current?.scrollToEnd({animated: true})
-        }>
+        onContentSizeChange={ handleContentSizeChange }>
         {messages.map((msg, index) => (
           <View
             key={index}
