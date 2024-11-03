@@ -6,7 +6,7 @@ import Plans from "../Plans";
 import { Plan } from "../../interfaces/Plan";
 import usePlans from "../../hooks/plans/usePlans";
 import { I18nextProvider } from "react-i18next";
-import i18n from "../../../i18n";
+import i18n from "../../internalization/i18n";
 
 // Mock del hook usePlans
 jest.mock("../../hooks/plans/usePlans");

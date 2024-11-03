@@ -1,0 +1,160 @@
+{
+  "common": {
+    "creation_date": "Fecha de Creación",
+    "edition_date": "Fecha de Edición",
+    "actions": "Acciones",
+    "actions_edit": "Editar",
+    "actions_delete": "Eliminar",
+    "button": {
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "create": "Crear"
+    }
+  },
+  "permissions": {
+    "name": "Nombre",
+    "resource": "Recurso",
+    "description": "Descripción",
+    "title": "Permisos de la Plataforma",
+    "create": "Crear Permiso",
+    "error_message": "Error",
+    "validations": {
+      "name": "El nombre debe tener al menos {{count}} caracteres.",
+      "description": "La descripción debe tener al menos {{count}} caracteres.",
+      "resource": "El recurso debe tener al menos {{count}} caracteres."
+    },
+    "modal": {
+      "edit": "Editar Permiso",
+      "create": "Crear Permiso",
+      "error_message": "Error",
+      "loading_message": "Cargando"
+    }
+  },
+  "role": {
+    "description": "Descripción",
+    "title": "Gestión de Roles",
+    "create": "Crear Rol",
+    "name": "Nombre",
+    "permissions": "Permisos",
+    "validations": {
+      "name": "El nombre debe tener al menos {{count}} caracteres.",
+      "name_requerid": "El nombre es requerido",
+      "description": "La descripción debe tener al menos {{count}} caracteres.",
+      "exists": "El rol ya existe",
+      "permissions_required": "Se requieren permisos",
+      "permissions_list_values": "El permiso no tiene valores de lista de accessLevel",
+      "permissions_unknown": "Error"
+    },
+    "modal": {
+      "name": "Nombre del rol",
+      "edit": "Editar Rol",
+      "create": "Crear Rol",
+      "current_permissions": "Permisos Actuales",
+      "select_permission": "Seleccionar Permiso"
+    }
+  },
+  "plans": {
+    "title": "Planes Disponibles",
+    "create": "Crear Plan",
+    "name": "Nombre del Plan",
+    "description": "Descripción",
+    "status": "Estado",
+    "price": "Precio",
+    "features": "Características",
+    "details": "Detalles",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "modal": {
+      "edit": "Editar plan de suscripción",
+      "create": "Crear nuevo plan de suscripción",
+      "name": "Nombre del plan *",
+      "description": "Descripción *",
+      "description_placeholder": "Descripción del plan",
+      "characteristics": "Características del plan *",
+      "price": "Precio *"
+    },
+    "validations": {
+      "name": "El nombre del plan es obligatorio",
+      "description": "La descripción es obligatoria",
+      "price": "El precio es obligatorio",
+      "features": "Debes seleccionar al menos una característica"
+    }
+  },
+  "users": {
+    "title": "Usuarios de la Plataforma",
+    "clear_filters": "Limpiar Filtros",
+    "create": "Crear Usuario",
+    "edit": "Editar Usuario",
+    "name": "Nombre Completo",
+    "email": "Dirección de Correo Electrónico",
+    "role": "Rol",
+    "status_label": "Estado",
+    "client": "ID de Cliente",
+    "created_at": "Fecha de Creación",
+    "select_role": "Selecciona un rol",
+    "edit_success": "El usuario ha sido actualizado exitosamente.",
+    "create_success": "El usuario ha sido creado exitosamente.",
+    "error": "Ocurrió un error al procesar el usuario.",
+    "statuses": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "filter": "Filtrar",
+    "filters": "Filtros",
+    "field": "Campo",
+    "search": "Buscar",
+    "select_field": "Seleccione el campo a buscar",
+    "search_placeholder": "Buscar",
+    "field_error": "Debes seleccionar un campo para buscar",
+    "search_error": "El campo de búsqueda no puede estar vacío",
+    "apply_filter": "Aplicar Filtro",
+    "validations": {
+      "name": "El nombre debe tener al menos {{count}} caracteres.",
+      "email": "Debe ser un correo válido.",
+      "role": "El rol es requerido.",
+      "client": "El cliente es requerido."
+    }
+  },
+  "incidentScreen": {
+    "tittle": "Crear registro de incidente",
+    "subTittle": "Complete el siguiente formulario con la información requerida.",
+    "incidentType": "Tipo de incidente",
+    "incidentTypePlaceholder": "Seleccione un incidente",
+    "incidentTypeSelectOne": "Problemas Técnicos",
+    "incidentTypeSelectTwo": "Incidencias de Facturación",
+    "incidentTypeSelectThree": "Consultas Generales",
+    "incidentTypeSelectFour": "Problemas de Seguridad",
+    "incidentTypeSelectFive": "Solicitudes de Mantenimiento",
+    "incidentDescription": "Descripción del incidente",
+    "incidentDescriptionPlaceholder": "Describa el incidente",
+    "contactData": "Datos de contacto",
+    "name": "Nombre",
+    "namePlaceholder": "Ingresa tu nombre",
+    "mail": "Correo electrónico",
+    "mailPlaceholder": "Ingresa tu correo electrónico",
+    "phone": "Teléfono",
+    "phonePlaceholder": "Ingresa tu número de teléfono",
+    "attachment": "Adjuntar archivos",
+    "createIncident": "Crear incidente",
+    "modalAttachment": {
+      "tittle": "Adjunte sus archivos",
+      "selectFiles": "¿Que tipo de archivo son permitidos? ",
+      "dropFiles": "Suelte el archivo aquí o <highlight>Seleccione el archivo</highlight> a cargar",
+      "supportedFiles": "Formatos soportados: CVS, XLS, XLSX",
+      "cancelButton": "Cancelar",
+      "attachmentButton": "Adjuntar"
+    },
+    "toast": {
+      "success": "Incidente regisrado exitosamente con el numero de ticket #0098632",
+      "error": "Error al registrar el incidente"
+    },
+    "errors": {
+      "incidentTypeRequired": "El tipo de incidente es obligatorio",
+      "incidentTypeInvalid": "Tipo de incidente no válido",
+      "incidentDescriptionRequired": "La descripción del incidente es obligatoria",
+      "incidentDescriptionMaxLength": "La descripción del incidente debe tener 200 caracteres o menos",
+      "attachmentFileSize": "El tamaño del archivo debe ser de 10MB o menos",
+      "attachmentFileType": "Tipo de archivo no válido"
+    }
+  }
+}
