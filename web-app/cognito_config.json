@@ -1,0 +1,8 @@
+{
+    "cognito": {
+        "url": "https://abcallg03.auth.us-east-1.amazoncognito.com/oauth2/token",
+        "clientId": "7evjfjtvscn0qsok8la2kf1ja",
+        "redirectUri": "https://abcallg03.com/callback",
+        "grantType": "authorization_code"
+    }
+}
