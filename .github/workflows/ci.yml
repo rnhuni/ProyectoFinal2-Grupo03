@@ -370,8 +370,8 @@ jobs:
           python-version: '3.9'
 
       # Testing for Servi cioIncidente
-      - name: Install dependencies for ServicioIncidente
-        working-directory: ./microservices/ServicioIncidente
+      - name: Install dependencies for ServicioFacturacion
+        working-directory: ./microservices/ServicioFacturacion
         run: pip install -r requirements.txt
 
       - name: Run tests for ServicioFacturacion
