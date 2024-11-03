@@ -3,7 +3,7 @@ import requests
 
 class SystemService:
     def __init__(self):
-        self.base_uri = os.getenv('SYSTEM_SERVICE_URI')
+        self.base_uri = os.getenv('SYSTEM_SERVICE_URI', '')
 
     def get_subscription(self, subscription_id):
         response = requests.get(f'{self.base_uri}/subscriptions/{subscription_id}')

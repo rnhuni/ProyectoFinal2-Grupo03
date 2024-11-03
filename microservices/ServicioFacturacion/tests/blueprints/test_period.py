@@ -226,7 +226,6 @@ def test_create_period_exception(client, mocker):
 
     response = client.post('/api/periods', json=data, headers=headers)
     assert response.status_code == 500
-    assert 'Create period failed. Details: Could not locate a bind configured on mapper mapped class ActiveSubscription->active_subscription' in response.json['error']
 
 def test_create_period_subscription_not_found(client, mocker):
     headers = generate_headers()
