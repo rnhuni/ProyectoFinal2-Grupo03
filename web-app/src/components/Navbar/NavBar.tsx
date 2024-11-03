@@ -1,6 +1,6 @@
 import { MoonIcon, QuestionOutlineIcon, SearchIcon } from "@chakra-ui/icons";
 import { FaRegBell } from "react-icons/fa6";
-import userImg from "../../assets/d33f5bf6acf24a85bbae418113ff0276.webp";
+import userImg from "../../assets/user.svg";
 import { useTranslation } from "react-i18next";
 import {
   Flex,

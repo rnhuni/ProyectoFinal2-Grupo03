@@ -10,3 +10,8 @@ export interface Role {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface RolePlan {
+  id: string;
+  name: string;
+}

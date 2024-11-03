@@ -1,0 +1,132 @@
+{
+  "loginScreen": {
+    "welcome": "Bienvenido a ABCALL",
+    "optimizeOperations": "Optimice sus operaciones y reduzca costos inesperados.",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "rememberMe": "Recordarme",
+    "login": "Iniciar sesión",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "welcomeMessage": "¡Bienvenido a la aplicación!",
+    "loginFailed": "Error de inicio de sesión",
+    "invalidCredentials": "Nombre de usuario o contraseña inválidos",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "navigateToForgotPassword": "Navegar a la pantalla de contraseña olvidada",
+    "register": "Regístrate",
+    "changeLanguage": "Cambiar idioma"
+  },
+  "registerScreen": {
+    "title": "Vamos a empezar",
+    "firstName": "Nombre",
+    "firstNamePlaceholder": "Escribe tu nombre",
+    "lastName": "Apellido",
+    "lastNamePlaceholder": "Escribe tu apellido",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tucorreo@dominio.com",
+    "emailInvalid": "Correo electrónico no es válido",
+    "country": "País",
+    "paisPlaceholder": "Selecciona un país",
+    "city": "Ciudad",
+    "ciudadPlaceholder": "Escribe tu ciudad",
+    "phone": "Número de teléfono",
+    "telefonoPlaceholder": "Número de teléfono",
+    "telefonoInvalid": "Debe tener al menos 7 caracteres",
+    "password": "Contraseña",
+    "contrasenaPlaceholder": "Escribe tu contraseña",
+    "submitButton": "Empezar",
+    "registrationMessage": "¡Te has registrado correctamente!",
+    "firstNameRequired": "El nombre es obligatorio",
+    "lastNameRequired": "El apellido es obligatorio",
+    "emailRequired": "El correo electrónico es obligatorio",
+    "countryRequired": "El país es obligatorio",
+    "cityRequired": "La ciudad es obligatoria",
+    "phoneRequired": "El número de teléfono es obligatorio",
+    "passwordRequired": "La contraseña es obligatoria",
+    "passwordInvalid": "La contraseña debe tener al menos 6 caracteres",
+    "registrationSuccess": "Registro exitoso",
+    "registerFailed": "Error de registro"
+  },
+  "footerScreen": {
+    "registerIncident": "Registrar incidente",
+    "summary": "Resumen",
+    "settings": "Configuración"
+  },
+  "homeScreen": {
+    "sectionTitle": "Mensajes predefinidos",
+    "tableHeaders": {
+      "id": "Id",
+      "template": "Plantilla",
+      "status": "Estado"
+    },
+    "rows": {
+      "welcome": "Bienvenida",
+      "additionalInfo": "Información adicional",
+      "satisfactionSurvey": "Encuesta satisfacción",
+      "chatEnd": "Finalización chat"
+    },
+    "status": {
+      "active": "Activo"
+    },
+    "pagination": {
+      "show": "Mostrar 10",
+      "page": "de 10"
+    },
+    "alert": "Funcionalidad en construcción"
+  },
+  "incidentReportScreen": {
+    "tabs": {
+      "summary": "Resumen",
+      "register": "Registrar incidente"
+    },
+    "incidentType": {
+      "label": "Tipo de incidente",
+      "placeholder": "Seleccione un tipo",
+      "incidents": {
+        "incident1": "Incidente 1",
+        "incident2": "Incidente 2",
+        "incident3": "Incidente 3"
+      }
+    },
+    "phoneNumber": {
+      "label": "Número de teléfono",
+      "placeholder": "+57"
+    },
+    "description": {
+      "label": "Descripción",
+      "placeholder": "Escriba una descripción"
+    },
+    "fileUpload": {
+      "buttonText": "Buscar archivo para cargar",
+      "addFileButton": "Añadir archivo"
+    },
+    "registerButton": "Registrar incidente"
+  },
+  "resumeIncidentScreen": {
+    "ticketNumber": "Número ticket",
+    "searchPlaceholder": "Buscar",
+    "loading": "Cargando...",
+    "table": {
+      "ticket": "# Ticket",
+      "incidentType": "Tipo incidente",
+      "data": {
+        "row1": "Text cell tables",
+        "row2": "Text cell tables",
+        "row3": "Text cell tables"
+      }
+    },
+    "pagination": {
+      "label": "1 de 10"
+    },
+    "downloadButton": "Descargar informe",
+    "help": {
+      "title": "¿Necesitas ayuda?",
+      "button": "Abrir un nuevo ticket"
+    }
+  },
+  "settingsIncidentScreen": {
+    "enableNotifications": "Habilitar notificaciones",
+    "stateChanges": "Cambios de estado",
+    "taskReminder": "Recordatorio tarea",
+    "supportMessages": "Mensajes de soporte"
+  }
+}

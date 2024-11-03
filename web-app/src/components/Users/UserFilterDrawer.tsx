@@ -19,8 +19,8 @@ import { useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 
-// Definir esquema de validación usando Zod
 const filterSchema = z.object({
   field: z.enum(["name", "email", "role_id", "status", "client_id"], {
     required_error: "Debes seleccionar un campo para buscar",
@@ -28,7 +28,6 @@ const filterSchema = z.object({
   searchValue: z.string().min(1, "El campo de búsqueda no puede estar vacío"),
 });
 
-// Definición del tipo para el formulario basado en el esquema
 type FilterFormData = z.infer<typeof filterSchema>;
 
 const UserFilterDrawer = ({
@@ -39,7 +38,8 @@ const UserFilterDrawer = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  // Configuración de react-hook-form con Zod
+  const { t } = useTranslation();
+
   const {
     handleSubmit,
     control,
@@ -54,13 +54,13 @@ const UserFilterDrawer = ({
 
   const onSubmit = (data: FilterFormData) => {
     applyFilters(data);
-    onClose(); // Cerrar el Drawer después de aplicar los filtros
+    onClose();
   };
 
   return (
     <>
       <Button ref={btnRef} colorScheme="blue" onClick={onOpen}>
-        Filtrar
+        {t("users.filter", "Filtrar")}
       </Button>
       <Drawer
         isOpen={isOpen}
@@ -71,48 +71,70 @@ const UserFilterDrawer = ({
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Filtros</DrawerHeader>
+          <DrawerHeader>{t("users.filters", "Filtros")}</DrawerHeader>
 
           <DrawerBody>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={4}>
                 <FormControl isInvalid={!!errors.field}>
-                  <FormLabel>Campo</FormLabel>
+                  <FormLabel>{t("users.field", "Campo")}</FormLabel>
                   <Controller
                     name="field"
                     control={control}
                     render={({ field }) => (
                       <Select
                         {...field}
-                        placeholder="Seleccione el campo a buscar"
+                        placeholder={t(
+                          "users.select_field",
+                          "Seleccione el campo a buscar"
+                        )}
                       >
-                        <option value="name">Nombre</option>
-                        <option value="email">Correo Electrónico</option>
-                        <option value="role_id">Rol</option>
-                        <option value="status">Estado</option>
-                        <option value="client_id">Cliente</option>
+                        <option value="name">
+                          {t("users.name", "Nombre")}
+                        </option>
+                        <option value="email">
+                          {t("users.email", "Correo Electrónico")}
+                        </option>
+                        <option value="role_id">
+                          {t("users.role", "Rol")}
+                        </option>
+                        <option value="status">
+                          {t("users.status_label", "Estado")}
+                        </option>
+                        <option value="client_id">
+                          {t("users.client", "Cliente")}
+                        </option>
                       </Select>
                     )}
                   />
                   {errors.field && (
                     <Text color="red.500" fontSize="sm">
-                      {errors.field.message}
+                      {t(
+                        "users.field_error",
+                        "Debes seleccionar un campo para buscar"
+                      )}
                     </Text>
                   )}
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.searchValue}>
-                  <FormLabel>Buscar</FormLabel>
+                  <FormLabel>{t("users.search", "Buscar")}</FormLabel>
                   <Controller
                     name="searchValue"
                     control={control}
                     render={({ field }) => (
-                      <Input {...field} placeholder="Buscar" />
+                      <Input
+                        {...field}
+                        placeholder={t("users.search_placeholder", "Buscar")}
+                      />
                     )}
                   />
                   {errors.searchValue && (
                     <Text color="red.500" fontSize="sm">
-                      {errors.searchValue.message}
+                      {t(
+                        "users.search_error",
+                        "El campo de búsqueda no puede estar vacío"
+                      )}
                     </Text>
                   )}
                 </FormControl>
@@ -122,10 +144,10 @@ const UserFilterDrawer = ({
 
           <DrawerFooter>
             <Button variant="outline" mr={3} onClick={onClose}>
-              Cancelar
+              {t("common.button.cancel", "Cancelar")}
             </Button>
             <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
-              Aplicar Filtro
+              {t("users.apply_filter", "Aplicar Filtro")}
             </Button>
           </DrawerFooter>
         </DrawerContent>

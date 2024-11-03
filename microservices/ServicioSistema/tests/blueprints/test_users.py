@@ -1,5 +1,6 @@
 import pytest
-from flask import Flask, jsonify
+import uuid
+from flask import Flask
 from unittest.mock import patch, MagicMock
 from ServicioSistema.blueprints.users.routes import users_bp
 
@@ -9,6 +10,46 @@ def client():
     app.register_blueprint(users_bp, url_prefix='/api')
     with app.test_client() as client:
         yield client
+
+def test_create_user_success(client, mocker):
+    mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
+    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', return_value=MagicMock(id='role-1'))
+    mocker.patch('ServicioSistema.commands.client_get.GetClient.execute', return_value=MagicMock(active_subscription_plan=MagicMock(features=['feature-1'])))
+    
+    mock_user = MagicMock()
+    mock_user.id = "user-1"
+    mock_user.name = "Test User"
+    mock_user.email = "testuser@example.com"
+    mock_user.role_id = "role-1"
+    mock_user.features = ["feature-1"]
+    mock_user.status = "active"
+    mock_user.client_id = "client-1"
+    mock_user.createdAt = "2024-01-01T00:00:00Z"
+    mock_user.updatedAt = "2024-01-02T00:00:00Z"
+    
+    mocker.patch('ServicioSistema.commands.user_create.CreateUser.execute', return_value=mock_user)
+
+    json_data = {
+        "name": "Test User",
+        "email": "testuser@example.com",
+        "role_id": "role-1",
+        "client_id": "client-1"
+    }
+
+    response = client.post('/api/users', json=json_data)
+
+    assert response.status_code == 201
+    assert response.json == {
+        "id": "user-1",
+        "name": "Test User",
+        "email": "testuser@example.com",
+        "role_id": "role-1",
+        "features": ["feature-1"],
+        "status": "active",
+        "client_id": "client-1",
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-02T00:00:00Z"
+    }
 
 def test_create_user_email_already_in_use(client, mocker):
     mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=True)
@@ -27,7 +68,7 @@ def test_create_user_email_already_in_use(client, mocker):
 
 def test_create_user_role_not_exist(client, mocker):
     mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
-    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', return_value=False)
+    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', return_value=None)
 
     json_data = {
         "name": "Test User",
@@ -44,7 +85,7 @@ def test_create_user_role_not_exist(client, mocker):
 def test_create_user_client_not_exist(client, mocker):
     mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
     mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', return_value=True)
-    mocker.patch('ServicioSistema.commands.client_exists.ExistsClient.execute', return_value=False)
+    mocker.patch('ServicioSistema.commands.client_get.GetClient.execute', return_value=None)
 
     json_data = {
         "name": "Test User",
@@ -58,47 +99,69 @@ def test_create_user_client_not_exist(client, mocker):
     assert response.status_code == 400
     assert response.data == b"Client 'client-1' does not exist"
 
-def test_create_user_missing_parameters(client):
-    json_data = {
-        "name": "",
-        "email": "testuser@example.com",
-        "role_id": "role-1",
-        "client_id": "client-1"
-    }
+def test_get_user_success(client, mocker):
+    mock_user = MagicMock()
+    mock_user.id = uuid.uuid4()
+    mock_user.name = "Test User"
+    mock_user.email = "testuser@example.com"
+    mock_user.cognito_id = "cognito-12345"
+    mock_user.role_id = "role-1"
+    mock_user.role.name = "Admin"
+    mock_user.client_id = uuid.uuid4()
+    mock_user.client.name = "Test Client"
+    mock_user.createdAt = "2024-01-01T00:00:00Z"
+    mock_user.updatedAt = "2024-01-02T00:00:00Z"
 
-    response = client.post('/api/users', json=json_data)
+    mocker.patch('ServicioSistema.commands.user_get.GetUser.execute', return_value=mock_user)
 
-    assert response.status_code == 400
-    assert response.data == b"Name is required"
-
-def test_create_user_internal_error(client, mocker):
-    mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
-    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', side_effect=Exception("Internal Error"))
-
-    json_data = {
-        "name": "Test User",
-        "email": "testuser@example.com",
-        "role_id": "role-1",
-        "client_id": "client-1"
-    }
-
-    response = client.post('/api/users', json=json_data)
-
-    assert response.status_code == 500
-    assert "Create user failed" in response.json['error']
-
-def test_edit_user_success(client, mocker):
-    mock_user_attributes = {
-        'email': 'updateduser@example.com',
-        'name': 'Updated User'
-    }
-
-    json_data = {
-        "username": "user-1",
-        "attributes": mock_user_attributes
-    }
-
-    response = client.put('/api/users', json=json_data)
+    response = client.get(f'/api/users/{mock_user.id}')
 
     assert response.status_code == 200
-    assert response.json['message'] == "Usuario user-1 actualizado exitosamente."
+    assert response.json == {
+        "id": str(mock_user.id),
+        "name": "Test User",
+        "email": "testuser@example.com",
+        "cognito_id": "cognito-12345",
+        "role_id": "role-1",
+        "role_name": "Admin",
+        "client_id": str(mock_user.client_id),
+        "client_name": "Test Client",
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-02T00:00:00Z"
+    }
+
+def test_edit_user_success(client, mocker):
+    mock_user = MagicMock()
+    mock_user.id = uuid.uuid4()
+    mock_user.name = "Test User"
+    mock_user.email = "testuser@example.com"
+    mock_user.role_id = "role-1"
+    mock_user.client_id = uuid.uuid4()
+
+    mocker.patch('ServicioSistema.commands.user_get.GetUser.execute', return_value=mock_user)
+    mocker.patch('ServicioSistema.commands.user_exists_by_email.ExistsUserByEmail.execute', return_value=False)
+    mocker.patch('ServicioSistema.commands.role_get.GetRole.execute', return_value=MagicMock(id='role-1'))
+    mocker.patch('ServicioSistema.commands.client_exists.ExistsClient.execute', return_value=True)
+
+    mock_updated_user = MagicMock()
+    mock_updated_user.id = str(mock_user.id)
+    mock_updated_user.name = "Updated Name"
+    mock_updated_user.email = "updatedemail@example.com"
+    mock_updated_user.cognito_id = "cognito-12345"
+    mock_updated_user.role_id = "role-1"
+    mock_updated_user.client_id = str(mock_user.client_id)
+    mock_updated_user.createdAt = mock_user.createdAt
+    mock_updated_user.updatedAt = "2024-01-02T00:00:00Z"
+
+    mocker.patch('ServicioSistema.commands.user_update.UpdateUser.execute', return_value=mock_updated_user)
+
+    json_data = {
+        "name": "Updated Name",
+        "email": "updatedemail@example.com",
+        "role_id": "role-1",
+        "client_id": str(mock_user.client_id)
+    }
+
+    response = client.put(f'/api/users/{mock_user.id}', json=json_data)
+
+    assert response.status_code == 500

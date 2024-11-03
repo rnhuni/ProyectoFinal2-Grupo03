@@ -9,6 +9,6 @@ export const permissionSchema = z.object({
 
 export const roleSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "El nombre es requerido"),
+  name: z.string().min(1, "permissions.validations.name_requerid"),
   permissions: z.array(permissionSchema),
 });

@@ -11,10 +11,11 @@ if os.getenv('ENV') != 'test':
     cognito_service = CognitoService()
 
 class CreateUser(BaseCommannd):
-    def __init__(self, name, email, role, client_id):
+    def __init__(self, name, email, role, features, client_id):
         self.name = name
         self.email = email
         self.role = role
+        self.features = features
         self.client_id = client_id
 
     def execute(self):
@@ -23,9 +24,6 @@ class CreateUser(BaseCommannd):
 
         try:
             client = session.query(Client).get(self.client_id)
-
-            if not self.role:
-                raise ValueError(f"Role does not exist")
             
             if not client:
                 raise ValueError(f"Client with id {self.client_id} does not exist")
@@ -36,8 +34,10 @@ class CreateUser(BaseCommannd):
                 name=self.name,
                 email=self.email,
                 client=str(self.client_id),
-                role=str(self.role),
-                permissions=permissions_str
+                role=str(self.role.id),
+                permissions=permissions_str,
+                features=str(self.features)
+
             )
             cognito_id = cognito_user['User']['Username']
 
@@ -52,6 +52,7 @@ class CreateUser(BaseCommannd):
             )
 
             user.status = status
+            user.features = self.features
 
             session.add(user)
             session.commit()

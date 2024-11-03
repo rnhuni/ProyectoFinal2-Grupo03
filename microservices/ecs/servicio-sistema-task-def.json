@@ -46,11 +46,27 @@
                 },
                 {
                     "name": "USER_POOL_ID",
-                    "value": "us-east-1_r6myWLjfj"
+                    "value": "us-east-1_X4SlUF0z0"
                 },
                 {
                     "name": "CLIENT_ID",
-                    "value": "abcall_users"
+                    "value": "abcall-users"
+                },
+                {
+                    "name": "BASE_URL",
+                    "value": "/system/v1"
+                },
+                {
+                    "name": "ORIGIN",
+                    "value": "*"
+                },
+                {
+                    "name": "COGNITO_AUDIENCE",
+                    "value": "7evjfjtvscn0qsok8la2kf1ja"
+                },
+                {
+                    "name": "COGNITO_SIGN_URL",
+                    "value": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_X4SlUF0z0/.well-known/jwks.json"
                 }
             ],
             "mountPoints": [],

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import httpClient from "../../services/HttpClient"; // Reemplaza el import con el nuevo cliente
+import httpClient from "../../services/HttpClient";
 import { AxiosError, CanceledError } from "axios";
 import { Role } from "../../interfaces/Role";
 
@@ -11,11 +11,9 @@ const useRoles = () => {
   const service = "/system/roles";
 
   const reloadRoles = () => {
-
     httpClient
-      .get<Role[]>(service) // Cambia el endpoint a "/roles"
+      .get<Role[]>(service)
       .then((res) => {
-        console.log(res);
         setRoles(res.data);
       })
 
@@ -23,19 +21,17 @@ const useRoles = () => {
         if (err instanceof CanceledError) return;
         setError(err.message);
       });
-
   };
 
   const createRole = async (newRole: Role) => {
-    setLoading(true); // Inicia el estado de carga
+    setLoading(true);
 
     try {
       const res = await httpClient.post<Role | string>(service, newRole);
-      return res.data; // Retorna el nuevo permiso creado
+      return res.data;
     } catch (err) {
       if (err instanceof CanceledError) return;
 
-      // Verificar si el error es de Axios
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
@@ -58,7 +54,6 @@ const useRoles = () => {
       setLoading(false);
     }
   };
-
 
   return { roles, loading, error, reloadRoles, createRole, updateRole };
 };

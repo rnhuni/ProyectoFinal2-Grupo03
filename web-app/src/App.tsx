@@ -10,7 +10,11 @@ import Activity from "./pages/Activity";
 import Create from "./pages/Create";
 import Admin from "./pages/Admin";
 import Permissions from "./pages/Permissions";
-import "../i18n";
+import "./internalization/i18n";
+import SuscriptionSummary from "./pages/SuscriptionSummary";
+import UserPlan from "./pages/UserPlan";
+import TestHooks from "./pages/TestHooks";
+import SubscriptionPage from "./pages/SuscriptionPage";
 import LoginCognito from "./pages/LoginCognito";
 
 function App() {
@@ -42,6 +46,10 @@ function App() {
           <Route path="create" element={<Create />} />
           <Route path="admin" element={<Admin />} />
           <Route path="permissions" element={<Permissions />} />
+          <Route path="suscription" element={<SubscriptionPage />} />
+          <Route path="suscription-user" element={<SuscriptionSummary />} />
+          <Route path="user-plan" element={<UserPlan />} />
+          <Route path="hooks" element={<TestHooks />} />
         </Route>
       </Routes>
     </Router>

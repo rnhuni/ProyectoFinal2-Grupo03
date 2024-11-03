@@ -2,9 +2,8 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import useRoles from "./useRoles";
 import httpClient from "../../services/HttpClient";
 import { AxiosError, CanceledError } from "axios";
-import { Role, RolePermissions } from "../../interfaces/Role";
+import { Role } from "../../interfaces/Role";
 
-// Mock de httpClient
 jest.mock("../../services/HttpClient", () => ({
   get: jest.fn(),
   post: jest.fn(),
@@ -17,25 +16,9 @@ describe("useRoles", () => {
   });
 
   it("debe cargar roles al inicializar", async () => {
-    const mockRolesPermissions: RolePermissions = {
-      id: "1",
-      actions: ["read", "write"],
-    };
     const mockRoles: Role[] = [
-      {
-        id: "1",
-        name: "Admin",
-        permissions: [mockRolesPermissions],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        name: "User",
-        permissions: [mockRolesPermissions],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
+      { id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: "2", name: "User", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     ];
 
     (httpClient.get as jest.Mock).mockResolvedValueOnce({ data: mockRoles });
@@ -88,16 +71,12 @@ describe("useRoles", () => {
 
 describe("create", () => {
   it("debe crear un nuevo rol", async () => {
-    const mockRolesPermissions: RolePermissions = {
-      id: "1",
-      actions: ["read", "write"],
-    };
     const mockRole: Role = {
       id: "1",
       name: "Admin",
-      permissions: [mockRolesPermissions],
+      permissions: [{ id: "1", actions: ["read", "write"] }],
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     (httpClient.post as jest.Mock).mockResolvedValueOnce({ data: mockRole });
@@ -124,17 +103,7 @@ describe("create", () => {
     const { result } = renderHook(() => useRoles());
 
     await act(async () => {
-      const mockRolesPermissions: RolePermissions = {
-        id: "1",
-        actions: ["read", "write"],
-      };
-      await result.current.createRole({
-        id: "1",
-        name: "Admin",
-        permissions: [mockRolesPermissions],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     });
 
     await waitFor(() => {
@@ -149,17 +118,7 @@ describe("create", () => {
     const { result } = renderHook(() => useRoles());
 
     await act(async () => {
-      const mockRolesPermissions: RolePermissions = {
-        id: "1",
-        actions: ["read", "write"],
-      };
-      await result.current.createRole({
-        id: "1",
-        name: "Admin",
-        permissions: [mockRolesPermissions],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     });
 
     await waitFor(() => {
@@ -170,23 +129,13 @@ describe("create", () => {
 
   it("debe establecer loading en true mientras se crea un rol", async () => {
     (httpClient.post as jest.Mock).mockImplementation(
-      () => new Promise(() => {})
+      () => new Promise(() => { })
     );
 
     const { result } = renderHook(() => useRoles());
 
     act(() => {
-      const mockRolesPermissions: RolePermissions = {
-        id: "1",
-        actions: ["read", "write"],
-      };
-      result.current.createRole({
-        id: "1",
-        name: "Admin",
-        permissions: [mockRolesPermissions],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     });
 
     expect(result.current.loading).toBe(true);
@@ -273,7 +222,7 @@ describe("useRoles - updateRole", () => {
 
   it("debe establecer loading en true mientras se actualiza un rol", async () => {
     (httpClient.put as jest.Mock).mockImplementation(
-      () => new Promise(() => {})
+      () => new Promise(() => { })
     );
 
     const mockRole: Role = {

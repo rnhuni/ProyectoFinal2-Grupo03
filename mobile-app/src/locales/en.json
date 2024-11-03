@@ -1,0 +1,132 @@
+{
+  "loginScreen": {
+    "welcome": "Welcome to ABCALL",
+    "optimizeOperations": "Optimize your operations and reduce unexpected costs.",
+    "username": "Username",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "login": "Login",
+    "loginSuccess": "Login Successful",
+    "welcomeMessage": "Welcome to the app!",
+    "loginFailed": "Login Failed",
+    "invalidCredentials": "Invalid username or password",
+    "forgotPassword": "Forgot Password?",
+    "navigateToForgotPassword": "Navigate to Forgot Password Screen",
+    "register": "Register",
+    "changeLanguage": "Change Language"
+  },
+  "registerScreen": {
+    "title": "Let's get started",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "email": "Email",
+    "emailPlaceholder": "yourname@domain.com",
+    "emailInvalid": "Invalid email address",
+    "country": "Country",
+    "paisPlaceholder": "Select a country",
+    "city": "City",
+    "ciudadPlaceholder": "Enter your city",
+    "phone": "Phone Number",
+    "telefonoPlaceholder": "Phone number",
+    "telefonoInvalid": "Must be at least 7 characters",
+    "password": "Password",
+    "contrasenaPlaceholder": "Enter your password",
+    "submitButton": "Get Started",
+    "registrationMessage": "You have successfully registered!",
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "emailRequired": "Email is required",
+    "countryRequired": "Country is required",
+    "cityRequired": "City is required",
+    "phoneRequired": "Phone number is required",
+    "passwordRequired": "Password is required",
+    "passwordInvalid": "Password must be at least 6 characters",
+    "registrationSuccess": "Registration successful",
+    "registerFailed": "Registration failed"
+  },
+  "footerScreen": {
+    "registerIncident": "Register Incident",
+    "summary": "Summary",
+    "settings": "Settings"
+  },
+  "homeScreen": {
+    "sectionTitle": "Predefined Messages",
+    "tableHeaders": {
+      "id": "Id",
+      "template": "Template",
+      "status": "Status"
+    },
+    "rows": {
+      "welcome": "Welcome",
+      "additionalInfo": "Additional Information",
+      "satisfactionSurvey": "Satisfaction Survey",
+      "chatEnd": "Chat End"
+    },
+    "status": {
+      "active": "Active"
+    },
+    "pagination": {
+      "show": "Show 10",
+      "page": "of 10"
+    },
+    "alert": "Feature under construction"
+  },
+  "incidentReportScreen": {
+    "tabs": {
+      "summary": "Summary",
+      "register": "Register Incident"
+    },
+    "incidentType": {
+      "label": "Incident Type",
+      "placeholder": "Select a type",
+      "incidents": {
+        "incident1": "Incident 1",
+        "incident2": "Incident 2",
+        "incident3": "Incident 3"
+      }
+    },
+    "phoneNumber": {
+      "label": "Phone Number",
+      "placeholder": "+57"
+    },
+    "description": {
+      "label": "Description",
+      "placeholder": "Enter a description"
+    },
+    "fileUpload": {
+      "buttonText": "Browse file to upload",
+      "addFileButton": "Add file"
+    },
+    "registerButton": "Register Incident"
+  },
+  "resumeIncidentScreen": {
+    "ticketNumber": "Ticket Number",
+    "searchPlaceholder": "Search",
+    "loading": "Loading...",
+    "table": {
+      "ticket": "# Ticket",
+      "incidentType": "Incident Type",
+      "data": {
+        "row1": "Text cell tables",
+        "row2": "Text cell tables",
+        "row3": "Text cell tables"
+      }
+    },
+    "pagination": {
+      "label": "1 of 10"
+    },
+    "downloadButton": "Download Report",
+    "help": {
+      "title": "Need Help?",
+      "button": "Open a New Ticket"
+    }
+  },
+  "settingsIncidentScreen": {
+    "enableNotifications": "Enable notifications",
+    "stateChanges": "State changes",
+    "taskReminder": "Task reminder",
+    "supportMessages": "Support messages"
+  }
+}

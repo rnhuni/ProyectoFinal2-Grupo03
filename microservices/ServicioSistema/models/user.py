@@ -14,7 +14,7 @@ class User(Model):
     role_id = Column(String, ForeignKey('role.id'))
     role = relationship('Role', backref='users')
 
-    client_id = Column(UUID, ForeignKey('client.id'))
+    client_id = Column(String, ForeignKey('client.id'))
     client = relationship('Client', backref='users')
 
     def __init__(self, name, email, cognito_id, role_id, client_id):

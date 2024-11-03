@@ -166,5 +166,4 @@ def edit_role(role_id):
         }), 200
 
     except Exception as e:
-        print(f"Error during update role: {str(e)}")
         return jsonify({'error': f'Update role failed. Details: {str(e)}'}), 500
