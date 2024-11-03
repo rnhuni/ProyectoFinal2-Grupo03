@@ -17,15 +17,19 @@ import {
   Text,
   Textarea,
   FormErrorMessage,
+  Alert,
+  AlertIcon,
+  useToast,
 } from "@chakra-ui/react";
 import { FaUpload } from "react-icons/fa6";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
-
 import incidentSchema from "./incidentSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { Attachment, Incident } from "../../interfaces/Indicents";
+import useFileUpload from "../../hooks/uploadFile/useFileUpload";
+import useIncidents from "../../hooks/incidents/useIncidents";
 
 interface IncidentFormModalProps {
   isOpen: boolean;
@@ -43,8 +47,8 @@ const IncidentFormModal = ({
   mode,
 }: IncidentFormModalProps) => {
   const { t } = useTranslation();
+  const toast = useToast();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [progress, setProgress] = useState(0);
   const [showProgressBox, setShowProgressBox] = useState(false);
 
   const {
@@ -54,7 +58,7 @@ const IncidentFormModal = ({
     reset,
   } = useForm<Incident>({
     resolver: zodResolver(incidentSchema),
-    defaultValues: initialData || {},
+    defaultValues: { type: "", description: "" },
   });
 
   useEffect(() => {
@@ -64,39 +68,123 @@ const IncidentFormModal = ({
     }
   }, [initialData, reset]);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const {
+    getUploadUrl,
+    uploadFile,
+    uploadProgress,
+    loading: fileLoading,
+    error: fileError,
+  } = useFileUpload();
+
+  const {
+    createIncident,
+    loading: incidentLoading,
+    error: incidentError,
+  } = useIncidents();
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files) return;
 
-    const newAttachments: Attachment[] = Array.from(files).map((file) => ({
-      id: URL.createObjectURL(file),
-      file_name: file.name,
-      content_type: file.type,
-      file_uri: URL.createObjectURL(file),
-    }));
+    const newAttachments: Attachment[] = [];
+    for (const file of files) {
+      const isAcceptedType = [
+        "text/csv",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ].includes(file.type);
+
+      if (!isAcceptedType) {
+        toast({
+          title: "Error",
+          description: "Solo se permiten archivos de tipo Excel o CSV.",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        continue;
+      }
+
+      const uploadData = await getUploadUrl(file.name, file.type);
+      if (uploadData) {
+        newAttachments.push({
+          id: uploadData.media_id,
+          file_name: uploadData.media_name,
+          content_type: uploadData.content_type,
+          file_uri: uploadData.upload_url,
+          fileObject: file,
+        });
+      }
+    }
 
     setAttachments((prev) => [...prev, ...newAttachments]);
     setShowProgressBox(true);
-
-    const interval = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress === 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return Math.min(oldProgress + 10, 100);
-      });
-    }, 400);
   };
 
-  const onSubmit = (data: Incident) => {
-    data.attachments = attachments;
-    onSave(data);
+  const onSubmit = async (data: Incident) => {
+    const uploadedAttachments = [];
+
+    try {
+      for (const attachment of attachments) {
+        if (attachment.fileObject && attachment.file_uri) {
+          const success = await uploadFile(
+            attachment.fileObject,
+            attachment.file_uri
+          );
+          if (success) {
+            uploadedAttachments.push({
+              id: attachment.id,
+              file_name: attachment.file_name,
+              content_type: attachment.content_type,
+              file_uri: attachment.file_uri,
+            });
+          } else {
+            throw new Error(
+              `Error al cargar el archivo: ${attachment.file_name}`
+            );
+          }
+        }
+      }
+
+      data.attachments = uploadedAttachments;
+      data.contact = { phone: "1234567890" }; // Asigna un teléfono genérico
+
+      await createIncident(data);
+
+      toast({
+        title: "Incidente creado",
+        description: "El incidente se ha creado exitosamente.",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+
+      onSave(data);
+      handleCloseModal(); // Llama a la función para limpiar el estado y cerrar el modal
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Hubo un error inesperado.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      handleCloseModal(); // Llama a la función para limpiar el estado y cerrar el modal
+    }
+  };
+
+  const handleCloseModal = () => {
+    setAttachments([]); // Limpiar los adjuntos
+    setShowProgressBox(false);
+    reset({ type: "", description: "" }); // Limpiar los campos del formulario
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
+    <Modal isOpen={isOpen} onClose={handleCloseModal} size="lg" isCentered>
       <ModalOverlay />
       <ModalContent maxW="600px">
         <ModalHeader>
@@ -106,14 +194,19 @@ const IncidentFormModal = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
+          {incidentError && (
+            <Alert status="error" mb={4}>
+              <AlertIcon />
+              {incidentError}
+            </Alert>
+          )}
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Incident Type Field */}
-            <FormControl isInvalid={!!errors.incidentType} mb={4}>
+            <FormControl isInvalid={!!errors.type} mb={4}>
               <FormLabel>{t("incidentScreen.incidentType")}</FormLabel>
               <Select
                 placeholder={t("incidentScreen.incidentTypePlaceholder")}
-                {...register("incidentType")}
-                defaultValue={initialData?.incidentType || ""}
+                {...register("type")}
+                defaultValue={initialData?.type || ""}
               >
                 <option value="technical">
                   {t("incidentScreen.incidentTypeSelectOne")}
@@ -131,30 +224,28 @@ const IncidentFormModal = ({
                   {t("incidentScreen.incidentTypeSelectFive")}
                 </option>
               </Select>
-              {errors.incidentType && (
+              {errors.type && (
                 <FormErrorMessage>
-                  {t(`incidentScreen.errors.incidentTypeRequired`)}
+                  {t(`incidentScreen.errors.typeRequired`)}
                 </FormErrorMessage>
               )}
             </FormControl>
 
-            {/* Incident Description Field */}
-            <FormControl isInvalid={!!errors.incidentDescription} mb={4}>
+            <FormControl isInvalid={!!errors.description} mb={4}>
               <FormLabel>{t("incidentScreen.incidentDescription")}</FormLabel>
               <Textarea
                 h={60}
                 placeholder={t("incidentScreen.incidentDescriptionPlaceholder")}
                 maxLength={200}
-                {...register("incidentDescription")}
+                {...register("description")}
               />
-              {errors.incidentDescription && (
+              {errors.description && (
                 <FormErrorMessage>
-                  {t(`incidentScreen.errors.incidentDescriptionRequired`)}
+                  {t(`incidentScreen.errors.descriptionRequired`)}
                 </FormErrorMessage>
               )}
             </FormControl>
 
-            {/* Attachments Field */}
             <FormControl mb={4}>
               <FormLabel>{t("incidentScreen.attachment")}</FormLabel>
               <Button
@@ -176,14 +267,13 @@ const IncidentFormModal = ({
               />
             </FormControl>
 
-            {/* Progress Bar for Uploads */}
             {showProgressBox && (
               <Box bg={"#F6F8FA"} mt={4} w="100%" px={4} minH={16} pt={2}>
                 {attachments.map((file) => (
                   <Text key={file.id}>{file.file_name}</Text>
                 ))}
                 <Progress
-                  value={progress}
+                  value={uploadProgress}
                   size="sm"
                   colorScheme="green"
                   mt={2}
@@ -195,10 +285,14 @@ const IncidentFormModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button onClick={onClose} mr={3}>
+          <Button onClick={handleCloseModal} mr={3}>
             {t("incidentScreen.modalAttachment.cancelButton")}
           </Button>
-          <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
+          <Button
+            colorScheme="blue"
+            onClick={handleSubmit(onSubmit)}
+            isLoading={fileLoading || incidentLoading}
+          >
             {mode === "edit"
               ? t("incidentScreen.createIncident")
               : t("incidentScreen.createIncident")}

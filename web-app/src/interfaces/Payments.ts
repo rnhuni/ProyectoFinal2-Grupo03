@@ -1,7 +1,8 @@
 export interface Payment {
   amount: number;
-  cycleId: string;
+  periodId: string;
   date: string;
   id: string;
   status: string;
+  description: string;
 }
