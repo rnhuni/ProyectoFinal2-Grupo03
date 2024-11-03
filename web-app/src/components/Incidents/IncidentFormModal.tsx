@@ -27,7 +27,7 @@ import { useState, useEffect } from "react";
 import incidentSchema from "./incidentSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
-import { Attachment, Incident } from "../../interfaces/Indicents";
+import { Attachment, Incident } from "../../interfaces/Incidents";
 import useFileUpload from "../../hooks/uploadFile/useFileUpload";
 import useIncidents from "../../hooks/incidents/useIncidents";
 
@@ -73,7 +73,6 @@ const IncidentFormModal = ({
     uploadFile,
     uploadProgress,
     loading: fileLoading,
-    error: fileError,
   } = useFileUpload();
 
   const {

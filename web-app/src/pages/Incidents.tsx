@@ -19,7 +19,7 @@ import { AddIcon, EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import useIncidents from "../hooks/incidents/useIncidents";
-import { Incident, IncidentTableData } from "../interfaces/Indicents";
+import { Incident, IncidentTableData } from "../interfaces/Incidents";
 import IncidentFormModal from "../components/Incidents/IncidentFormModal";
 
 const Incidents = () => {
@@ -54,9 +54,10 @@ const Incidents = () => {
   ): Incident => {
     return {
       id: data.id,
-      incidentType: data.type,
-      incidentDescription: data.description,
+      type: data.type,
+      description: data.description,
       attachments: data.attachments,
+      contact: data.contact,
     };
   };
 

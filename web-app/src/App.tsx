@@ -12,7 +12,7 @@ import Activity from "./pages/Activity";
 import Create from "./pages/Create";
 import Admin from "./pages/Admin";
 import Permissions from "./pages/Permissions";
-import "../i18n";
+import "./internalization/i18n";
 import SuscriptionSummary from "./pages/SuscriptionSummary";
 import UserPlan from "./pages/UserPlan";
 import TestHooks from "./pages/TestHooks";

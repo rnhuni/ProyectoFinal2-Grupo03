@@ -11,7 +11,7 @@ import useUpdateActiveSubscription from "../hooks/invoices/useUpdateActiveSubscr
 
 const TestHooks = () => {
   const {
-    updateActiveSubscription,
+    // updateActiveSubscription,
     loading: updateLoading,
     error: updateError,
     success,

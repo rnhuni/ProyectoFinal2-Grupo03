@@ -47,17 +47,15 @@ describe("PlanFormModal Component", () => {
       />
     );
 
+    expect(screen.getByText(i18n.t("plans.modal.create"))).toBeInTheDocument();
     expect(
-      screen.getByText(i18n.t("plans.modal.create", "Crear Plan"))
+      screen.getByLabelText(i18n.t("plans.modal.name"))
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan"))
+      screen.getByLabelText(i18n.t("plans.modal.description"))
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText(i18n.t("plans.modal.description", "Descripción"))
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(i18n.t("plans.modal.price", "Precio"))
+      screen.getByLabelText(i18n.t("plans.modal.price"))
     ).toBeInTheDocument();
 
     // Verificar que se rendericen todas las características
@@ -77,18 +75,16 @@ describe("PlanFormModal Component", () => {
       />
     );
 
+    expect(screen.getByText(i18n.t("plans.modal.edit"))).toBeInTheDocument();
+    expect(screen.getByLabelText(i18n.t("plans.modal.name"))).toHaveValue(
+      mockPlan.name
+    );
     expect(
-      screen.getByText(i18n.t("plans.modal.edit", "Editar Plan"))
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan"))
-    ).toHaveValue(mockPlan.name);
-    expect(
-      screen.getByLabelText(i18n.t("plans.modal.description", "Descripción"))
+      screen.getByLabelText(i18n.t("plans.modal.description"))
     ).toHaveValue(mockPlan.description);
-    expect(
-      screen.getByLabelText(i18n.t("plans.modal.price", "Precio"))
-    ).toHaveValue(mockPlan.price.toString());
+    expect(screen.getByLabelText(i18n.t("plans.modal.price"))).toHaveValue(
+      mockPlan.price.toString()
+    );
 
     // Verificar que los checkboxes correctos estén marcados
     featuresList.forEach((feature) => {
@@ -134,9 +130,7 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    const cancelButton = screen.getByText(
-      i18n.t("common.button.cancel", "Cancelar")
-    );
+    const cancelButton = screen.getByText(i18n.t("common.button.cancel"));
     fireEvent.click(cancelButton);
 
     expect(onClose).toHaveBeenCalled();
@@ -153,34 +147,23 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    fireEvent.change(
-      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan")),
-      {
-        target: { value: "Nuevo plan" },
-      }
-    );
+    fireEvent.change(screen.getByLabelText(i18n.t("plans.modal.name")), {
+      target: { value: "Nuevo plan" },
+    });
 
-    fireEvent.change(
-      screen.getByLabelText(i18n.t("plans.modal.description", "Descripción")),
-      {
-        target: { value: "Descripción del nuevo plan" },
-      }
-    );
+    fireEvent.change(screen.getByLabelText(i18n.t("plans.modal.description")), {
+      target: { value: "Descripción del nuevo plan" },
+    });
 
-    fireEvent.change(
-      screen.getByLabelText(i18n.t("plans.modal.price", "Precio")),
-      {
-        target: { value: 200 },
-      }
-    );
+    fireEvent.change(screen.getByLabelText(i18n.t("plans.modal.price")), {
+      target: { value: 200 },
+    });
 
     const firstFeatureCheckbox = screen.getByLabelText(featuresList[0]);
     fireEvent.click(firstFeatureCheckbox);
 
     fireEvent.click(
-      screen.getByRole("button", {
-        name: i18n.t("common.button.create", "Crear"),
-      })
+      screen.getByRole("button", { name: i18n.t("common.button.create") })
     );
 
     await waitFor(() => {
@@ -200,17 +183,12 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    fireEvent.change(
-      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan")),
-      {
-        target: { value: "Plan Editado" },
-      }
-    );
+    fireEvent.change(screen.getByLabelText(i18n.t("plans.modal.name")), {
+      target: { value: "Plan Editado" },
+    });
 
     fireEvent.click(
-      screen.getByRole("button", {
-        name: i18n.t("common.button.edit", "Editar"),
-      })
+      screen.getByRole("button", { name: i18n.t("common.button.edit") })
     );
 
     await waitFor(() => {
