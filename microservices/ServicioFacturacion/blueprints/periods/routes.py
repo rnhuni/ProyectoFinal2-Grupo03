@@ -6,89 +6,78 @@ from ServicioFacturacion.commands.period_create import CreatePeriod
 from ServicioFacturacion.commands.period_update import UpdatePeriod
 from ServicioFacturacion.commands.period_exists import ExistsPeriod
 from ServicioFacturacion.commands.period_get import GetPeriod
+from ServicioFacturacion.commands.period_get_all import GetAllPeriods
+from ServicioFacturacion.utils import decode_user
 
 periods_bp = Blueprint('periods', __name__)
 
 @periods_bp.route('/periods', methods=['GET'])
 def get_all_periods():
-    #auth_header = request.headers.get('Authorization')
-    
     try:
-        #user = decode_user(auth_header)
+        periods = GetAllPeriods().execute()
 
-        return jsonify([
+        periods_list = [
             {
-                "id": "3675d547-d115-4437-87b8-890c52b1f819",
-                "periodStatus": "current_period",
-                "periodDate": "2024-10-01",
-                "subscriptionClientId": "4675d547-d115-4437-87b8-890c52b1f819",
-                "subscriptionBaseId": "plan-premium-master",
-                "subscriptionBaseName": "Plan Premium Master",
-                "invoiceId": "0000d547-d115-4437-87b8-890c52b1f819",
-                "invoiceDate": "2024-10-24 19:35:55.357",
-                "invoiceStatus": "paid",
-                "invoiceAmount": 120.00,
-                "paymentId": "0000e547-d115-4437-87b8-890c52b1f819",
-                "paymentDate": "2024-10-24 19:35:55.357",
-                "paimentAmount": 120.00
-            },
-            {
-                "id": "007dab05-e81b-4379-83f6-c4259580b7a4",
-                "periodStatus" : "expired",
-                "periodDate": "2024-09-01",
-                "subscriptionClientId": "5675d547-d115-4437-87b8-890c52b1f819",
-                "subscriptionBaseId": "plan-pro-engage",
-                "subscriptionBaseName": "Plan Pro Engage",
-                "invoiceDate": "2024-10-24 19:35:55.357",
-                "invoiceId": "0000f547-d115-4437-87b8-890c52b1f819",
-                "invoiceStatus": "paid",
-                "invoiceAmount": 120.00,
-                "paymentId": "0000e547-d115-4437-87b8-890c52b1f819",
-                "paymentDate": "2024-10-24 19:35:55.357",
-                "paimentAmount": 120.00               
-            },
-            {
-                "id": "007dab05-e81b-4379-83f6-c4259580b7a4",
-                "periodStatus": "expired",
-                "periodDate": "2024-08-01",
-                "subscriptionClientId": "6675d547-d115-4437-87b8-890c52b1f819",
-                "subscriptionBaseId": "plan-basico-connect",
-                "subscriptionBaseName": "Plan Básico Connect",                
-                "invoiceId": "0000e547-d115-4437-87b8-890c52b1f819",
-                "invoiceStatus": "paid",
-                "invoiceDate": "2024-10-24 19:35:55.357",
-                "invoiceAmount": 120.00,
-                "paymentId": "0000e547-d115-4437-87b8-890c52b1f819",
-                "paymentDate": "2024-10-24 19:35:55.357",
-                "paimentAmount": 120.00
+                "id": str(period.id),
+                "periodStatus": period.status,
+                "periodDate": period.date,
+                "subscriptionClientId": str(period.client_id),
+                "subscriptionBaseId": period.active_subscription.base_id if period.active_subscription else None,
+                "subscriptionBaseName": period.active_subscription.base_name if period.active_subscription else None,
+                "invoiceId": str(period.invoice.id) if period.invoice else None,
+                "invoiceDate": period.invoice.date if period.invoice else None,
+                "invoiceStatus": period.invoice.status if period.invoice else None,
+                "invoiceAmount": float(period.invoice.amount) if period.invoice else None,
+                "paymentId": str(period.payment.id) if period.payment else None,
+                "paymentDate": period.payment.date if period.payment else None,
+                "paymentAmount": float(period.payment.amount) if period.payment else None
             }
-        ]), 200
+            for period in periods
+        ]
+
+        return jsonify(periods_list), 200
     except Exception as e:
-        return jsonify({"error": f"Failed to retrieve periods. Details: {str(e)}"}), 500
-    
+        return jsonify({'error': f'Failed to retrieve periods. Details: {str(e)}'}), 500    
 
 @periods_bp.route('/periods/active', methods=['GET'])
 def get_current_periods():
-    try:        
-        return jsonify(
+    auth_header = request.headers.get('Authorization')
+
+    try:
+        user = decode_user(auth_header)
+
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        client_id = user["client"]
+
+        active_periods = GetPeriod(client_id=client_id, status="active").execute()
+
+        if not active_periods:
+            return jsonify({"message": "No active periods found"}), 404
+
+        periods_list = [
             {
-                "id": "3675d547-d115-4437-87b8-890c52b1f819",
-                "periodStatus": "current_period",
-                "periodDate": "2024-10-01",
-                "subscriptionClientId": "4675d547-d115-4437-87b8-890c52b1f819",
-                "subscriptionBaseId": "plan-premium-master",
-                "subscriptionBaseName": "Plan Premium Master",
-                "invoiceId": "0000d547-d115-4437-87b8-890c52b1f819",
-                "invoiceDate": "2024-10-24 19:35:55.357",
-                "invoiceStatus": "paid",
-                "invoiceAmount": 120.00,
-                "paymentId": "0000e547-d115-4437-87b8-890c52b1f819",
-                "paymentDate": "2024-10-24 19:35:55.357",
-                "paimentAmount": 120.00
-            }), 200
+                "id": str(period.id),
+                "periodStatus": period.status,
+                "periodDate": period.date,
+                "subscriptionClientId": str(period.active_subscription.client_id) if period.active_subscription else None,
+                "subscriptionBaseId": period.active_subscription.base_id if period.active_subscription else None,
+                "subscriptionBaseName": period.active_subscription.base_name if period.active_subscription else None,
+                "invoiceId": str(period.invoice.id) if period.invoice else None,
+                "invoiceDate": period.invoice.date if period.invoice else None,
+                "invoiceStatus": period.invoice.status if period.invoice else None,
+                "invoiceAmount": float(period.invoice.amount) if period.invoice else None,
+                "paymentId": str(period.payment.id) if period.payment else None,
+                "paymentDate": period.payment.date if period.payment else None,
+                "paymentAmount": float(period.payment.amount) if period.payment else None
+            }
+            for period in active_periods
+        ]
+
+        return jsonify(periods_list), 200
     except Exception as e:
-        return jsonify({'error': f'"Failed to retrieve current periods. Details: {str(e)}'}), 500
-    
+        return jsonify({'error': f'Failed to retrieve active periods. Details: {str(e)}'}), 500
 
 @periods_bp.route('/periods', methods=['POST'])
 def create_period():
@@ -121,3 +110,41 @@ def create_period():
         }), 200
     except Exception as e:
         return jsonify({'error': f'"Create period failed. Details: {str(e)}'}), 500
+
+@periods_bp.route('/periods/<period_id>', methods=['PUT'])
+def update_period(period_id):
+    try:
+        data = request.get_json()
+        status = data.get('status')
+        active_subscription_id = data.get('activeSubscriptionId')
+
+        if not all([status, active_subscription_id]):
+            return jsonify({"error": "No fields to update or missing required fields"}), 400
+
+        period = GetPeriod(id=period_id).execute()
+        if not period:
+            return jsonify({"error": "Period not found"}), 404
+
+        active_subscription = GetActiveSubscription(active_subscription_id).execute()
+        if not active_subscription:
+            return jsonify({"error": "Active subscription not found"}), 404
+
+        updated_period = UpdatePeriod(
+            period=period,
+            active_subscription=active_subscription,
+            status=status
+        ).execute()
+
+        return jsonify({
+            "id": str(updated_period.id),
+            "periodStatus": updated_period.status,
+            "periodDate": updated_period.date,
+            "subscriptionClientId": str(updated_period.active_subscription.client_id) if updated_period.active_subscription else None,
+            "subscriptionBaseId": updated_period.active_subscription.base_id if updated_period.active_subscription else None,
+            "subscriptionBaseName": updated_period.active_subscription.base_name if updated_period.active_subscription else None
+        }), 200
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': f'Failed to update period. Details: {str(e)}'}), 500

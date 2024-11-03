@@ -43,4 +43,4 @@ CORS(app, resources={r"/*": {
 }})
 
 if __name__ == '__main__':
-    print("ServicioIncidente is running on 5000")
+    print("ServicioFacturacion is running on 5000")

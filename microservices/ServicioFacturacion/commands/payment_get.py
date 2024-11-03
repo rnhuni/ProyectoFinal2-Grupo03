@@ -1,10 +1,10 @@
 from ..models.model import session
-from ..models.incident import Incident
+from ..models.payment import Payment
 from .base_command import BaseCommannd
 
-class GetIncident(BaseCommannd):
+class GetPayment(BaseCommannd):
     def __init__(self, id):
         self.id = id
 
     def execute(self):
-        return session.query(Incident).filter_by(id=self.id).first()
+        return session.query(Payment).filter_by(id=self.id).first()

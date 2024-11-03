@@ -16,5 +16,3 @@ class ActiveSubscriptionExists(BaseCommannd):
             return session.query(ActiveSubscription).filter_by(client_id=self.client_id, status=self.status).first() is not None
         
         raise ValueError("Invalid data provided")
-        
-        
