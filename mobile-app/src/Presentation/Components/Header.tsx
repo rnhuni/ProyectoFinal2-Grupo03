@@ -14,9 +14,13 @@ const Header = () => {
     i18n.changeLanguage(newLanguage);
   };
 
+  const handleGoBack = () => {  
+    navigation.goBack();
+  }
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity onPress={handleGoBack} testID='go-back'>
         <Icon name="keyboard-backspace" style={styles.icon} />
       </TouchableOpacity>
       <Text style={styles.title}>ABCcall</Text>
@@ -26,7 +30,7 @@ const Header = () => {
         <Icon name="account-outline" style={styles.icon} />
 
         {/* Botón para cambiar el idioma */}
-        <TouchableOpacity onPress={toggleLanguage}>
+        <TouchableOpacity onPress={toggleLanguage} testID='toggle-languaje'>
           <Icon name="web" style={styles.icon} />
         </TouchableOpacity>
       </View>

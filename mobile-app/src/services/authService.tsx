@@ -17,7 +17,7 @@ interface AuthResult {
 export const loginUser = async (username: string, password: string): Promise<AuthResult> => {
   const params = {
     AuthFlow: 'USER_PASSWORD_AUTH',
-    ClientId: '7evjfjtvscn0qsok8la2kf1ja', // Reemplaza con tu Client ID de Cognito
+    ClientId: '7evjfjtvscn0qsok8la2kf1ja', 
     AuthParameters: {
       USERNAME: username,
       PASSWORD: password,

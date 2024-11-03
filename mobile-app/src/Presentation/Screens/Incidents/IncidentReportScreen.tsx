@@ -12,6 +12,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTranslation} from 'react-i18next';
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
+import {Contact, Incident} from '../../../interfaces/Indicents';
+import useIncidents from '../../../hooks/incidents/useIncidents';
 
 export const IncidentReportScreen = () => {
   const {t} = useTranslation(); // Usamos el hook para acceder a las traducciones
@@ -20,6 +22,28 @@ export const IncidentReportScreen = () => {
   );
   const [phoneNumber, setPhoneNumber] = useState('');
   const [description, setDescription] = useState('');
+  const {incidents, loading, error, createIncident} = useIncidents();
+
+  const handleRegisterIncident = async () => {
+    try {
+      const incidentContact: Contact = {
+        phone: phoneNumber,
+      };
+      const incidentData: Incident = {
+        type: incidentType,
+        description: description,
+        contact: incidentContact,
+      };
+      console.log(incidentData);
+      const result = await createIncident(incidentData);
+      console.log(result);
+      // Maneja la respuesta exitosa aquí
+      alert('Incidente registrado con éxito');
+    } catch (error) {
+      // Maneja el error aquí
+      alert('Error al registrar el incidente');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -28,11 +52,11 @@ export const IncidentReportScreen = () => {
       <View style={styles.content}>
         {/* Pestañas */}
         <View style={styles.tabs}>
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={styles.activeTab}>
               {t('incidentReportScreen.tabs.summary')}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity>
             <Text testID="register-text" style={styles.tab}>
               {t('incidentReportScreen.tabs.register')}
@@ -126,7 +150,8 @@ export const IncidentReportScreen = () => {
         {/* Botón para registrar incidente */}
         <TouchableOpacity
           style={styles.registerButton}
-          testID="register-button">
+          testID="register-button"
+          onPress={handleRegisterIncident}>
           <Text style={styles.registerButtonText}>
             {t('incidentReportScreen.registerButton')}
           </Text>
@@ -154,11 +179,11 @@ const styles = StyleSheet.create({
   activeTab: {
     color: '#3366FF',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
   },
   tab: {
-    color: '#8F9BB3',
-    fontSize: 16,
+    color: 'black',
+    fontSize: 18,
   },
   inputContainer: {
     marginBottom: 15,
@@ -166,7 +191,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 5,
     color: '#8F9BB3',
-    fontSize: 14,
+    fontSize: 16,
   },
   input: {
     fontSize: 16,

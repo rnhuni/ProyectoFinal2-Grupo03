@@ -34,6 +34,7 @@ export const SettingsIncidentScreen = () => {
           <Switch
             value={isNotificationsEnabled}
             onValueChange={toggleNotifications}
+            testID='enable-notifications-switch'
           />
         </View>
 
@@ -47,6 +48,7 @@ export const SettingsIncidentScreen = () => {
               <Switch
                 value={isStateChangesEnabled}
                 onValueChange={toggleStateChanges}
+                testID='enable-notifications-switch-state-changes'
               />
             </View>
 
@@ -58,6 +60,7 @@ export const SettingsIncidentScreen = () => {
               <Switch
                 value={isTaskReminderEnabled}
                 onValueChange={toggleTaskReminder}
+            testID='enable-notifications-switch-task-reminder'
               />
             </View>
 
@@ -69,6 +72,7 @@ export const SettingsIncidentScreen = () => {
               <Switch
                 value={isSupportMessagesEnabled}
                 onValueChange={toggleSupportMessages}
+            testID='enable-notifications-switch-support-messages'
               />
             </View>
           </>
