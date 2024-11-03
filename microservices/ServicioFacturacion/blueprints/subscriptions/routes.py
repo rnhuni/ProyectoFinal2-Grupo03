@@ -47,7 +47,7 @@ def get_active_subscription():
     auth_header = request.headers.get('Authorization')
 
     try:
-        user = decode_user(auth_header)
+        user = decode_user(auth_header)        
 
         if not user:
             return jsonify({"error": "Unauthorized"}), 401
@@ -84,12 +84,7 @@ def get_active_subscription():
     
 @subscriptions_bp.route('/subscriptions/active/history', methods=['GET'])
 def get_suscriptions_history():
-    #auth_header = request.headers.get('Authorization')
-    
-    try:
-        #user = decode_user(auth_header)
-
-        return jsonify([
+    return jsonify([
             {
                 "id": "4675d547-d115-4437-87b8-890c52b1f819",
                 "baseId": "plan-premium-master",
@@ -118,8 +113,6 @@ def get_suscriptions_history():
                 "updatedAt": "2024-10-24 19:35:55.357"
             }
         ]), 200
-    except Exception as e:
-        return jsonify({'error': f'Failed to retrieve subscription active history. Details: {str(e)}'}), 500
 
 @subscriptions_bp.route('/subscriptions/active', methods=['PUT'])
 def put_active_subscription():
