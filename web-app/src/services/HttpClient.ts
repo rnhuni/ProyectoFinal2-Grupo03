@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "/v1",
+  baseURL: "https://api.abcallg03.com/v2",
 });
 
 apiClient.interceptors.request.use(
