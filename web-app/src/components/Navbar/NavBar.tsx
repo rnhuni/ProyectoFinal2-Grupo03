@@ -39,9 +39,9 @@ const NavBar = () => {
       color={color}
       alignItems="center"
       justifyContent="space-between"
-      px={4} // Ajusta el padding horizontal
-      py={1} // Reduce el padding vertical para disminuir la altura
-      h="6vh" // Reducir la altura del NavBar
+      px={4}
+      py={1}
+      h="6vh"
       boxShadow="md"
       position="sticky"
       top="0"
