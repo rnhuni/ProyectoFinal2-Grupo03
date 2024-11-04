@@ -31,7 +31,7 @@ def commit_or_rollback(response):
         session.rollback()
     return response
 
-origins = os.getenv("ORIGINS", "")
+origins = os.getenv("ORIGINS", "*")
 
 CORS(app, resources={r"/*": {
     "origins": origins,

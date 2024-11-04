@@ -57,7 +57,7 @@
                     "value": "/user/v2"
                 },
                 {
-                    "name": "ORIGIN",
+                    "name": "ORIGINS",
                     "value": "*"
                 },
                 {

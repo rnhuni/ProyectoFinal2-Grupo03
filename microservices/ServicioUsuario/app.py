@@ -11,7 +11,7 @@ loaded = load_dotenv('.env')
 app = Flask(__name__)
 register_blueprints(app)
 
-origins = os.getenv("ORIGINS", "")
+origins = os.getenv("ORIGINS", "*")
 
 CORS(app, resources={r"/*": {
     "origins": origins,
