@@ -54,7 +54,7 @@
                 },
                 {
                     "name": "BASE_URL",
-                    "value": "/incident/v1"
+                    "value": "/incident/v2"
                 },
                 {
                     "name": "ORIGIN",

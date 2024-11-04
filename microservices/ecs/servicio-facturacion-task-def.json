@@ -54,7 +54,7 @@
                 },
                 {
                     "name": "BASE_URL",
-                    "value": "/billing/v1"
+                    "value": "/billing/v2"
                 },
                 {
                     "name": "ORIGIN",
@@ -74,7 +74,7 @@
                 },
                 {
                     "name": "SYSTEM_SERVICE_URI",
-                    "value": "https://api.abcallg03.com/v1/system"
+                    "value": "https://api.abcallg03.com/v2/system"
                 }
             ],
             "mountPoints": [],
