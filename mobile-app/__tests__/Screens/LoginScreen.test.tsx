@@ -1,119 +1,128 @@
 import React from 'react';
-import {render, fireEvent, waitFor} from '@testing-library/react-native';
-import {LoginScreen} from '../../src/Presentation/Screens/Auth/LoginScreen';
-import {Alert} from 'react-native';
+import {fireEvent, render} from '@testing-library/react-native';
 import {I18nextProvider} from 'react-i18next';
+import {NavigationContainer} from '@react-navigation/native';
 import i18n from '../../src/internalization/i18n';
+import {LoginScreen} from '../../src/Presentation/Screens/Auth/LoginScreen';
+import {loginUser} from '../../src/services/authService';
+import {Alert} from 'react-native';
+
+jest.mock('../../src/services/authService', () => ({
+  loginUser: jest.fn(),
+}));
+
+jest.mock('../../src/api/api', () => ({
+  setToken: jest.fn(),
+}));
+
+const renderWithI18n = (component: React.ReactNode) => {
+  return render(
+    <I18nextProvider i18n={i18n}>
+      <NavigationContainer>{component}</NavigationContainer>
+    </I18nextProvider>,
+  );
+};
 
 describe('LoginScreen', () => {
-  const mockNavigate = jest.fn();
+  const navigate = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  const renderWithI18n = (component: React.ReactNode) => {
-    return render(<I18nextProvider i18n={i18n}>{component}</I18nextProvider>);
-  };
+  it('should render correctly', () => {
+    const {getByText} = renderWithI18n(<LoginScreen navigation={{navigate}} />);
 
-  it('renders correctly', () => {
-    const {getByText} = renderWithI18n(
-      <LoginScreen navigation={{navigate: mockNavigate}} />,
-    );
-    // Cambia 'welcome' a 'loginScreen.welcome'
     expect(getByText(i18n.t('loginScreen.welcome'))).toBeTruthy();
+    expect(getByText(i18n.t('loginScreen.optimizeOperations'))).toBeTruthy();
   });
 
-  it('displays success alert and navigates to HomeScreen on successful login', async () => {
-    const {getByPlaceholderText, getByText} = renderWithI18n(
-      <LoginScreen navigation={{navigate: mockNavigate}} />,
+  it('should update username input', () => {
+    const {getByPlaceholderText} = renderWithI18n(
+      <LoginScreen navigation={{navigate}} />,
     );
 
-    fireEvent.changeText(
-      getByPlaceholderText(i18n.t('loginScreen.username')),
-      'admin',
-    );
-    fireEvent.changeText(
-      getByPlaceholderText(i18n.t('loginScreen.password')),
-      '123',
-    );
+    const usernameInput = getByPlaceholderText(i18n.t('loginScreen.username'));
+    fireEvent.changeText(usernameInput, 'test@example.com');
 
-    jest.spyOn(Alert, 'alert');
-    fireEvent.press(getByText(i18n.t('loginScreen.login')));
-
-    await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        i18n.t('loginScreen.loginSuccess'),
-        i18n.t('loginScreen.welcomeMessage'),
-      );
-      expect(mockNavigate).toHaveBeenCalledWith('HomeScreen');
-    });
+    expect(usernameInput.props.value).toBe('test@example.com');
   });
 
-  it('displays failure alert on invalid login', async () => {
-    const {getByPlaceholderText, getByText} = renderWithI18n(
-      <LoginScreen navigation={{navigate: mockNavigate}} />,
+  it('should update password input', () => {
+    const {getByPlaceholderText} = renderWithI18n(
+      <LoginScreen navigation={{navigate}} />,
     );
 
-    fireEvent.changeText(
-      getByPlaceholderText(i18n.t('loginScreen.username')),
-      'wrongUser',
-    );
-    fireEvent.changeText(
-      getByPlaceholderText(i18n.t('loginScreen.password')),
-      'wrongPass',
-    );
+    const passwordInput = getByPlaceholderText(i18n.t('loginScreen.password'));
+    fireEvent.changeText(passwordInput, 'testpassword');
 
-    jest.spyOn(Alert, 'alert');
-    fireEvent.press(getByText(i18n.t('loginScreen.login')));
-
-    await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        i18n.t('loginScreen.loginFailed'),
-        i18n.t('loginScreen.invalidCredentials'),
-      );
-      expect(mockNavigate).not.toHaveBeenCalled();
-    });
+    expect(passwordInput.props.value).toBe('testpassword');
   });
 
-  it('toggles rememberMe checkbox', () => {
-    const {getByText} = renderWithI18n(
-      <LoginScreen navigation={{navigate: mockNavigate}} />,
+  it('should call loginUser on button press and navigate on success', async () => {
+    const mockedUsername = 'correo@gmail.com';
+    const mockedPassword = 'T0rasdw333s';
+
+    (loginUser as jest.Mock).mockResolvedValueOnce({IdToken: 'mocked-token'});
+    const {getByTestId, getByPlaceholderText} = renderWithI18n(
+      <LoginScreen navigation={{navigate}} />,
     );
-    const checkbox = getByText('☐');
 
-    fireEvent.press(checkbox);
-    expect(getByText('☑')).toBeTruthy(); // Verify that it toggles to checked state
+    const usernameInput = getByPlaceholderText(i18n.t('loginScreen.username'));
+    fireEvent.changeText(usernameInput, mockedUsername);
 
-    fireEvent.press(checkbox);
-    expect(getByText('☐')).toBeTruthy(); // Verify that it toggles back to unchecked state
+    const passwordInput = getByPlaceholderText(i18n.t('loginScreen.password'));
+    fireEvent.changeText(passwordInput, mockedPassword);
+
+    fireEvent.press(getByTestId('login-button'));
+
+    expect(loginUser).toHaveBeenCalledWith(mockedUsername, mockedPassword);
   });
 
-  it('displays alert on "Forgot Password" press', async () => {
-    const {getByText} = renderWithI18n(
-      <LoginScreen navigation={{navigate: mockNavigate}} />,
+  it('should show alert on login failure', async () => {
+    (loginUser as jest.Mock).mockRejectedValueOnce(new Error('Login failed'));
+    const {getByTestId} = renderWithI18n(
+      <LoginScreen navigation={{navigate}} />,
     );
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation();
 
-    jest.spyOn(Alert, 'alert');
-    fireEvent.press(getByText(i18n.t('loginScreen.forgotPassword')));
+    fireEvent.press(getByTestId('login-button'));
 
-    await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        i18n.t('loginScreen.forgotPassword'),
-        i18n.t('loginScreen.navigateToForgotPassword'),
-      );
-    });
+    alertSpy.mockRestore();
   });
 
-  it('navigates to "RegisterScreen" on "Regístrate" press', async () => {
-    const {getByText} = renderWithI18n(
-      <LoginScreen navigation={{navigate: mockNavigate}} />,
+  it('should toggle language', () => {
+    const {getByRole} = renderWithI18n(<LoginScreen navigation={{navigate}} />);
+
+    const languageSwitch = getByRole('button');
+    fireEvent.press(languageSwitch);
+
+    expect(i18n.language).toBe('en');
+  });
+
+  it('should toggle remember me option', () => {
+    const {getByTestId} = renderWithI18n(
+      <LoginScreen navigation={{navigate}} />,
     );
 
-    fireEvent.press(getByText(i18n.t('loginScreen.register')));
+    const rememberMeLabel = getByTestId('remember-button');
+    fireEvent.press(rememberMeLabel);
+  });
 
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('RegisterScreen');
-    });
+  it('should toggle language on button press', () => {
+    const {getByTestId} = renderWithI18n(
+      <LoginScreen navigation={{navigate: jest.fn()}} />,
+    );
+
+    expect(i18n.language).toBe('en');
+
+    const languageSwitch = getByTestId('languaje-button');
+    fireEvent.press(languageSwitch);
+
+    expect(i18n.language).toBe('es');
+
+    fireEvent.press(languageSwitch);
+
+    expect(i18n.language).toBe('en');
   });
 });

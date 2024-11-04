@@ -3,7 +3,8 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import PlanFormModal from "./PlanFormModal";
-import i18n from "../../../i18nextConfig";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../../internalization/i18n";
 import { featuresList } from "../../data/FeaturesList";
 
 // Mock data
@@ -21,8 +22,12 @@ const mockPlan = {
 const onSave = jest.fn();
 const onClose = jest.fn();
 
-const renderWithChakra = (ui: React.ReactNode) => {
-  return render(<ChakraProvider>{ui}</ChakraProvider>);
+const renderWithProviders = (ui: React.ReactNode) => {
+  return render(
+    <I18nextProvider i18n={i18n}>
+      <ChakraProvider>{ui}</ChakraProvider>
+    </I18nextProvider>
+  );
 };
 
 describe("PlanFormModal Component", () => {
@@ -32,7 +37,7 @@ describe("PlanFormModal Component", () => {
   });
 
   test("should render modal elements correctly for create mode", () => {
-    renderWithChakra(
+    renderWithProviders(
       <PlanFormModal
         isOpen={true}
         onClose={onClose}
@@ -42,12 +47,18 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    expect(screen.getByText("plans.modal.create")).toBeInTheDocument();
-    expect(screen.getByLabelText("plans.modal.name")).toBeInTheDocument();
     expect(
-      screen.getByLabelText("plans.modal.description")
+      screen.getByText(i18n.t("plans.modal.create", "Crear Plan"))
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("plans.modal.price")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan"))
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(i18n.t("plans.modal.description", "Descripción"))
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(i18n.t("plans.modal.price", "Precio"))
+    ).toBeInTheDocument();
 
     // Verificar que se rendericen todas las características
     featuresList.forEach((feature) => {
@@ -56,7 +67,7 @@ describe("PlanFormModal Component", () => {
   });
 
   test("should render modal elements correctly for edit mode and fill form with plan data", () => {
-    renderWithChakra(
+    renderWithProviders(
       <PlanFormModal
         isOpen={true}
         onClose={onClose}
@@ -66,16 +77,18 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    expect(screen.getByText("plans.modal.edit")).toBeInTheDocument();
-    expect(screen.getByLabelText("plans.modal.name")).toHaveValue(
-      mockPlan.name
-    );
-    expect(screen.getByLabelText("plans.modal.description")).toHaveValue(
-      mockPlan.description
-    );
-    expect(screen.getByLabelText("plans.modal.price")).toHaveValue(
-      mockPlan.price.toString()
-    );
+    expect(
+      screen.getByText(i18n.t("plans.modal.edit", "Editar Plan"))
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan"))
+    ).toHaveValue(mockPlan.name);
+    expect(
+      screen.getByLabelText(i18n.t("plans.modal.description", "Descripción"))
+    ).toHaveValue(mockPlan.description);
+    expect(
+      screen.getByLabelText(i18n.t("plans.modal.price", "Precio"))
+    ).toHaveValue(mockPlan.price.toString());
 
     // Verificar que los checkboxes correctos estén marcados
     featuresList.forEach((feature) => {
@@ -89,7 +102,7 @@ describe("PlanFormModal Component", () => {
   });
 
   test("should update plan features on checkbox change", () => {
-    renderWithChakra(
+    renderWithProviders(
       <PlanFormModal
         isOpen={true}
         onClose={onClose}
@@ -111,7 +124,7 @@ describe("PlanFormModal Component", () => {
   });
 
   test("should close modal when cancel button is clicked", () => {
-    renderWithChakra(
+    renderWithProviders(
       <PlanFormModal
         isOpen={true}
         onClose={onClose}
@@ -121,14 +134,16 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    const cancelButton = screen.getByText("common.button.cancel");
+    const cancelButton = screen.getByText(
+      i18n.t("common.button.cancel", "Cancelar")
+    );
     fireEvent.click(cancelButton);
 
     expect(onClose).toHaveBeenCalled();
   });
 
   test("should submit form when create button is clicked", async () => {
-    renderWithChakra(
+    renderWithProviders(
       <PlanFormModal
         isOpen={true}
         onClose={onClose}
@@ -138,23 +153,34 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    fireEvent.change(screen.getByLabelText("plans.modal.name"), {
-      target: { value: "Nuevo plan" },
-    });
+    fireEvent.change(
+      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan")),
+      {
+        target: { value: "Nuevo plan" },
+      }
+    );
 
-    fireEvent.change(screen.getByLabelText("plans.modal.description"), {
-      target: { value: "Descripción del nuevo plan" },
-    });
+    fireEvent.change(
+      screen.getByLabelText(i18n.t("plans.modal.description", "Descripción")),
+      {
+        target: { value: "Descripción del nuevo plan" },
+      }
+    );
 
-    fireEvent.change(screen.getByLabelText("plans.modal.price"), {
-      target: { value: 200 },
-    });
+    fireEvent.change(
+      screen.getByLabelText(i18n.t("plans.modal.price", "Precio")),
+      {
+        target: { value: 200 },
+      }
+    );
 
     const firstFeatureCheckbox = screen.getByLabelText(featuresList[0]);
     fireEvent.click(firstFeatureCheckbox);
 
     fireEvent.click(
-      screen.getByRole("button", { name: "common.button.create" })
+      screen.getByRole("button", {
+        name: i18n.t("common.button.create", "Crear"),
+      })
     );
 
     await waitFor(() => {
@@ -164,7 +190,7 @@ describe("PlanFormModal Component", () => {
   });
 
   test("should submit form when edit button is clicked", async () => {
-    renderWithChakra(
+    renderWithProviders(
       <PlanFormModal
         isOpen={true}
         onClose={onClose}
@@ -174,11 +200,18 @@ describe("PlanFormModal Component", () => {
       />
     );
 
-    fireEvent.change(screen.getByLabelText("plans.modal.name"), {
-      target: { value: "Plan Editado" },
-    });
+    fireEvent.change(
+      screen.getByLabelText(i18n.t("plans.modal.name", "Nombre del Plan")),
+      {
+        target: { value: "Plan Editado" },
+      }
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "common.button.edit" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: i18n.t("common.button.edit", "Editar"),
+      })
+    );
 
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledWith(

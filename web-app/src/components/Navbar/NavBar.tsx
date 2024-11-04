@@ -1,6 +1,6 @@
 import { MoonIcon, QuestionOutlineIcon, SearchIcon } from "@chakra-ui/icons";
 import { FaRegBell } from "react-icons/fa6";
-import userImg from "../../assets/d33f5bf6acf24a85bbae418113ff0276.webp";
+import userImg from "../../assets/user.svg";
 import { useTranslation } from "react-i18next";
 import {
   Flex,
@@ -39,9 +39,9 @@ const NavBar = () => {
       color={color}
       alignItems="center"
       justifyContent="space-between"
-      px={4} // Ajusta el padding horizontal
-      py={1} // Reduce el padding vertical para disminuir la altura
-      h="6vh" // Reducir la altura del NavBar
+      px={4}
+      py={1}
+      h="6vh"
       boxShadow="md"
       position="sticky"
       top="0"

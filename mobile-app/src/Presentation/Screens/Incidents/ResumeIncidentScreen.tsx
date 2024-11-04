@@ -1,42 +1,69 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   TextInput,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useTranslation} from 'react-i18next'; // Importar hook de traducción
+import {useTranslation} from 'react-i18next';
+import useIncidents from '../../../hooks/incidents/useIncidents';
+import DetailModal from '../../Components/Incidents/DetailModal';
+import Loading from '../../Components/Loading';
+import {useFocusEffect} from '@react-navigation/native';
 
 export const ResumeIncidentScreen = () => {
-  const {t} = useTranslation(); // Usar hook de traducción
+  const {t} = useTranslation();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [ticketNumber, setTicketNumber] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedIncident, setSelectedIncident] = useState<any>(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const {incidents, loading, error, reloadIncidents} = useIncidents();
 
-  const data = [
-    {id: 1, ticket: '1', tipo: t('resumeIncidentScreen.table.data.row1')},
-    {id: 2, ticket: '2', tipo: t('resumeIncidentScreen.table.data.row2')},
-    {id: 3, ticket: '3', tipo: t('resumeIncidentScreen.table.data.row3')},
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      console.log('Incidents: reload');
+      reloadIncidents();
+    }, []),
+  );
+  const handleRowPress = async (item: any) => {
+    setModalLoading(true);
+    setSelectedIncident(item);
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalLoading(false);
+    }, 1000);
+  };
 
   const renderRow = (item: any) => (
-    <View style={styles.tableRow} key={item.id}>
-      <Text style={styles.tableCell}>{item.ticket}</Text>
-      <Text style={styles.tableCell}>{item.tipo}</Text>
-    </View>
+    <TouchableOpacity
+      key={item.id}
+      style={styles.tableRow}
+      onPress={() => handleRowPress(item)}>
+      <Text style={styles.tableCell}>{item.id}</Text>
+      <Text style={styles.tableCell}>{item.type}</Text>
+    </TouchableOpacity>
   );
+
+  const handledetailModalClose = () => {
+    reloadIncidents();
+    setModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
       <Header />
 
       <View style={styles.content}>
-        {/* Inputs */}
+        {loading && <Loading message={t('resumeIncidentScreen.loading')} />}
+
         <View style={styles.inputContainer}>
           <Text style={styles.label}>
             {t('resumeIncidentScreen.ticketNumber')}
@@ -60,20 +87,20 @@ export const ResumeIncidentScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Tabla */}
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.tableHeaderCell}>
-              {t('resumeIncidentScreen.table.ticket')}
-            </Text>
-            <Text style={styles.tableHeaderCell}>
-              {t('resumeIncidentScreen.table.incidentType')}
-            </Text>
+        <ScrollView>
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderCell}>
+                {t('resumeIncidentScreen.table.ticket')}
+              </Text>
+              <Text style={styles.tableHeaderCell}>
+                {t('resumeIncidentScreen.table.incidentType')}
+              </Text>
+            </View>
+            {incidents.map(renderRow)}
           </View>
-          {data.map(renderRow)}
-        </View>
+        </ScrollView>
 
-        {/* Paginación usando Picker */}
         <View style={styles.pagination}>
           <View style={styles.pickerContainer}>
             <Picker
@@ -90,24 +117,23 @@ export const ResumeIncidentScreen = () => {
           </Text>
         </View>
 
-        {/* Botón de descargar */}
         <TouchableOpacity style={styles.downloadButton}>
           <Text style={styles.downloadButtonText}>
             {t('resumeIncidentScreen.downloadButton')}
           </Text>
         </TouchableOpacity>
 
-        {/* Sección de ayuda */}
-        <View style={styles.helpSection}>
-          <Text style={styles.helpTitle}>
-            {t('resumeIncidentScreen.help.title')}
-          </Text>
-          <TouchableOpacity style={styles.helpButton}>
-            <Text style={styles.helpButtonText}>
-              {t('resumeIncidentScreen.help.button')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {selectedIncident && (
+          <DetailModal
+            visible={modalVisible}
+            onClose={handledetailModalClose}
+            data={selectedIncident}
+          />
+        )}
+
+        {modalLoading && (
+          <Loading message={t('resumeIncidentScreen.loading')} />
+        )}
       </View>
 
       <Footer />
@@ -210,38 +236,20 @@ const styles = StyleSheet.create({
     height: 50,
   },
   pageText: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#8F9BB3',
   },
   downloadButton: {
     backgroundColor: '#3366FF',
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
   },
   downloadButtonText: {
     color: '#fff',
     fontSize: 16,
   },
-  helpSection: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    backgroundColor: '#F7F9FC',
-    borderRadius: 10,
-  },
-  helpTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  helpButton: {
-    marginTop: 10,
-    backgroundColor: '#3366FF',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  helpButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
 });
+
+export default ResumeIncidentScreen;

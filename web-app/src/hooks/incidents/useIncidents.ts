@@ -1,7 +1,7 @@
 import { useState } from "react";
 import httpClient from "../../services/HttpClient";
 import { AxiosError, CanceledError } from "axios";
-import { Incident, IncidentTableData } from "../../interfaces/Indicents";
+import { Incident, IncidentTableData } from "../../interfaces/Incidents";
 
 
 const useIncidents = () => {

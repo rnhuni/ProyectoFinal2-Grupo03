@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { UserModal } from "./UserModal";
 import { ChakraProvider } from "@chakra-ui/react";
-import i18n from "../../../i18nextConfig"; // Importar configuración de internacionalización
+import i18n from "../../../src/internalization/i18n"; // Importar configuración de internacionalización
 import useUsers from "../../hooks/users/useUser";
 import useRoles from "../../hooks/roles/useRoles";
 import { User } from "../../interfaces/User";
@@ -17,7 +17,7 @@ describe("UserModal Component", () => {
   const updateUserMock = jest.fn();
 
   beforeEach(() => {
-    i18n.changeLanguage("es"); // Cambiar a español para las pruebas
+    i18n.changeLanguage("es");
     jest.clearAllMocks();
     (useUsers as jest.Mock).mockReturnValue({
       createUser: createUserMock,
@@ -50,10 +50,24 @@ describe("UserModal Component", () => {
 
     // Esperamos a que aparezcan los mensajes de error
     await waitFor(() => {
-      expect(screen.getByText("users.validations.name")).toBeInTheDocument();
-      expect(screen.getByText("users.validations.email")).toBeInTheDocument();
-      expect(screen.getByText("users.validations.role")).toBeInTheDocument();
-      expect(screen.getByText("users.validations.client")).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes("El nombre debe tener al menos")
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes("Debe ser un correo válido")
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => content.includes("El rol es requerido"))
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes("El cliente es requerido")
+        )
+      ).toBeInTheDocument();
     });
   });
 

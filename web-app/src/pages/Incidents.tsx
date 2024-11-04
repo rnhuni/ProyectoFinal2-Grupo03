@@ -1,3 +1,4 @@
+// Incidents.js
 import {
   Box,
   Button,
@@ -19,8 +20,9 @@ import { AddIcon, EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import useIncidents from "../hooks/incidents/useIncidents";
-import { Incident, IncidentTableData } from "../interfaces/Indicents";
+import { Incident, IncidentTableData } from "../interfaces/Incidents";
 import IncidentFormModal from "../components/Incidents/IncidentFormModal";
+import IncidentDetailModal from "../components/Incidents/IncidentDetailModal";
 
 const Incidents = () => {
   const { t } = useTranslation();
@@ -41,6 +43,10 @@ const Incidents = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
 
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedIncidentForDetails, setSelectedIncidentForDetails] =
+    useState<IncidentTableData | null>(null);
+
   useEffect(() => {
     reloadIncidents();
   }, []);
@@ -49,14 +55,16 @@ const Incidents = () => {
     setFilteredIncidents(incidents);
   }, [incidents]);
 
+  // Función para mapear IncidentTableData a Incident
   const mapIncidentTableDataToIncident = (
     data: IncidentTableData
   ): Incident => {
     return {
       id: data.id,
-      incidentType: data.type,
-      incidentDescription: data.description,
+      type: data.type,
+      description: data.description,
       attachments: data.attachments,
+      contact: data.contact,
     };
   };
 
@@ -80,6 +88,11 @@ const Incidents = () => {
     }
     reloadIncidents();
     setIsFormModalOpen(false);
+  };
+
+  const handleViewDetails = (incident: IncidentTableData) => {
+    setSelectedIncidentForDetails(incident);
+    setIsDetailModalOpen(true);
   };
 
   return (
@@ -144,7 +157,7 @@ const Incidents = () => {
                   <IconButton
                     aria-label="View details"
                     icon={<ViewIcon />}
-                    onClick={() => console.log("View Details")}
+                    onClick={() => handleViewDetails(incident)}
                     variant="ghost"
                   />
                 </Td>
@@ -180,6 +193,12 @@ const Incidents = () => {
             : null
         }
         mode={formMode}
+      />
+
+      <IncidentDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        incident={selectedIncidentForDetails}
       />
     </Box>
   );

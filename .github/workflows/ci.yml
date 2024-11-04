@@ -6,29 +6,33 @@ on:
       - main
     paths:
       - 'web-app/**'
+      - 'mobile-app/**'
       - 'microservices/ServicioSistema/**'
       - 'microservices/ServicioUsuario/**'
       - 'microservices/ServicioIncidente/**'
-      - 'mobile-app/**'
-
+      - 'microservices/ServicioFacturacion/**'
   push:
     branches:
       - main
     paths:
       - 'web-app/**'
+      - 'mobile-app/**'
       - 'microservices/ServicioSistema/**'
       - 'microservices/ServicioUsuario/**'
       - 'microservices/ServicioIncidente/**'
-      - 'mobile-app/**'
+      - 'microservices/ServicioFacturacion/**'
+      
 jobs:
   determine-changes:
     runs-on: ubuntu-latest
     outputs:
       web_app_changed: ${{ steps.filter.outputs.web_app }}
+      mobile_app_changed: ${{ steps.filter.outputs.mobile_app }}
       servicio_sistema_changed: ${{ steps.filter.outputs.servicio_sistema }}
       servicio_usuario_changed: ${{ steps.filter.outputs.servicio_usuario }}
       servicio_incidente_changed: ${{ steps.filter.outputs.servicio_incidente }}
-      mobile_app_changed: ${{ steps.filter.outputs.mobile_app }}
+      servicio_facturacion_changed: ${{ steps.filter.outputs.servicio_facturacion }}
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -40,15 +44,17 @@ jobs:
           filters: |
             web_app:
               - 'web-app/**'
+            mobile_app:
+              - 'mobile-app/**'
             servicio_sistema:
               - 'microservices/ServicioSistema/**'
             servicio_usuario:
               - 'microservices/ServicioUsuario/**'
             servicio_incidente:
               - 'microservices/ServicioIncidente/**'
-            mobile_app:
-              - 'mobile-app/**'
-
+            servicio_facturacion:
+              - 'microservices/ServicioFacturacion/**'
+            
   test-web-app:
     if: needs.determine-changes.outputs.web_app_changed == 'true'
     runs-on: ubuntu-latest
@@ -346,5 +352,83 @@ jobs:
         with:
           task-definition: ${{ steps.render-servicio-incidente.outputs.task-definition }}
           service: ServicioIncidente
+          cluster: ClusterABCall
+          wait-for-service-stability: false
+
+  test-and-deploy-servicio-facturacion:
+    if: needs.determine-changes.outputs.servicio_facturacion_changed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [determine-changes]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Testing for Servi cioIncidente
+      - name: Install dependencies for ServicioFacturacion
+        working-directory: ./microservices/ServicioFacturacion
+        run: pip install -r requirements.txt
+
+      - name: Run tests for ServicioFacturacion
+        working-directory: ./microservices/ServicioFacturacion
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
+
+      - name: Run SonarCloud Scan for ServicioFacturacion
+        uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
+        with:
+          args: >
+            -Dsonar.organization=rnhuni
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03-ServicioFacturacion
+            -Dsonar.projectBaseDir=microservices/ServicioFacturacion
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # Configure AWS deploy
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Build and push Docker
+      - name: Build, tag, and push ServicioFacturacion image to ECR
+        id: build-servicio-facturacion
+        working-directory: ./microservices/ServicioFacturacion
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: servicio-facturacion
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # Build ECS task definition
+      - name: Render ECS task definition for ServicioFacturacion
+        id: render-servicio-facturacion
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./microservices/ecs/servicio-facturacion-task-def.json
+          container-name: servicio-facturacion
+          image: ${{ steps.build-servicio-facturacion.outputs.image }}
+
+      # ECS deploy
+      - name: Deploy to ECS ServicioFacturacion
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-servicio-facturacion.outputs.task-definition }}
+          service: ServicioFacturacion
           cluster: ClusterABCall
           wait-for-service-stability: false

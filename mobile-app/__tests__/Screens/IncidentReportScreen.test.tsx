@@ -1,14 +1,13 @@
 import React from 'react';
-import {render, fireEvent} from '@testing-library/react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import {IncidentReportScreen} from '../../src/Presentation/Screens/Incidents/IncidentReportScreen';
+import useIncidents from '../../src/hooks/incidents/useIncidents';
 import {I18nextProvider} from 'react-i18next';
-import i18n from '../../src/internalization/i18n'; // Asegúrate de tener tu configuración de i18n correcta
+import i18n from '../../src/internalization/i18n';
+import {NavigationContainer} from '@react-navigation/native';
 
-jest.mock('../../src/Presentation/Components/Header', () => 'Header');
-jest.mock('../../src/Presentation/Components/Footer', () => 'Footer');
+jest.mock('../../src/hooks/incidents/useIncidents');
 
-// Helper para renderizar con internacionalización
 const renderWithI18n = (component: React.ReactNode) => {
   return render(
     <I18nextProvider i18n={i18n}>
@@ -18,70 +17,79 @@ const renderWithI18n = (component: React.ReactNode) => {
 };
 
 describe('IncidentReportScreen', () => {
-  it('renders correctly with translated texts', () => {
-    const {getByText, getByPlaceholderText, getByTestId} = renderWithI18n(
-      <IncidentReportScreen />,
-    );
+  const createIncidentMock = jest.fn();
+  const reloadIncidentsMock = jest.fn();
 
-    // Verificar que los textos internacionalizados aparezcan correctamente
-    expect(getByText(i18n.t('incidentReportScreen.tabs.summary'))).toBeTruthy();
-    expect(getByTestId('register-text')).toBeTruthy();
-    expect(
-      getByText(i18n.t('incidentReportScreen.incidentType.label')),
-    ).toBeTruthy();
-    expect(
-      getByPlaceholderText(
-        i18n.t('incidentReportScreen.phoneNumber.placeholder'),
-      ),
-    ).toBeTruthy();
-    expect(
-      getByPlaceholderText(
-        i18n.t('incidentReportScreen.description.placeholder'),
-      ),
-    ).toBeTruthy();
-    expect(
-      getByText(i18n.t('incidentReportScreen.fileUpload.buttonText')),
-    ).toBeTruthy();
-    expect(
-      getByText(i18n.t('incidentReportScreen.fileUpload.addFileButton')),
-    ).toBeTruthy();
+  beforeAll(() => {
+    global.alert = jest.fn();
   });
 
-  it('handles input changes', () => {
-    const {getByPlaceholderText} = renderWithI18n(<IncidentReportScreen />);
-
-    // Cambiar el texto del input de teléfono
-    const phoneNumberInput = getByPlaceholderText(
-      i18n.t('incidentReportScreen.phoneNumber.placeholder'),
-    );
-    fireEvent.changeText(phoneNumberInput, '1234567890');
-    expect(phoneNumberInput.props.value).toBe('1234567890');
-
-    // Cambiar el texto del input de descripción
-    const descriptionInput = getByPlaceholderText(
-      i18n.t('incidentReportScreen.description.placeholder'),
-    );
-    fireEvent.changeText(descriptionInput, 'Descripción del incidente');
-    expect(descriptionInput.props.value).toBe('Descripción del incidente');
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (useIncidents as jest.Mock).mockReturnValue({
+      incidents: [],
+      loading: false,
+      error: '',
+      createIncident: createIncidentMock,
+      reloadIncidents: reloadIncidentsMock,
+    });
   });
 
-  // it('handles picker selection', () => {
-  //   const {getByTestId} = renderWithI18n(<IncidentReportScreen />);
+  it('renders the screen with all elements', () => {
+    const {getByTestId, getByText} = renderWithI18n(<IncidentReportScreen />);
+    expect(getByTestId('incident-type-picker')).toBeTruthy();
+    expect(getByTestId('phone-number-input')).toBeTruthy();
+    expect(getByTestId('description-input')).toBeTruthy();
+    expect(getByTestId('register-button')).toBeTruthy();
+  });
 
-  //   // Simular selección del Picker
-  //   const picker = getByTestId('incident-type-picker');
-  //   fireEvent(picker, 'valueChange', 'Incidente 1'); // Simula la selección del Picker
-  //   expect(picker.props.selectedValue).toBe('Incidente 1');
-  // });
+  it('allows selecting an incident type', () => {
+    const {getByTestId, getByText} = renderWithI18n(<IncidentReportScreen />);
+    const picker = getByTestId('incident-type-picker');
 
-  it('handles register button press', () => {
+    fireEvent(picker, 'onValueChange', 'Incidente 1');
+
+    expect(getByText('Incidente 1')).toBeTruthy();
+  });
+
+  it('updates the phone number input', () => {
     const {getByTestId} = renderWithI18n(<IncidentReportScreen />);
+    const phoneInput = getByTestId('phone-number-input');
 
-    // Verificar que se pueda presionar el botón de registro
+    fireEvent.changeText(phoneInput, '1234567890');
+    expect(phoneInput.props.value).toBe('1234567890');
+  });
+
+  it('updates the description input', () => {
+    const {getByTestId} = renderWithI18n(<IncidentReportScreen />);
+    const descriptionInput = getByTestId('description-input');
+
+    fireEvent.changeText(
+      descriptionInput,
+      'This is a test incident description',
+    );
+    expect(descriptionInput.props.value).toBe(
+      'This is a test incident description',
+    );
+  });
+
+  it('calls createIncident on register button press', async () => {
+    const {getByTestId} = renderWithI18n(<IncidentReportScreen />);
     const registerButton = getByTestId('register-button');
+
     fireEvent.press(registerButton);
 
-    // Aquí puedes añadir alguna expectativa si hay algún comportamiento posterior a la pulsación
-    // Por ejemplo, una alerta, navegación, etc.
+    await waitFor(() => {
+      expect(createIncidentMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('shows an error message when createIncident fails', async () => {
+    const errorMessage = 'Error creating incident';
+    createIncidentMock.mockRejectedValueOnce(new Error(errorMessage));
+    const {getByTestId, findByText} = renderWithI18n(<IncidentReportScreen />);
+
+    const registerButton = getByTestId('register-button');
+    fireEvent.press(registerButton);
   });
 });

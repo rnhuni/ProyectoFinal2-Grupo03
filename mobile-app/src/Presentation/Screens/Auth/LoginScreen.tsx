@@ -1,6 +1,6 @@
-import {StackScreenProps} from '@react-navigation/stack';
-import React, {useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -11,29 +11,29 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {RootStackParamList} from '../../Routes/StackNavigator';
+import { RootStackParamList } from '../../Routes/StackNavigator';
+import { loginUser } from '../../../services/authService';
+import { setToken } from '../../../api/api';
 
-interface LoginScreenProps
-  extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
+interface LoginScreenProps extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
 
-export const LoginScreen = ({navigation}: LoginScreenProps) => {
-  const {t, i18n} = useTranslation();
+export const LoginScreen = ({ navigation }: LoginScreenProps) => {
+  const { t, i18n } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === '123') {
-      Alert.alert(
-        t('loginScreen.loginSuccess'),
-        t('loginScreen.welcomeMessage'),
-      );
+  const handleLogin = async () => {
+    try {
+      const authResult = await loginUser(username, password);
+      console.log(authResult.IdToken);
+      setToken(authResult.IdToken);
+      console.log(authResult.IdToken);
+
       navigation.navigate('HomeScreen');
-    } else {
-      Alert.alert(
-        t('loginScreen.loginFailed'),
-        t('loginScreen.invalidCredentials'),
-      );
+    } catch (error) {
+      setToken("");
+      Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidCredentials'));
     }
   };
 
@@ -42,10 +42,14 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
     i18n.changeLanguage(newLang);
   };
 
+  const handleremeberMe = () => {
+    setRememberMe(!rememberMe);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.languageSwitch}>
-        <TouchableOpacity onPress={toggleLanguage}>
+        <TouchableOpacity onPress={toggleLanguage} testID='languaje-button'>
           <Icon name="web" size={25} />
         </TouchableOpacity>
       </View>
@@ -73,26 +77,12 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
       </View>
 
       <View style={styles.checkboxContainer}>
-        <TouchableOpacity onPress={() => setRememberMe(!rememberMe)}>
+        <TouchableOpacity onPress={handleremeberMe} testID='remember-button'>
           <Text style={styles.checkbox}>{rememberMe ? '☑' : '☐'}</Text>
         </TouchableOpacity>
         <Text style={styles.checkboxLabel}>{t('loginScreen.rememberMe')}</Text>
       </View>
-
-      <Button title={t('loginScreen.login')} onPress={handleLogin} />
-
-      <TouchableOpacity
-        onPress={() =>
-          Alert.alert(
-            t('loginScreen.forgotPassword'),
-            t('loginScreen.navigateToForgotPassword'),
-          )
-        }>
-        <Text style={styles.link}>{t('loginScreen.forgotPassword')}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
-        <Text style={styles.link}>{t('loginScreen.register')}</Text>
-      </TouchableOpacity>
+      <Button title={t('loginScreen.login')} onPress={handleLogin} testID='login-button'/>
     </View>
   );
 };

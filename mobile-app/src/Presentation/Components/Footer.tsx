@@ -8,13 +8,26 @@ const Footer = () => {
   const navigation = useNavigation<any>();
   const {t} = useTranslation(); // Usar el hook de traducción
 
+  const handleIncidentReportScreen = () => {
+    navigation.navigate('IncidentReportScreen');
+  }
+
+  const handleResumeIncidentScreen = () => {
+    navigation.navigate('ResumeIncidentScreen');
+  }
+
+  const handleSettingsIncidentScreen = () => {
+    navigation.navigate('SettingsIncidentScreen');
+  }
+
   return (
     <View style={styles.container}>
       {/* Botón para registrar incidente */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => navigation.navigate('IncidentReportScreen')}>
+          onPress={handleIncidentReportScreen}
+          testID='incident-report'>
           <View style={styles.iconWrapper}>
             <Icon name="plus" style={styles.icon} />
           </View>
@@ -26,7 +39,8 @@ const Footer = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => navigation.navigate('ResumeIncidentScreen')}>
+          onPress={handleResumeIncidentScreen}
+          testID='resume-incident'>
           <View style={styles.iconWrapper}>
             <Icon name="view-dashboard" style={styles.icon} />
           </View>
@@ -38,7 +52,8 @@ const Footer = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => navigation.navigate('SettingsIncidentScreen')}>
+          onPress={handleSettingsIncidentScreen}
+          testID='settings-incident'>
           <View style={styles.iconWrapper}>
             <Icon name="cog" style={styles.icon} />
           </View>

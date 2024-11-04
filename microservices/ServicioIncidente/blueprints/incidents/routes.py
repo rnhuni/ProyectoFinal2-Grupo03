@@ -23,6 +23,7 @@ def create_incident():
         type = data.get('type')
         description = data.get('description')
         contact = data.get('contact', "")
+        attachments =  data.get('attachments', [])
         
         if not type or not description or len(description) < 1:
             return "Invalid parameters", 400
@@ -33,6 +34,15 @@ def create_incident():
         id = build_incident_id()
         
         data = CreateIncident(id, type, description, contact, user["id"], user["name"]).execute()
+
+        for attachment in attachments:
+            aid = attachment["id"]
+            content_type = attachment["content_type"]
+            file_uri = attachment["file_uri"]
+            file_name = attachment["file_name"]
+            if not ExistsAttachment(aid).execute():
+                CreateAttachment(aid, data.id, file_name, file_uri, content_type,\
+                                user["id"], user["name"]).execute()
 
         return jsonify({
             "id": data.id,

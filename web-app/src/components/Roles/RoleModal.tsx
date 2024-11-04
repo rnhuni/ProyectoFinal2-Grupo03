@@ -178,7 +178,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
   };
 
   const onSubmit = async (data: FormData) => {
-    let message = await handleRequest(data);
+    const message = await handleRequest(data);
 
     if (typeof message === "string") {
       if (message == "Role already exists") {
