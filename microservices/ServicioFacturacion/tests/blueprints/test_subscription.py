@@ -68,6 +68,8 @@ def test_get_active_all_subscriptions_success(client, mocker):
     mock_subscription.description = "A basic subscription"
     mock_subscription.status = "active"
     mock_subscription.price = 10.0
+    mock_subscription.createdAt = "2024-10-24 19:35:55.357"
+    mock_subscription.updatedAt = "2024-10-24 19:35:55.357"
     mock_subscription.features = [
     ]
 
@@ -95,6 +97,8 @@ def test_get_active_subscription_success(client, mocker):
     mock_active_subscription.price = 20.0
     mock_active_subscription.notify_by_email = True
     mock_active_subscription.features = []
+    mock_active_subscription.createdAt = "2024-10-24 19:35:55.357"
+    mock_active_subscription.updatedAt = "2024-10-24 19:35:55.357"
 
     mocker.patch('ServicioFacturacion.commands.active_subscription_get.GetActiveSubscription.execute', return_value=mock_active_subscription)
 
@@ -194,6 +198,8 @@ def test_create_active_subscription_failed(client, mocker):
     mock_active_subscription.notify_by_email = True
     mock_active_subscription.price = 15.0
     mock_active_subscription.features = mock_features
+    mock_active_subscription.createdAt = "2024-10-24 19:35:55.357"
+    mock_active_subscription.updatedAt = "2024-10-24 19:35:55.357"
 
     mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_subscription', return_value=mock_base_subscription)
     mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_features', return_value=mock_features)

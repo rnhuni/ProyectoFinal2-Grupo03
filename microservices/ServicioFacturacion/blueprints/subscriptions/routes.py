@@ -32,7 +32,9 @@ def get_active_all_subscriptions():
                         "name": feature.feature_name
                     }
                     for feature in subscription.features
-                ]
+                ],
+                "createdAt": subscription.createdAt,
+                "updatedAt": subscription.updatedAt
             }
             for subscription in subscriptions
         ]
@@ -75,7 +77,9 @@ def get_active_subscription():
                     "name": feature.feature_name,
                     "price": float(feature.feature_price)
                 } for feature in (active_subscription.features or [])
-            ]
+            ],
+            "createdAt": active_subscription.createdAt,
+            "updatedAt": active_subscription.updatedAt
         }), 200
 
     except Exception as e:
