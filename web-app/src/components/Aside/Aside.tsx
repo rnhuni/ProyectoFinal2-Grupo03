@@ -19,6 +19,9 @@ import {
   Gear,
   Person,
   ListCheck,
+  TicketDetailed,
+  Receipt,
+  PersonBadge,
 } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 
@@ -39,6 +42,21 @@ const Sidebar = () => {
     { name: "Roles", icon: <People />, path: "/dashboard/roles" },
     { name: "Actividad", icon: <ClipboardData />, path: "/dashboard/activity" },
     { name: "Permisos", icon: <ListCheck />, path: "/dashboard/permissions" },
+    {
+      name: "Mi suscripción",
+      icon: <Receipt />,
+      path: "/dashboard/user-plan",
+    },
+    {
+      name: "Suscripciones",
+      icon: <TicketDetailed />,
+      path: "/dashboard/suscriptions",
+    },
+    {
+      name: "Manejar plan",
+      icon: <PersonBadge />,
+      path: "/dashboard/manage-plan",
+    },
   ];
 
   const adminItem = { name: "Admin", icon: <Gear />, path: "/dashboard/admin" };
