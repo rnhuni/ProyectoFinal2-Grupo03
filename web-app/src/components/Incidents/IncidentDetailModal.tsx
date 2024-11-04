@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -10,8 +10,10 @@ import {
   Button,
   Text,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { IncidentTableData } from "../../interfaces/Incidents";
+import apiClient from "../../services/HttpClient";
 
 interface IncidentDetailModalProps {
   isOpen: boolean;
@@ -24,6 +26,41 @@ const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
   onClose,
   incident,
 }) => {
+  const [downloading, setDownloading] = useState(false);
+  const toast = useToast();
+
+  const handleDownload = async (attachmentId: string) => {
+    setDownloading(true);
+    try {
+      const response = await apiClient.post("/v1/incident/media/download-url", {
+        media_id: attachmentId,
+      });
+
+      const downloadUrl = response.data.url;
+
+      // Redirecciona para iniciar la descarga
+      window.location.href = downloadUrl;
+
+      toast({
+        title: "Descarga iniciada",
+        description: "El archivo se está descargando.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error en la descarga",
+        description: "No se pudo descargar el archivo.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (!incident) return null;
 
   return (
@@ -66,11 +103,9 @@ const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
                   <Button
                     colorScheme="blue"
                     size="sm"
-                    onClick={() => {
-                      console.log(
-                        `Descargando archivo: ${attachment.file_name}`
-                      );
-                    }}
+                    onClick={() => handleDownload(attachment.id)}
+                    isLoading={downloading}
+                    loadingText="Descargando"
                   >
                     Descargar
                   </Button>
