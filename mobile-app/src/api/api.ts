@@ -17,7 +17,6 @@ let token: string | null = null;
 export const setToken = (token: string) => {
     if (token) {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        token = token;
     } else {
         delete api.defaults.headers.common['Authorization'];
     }
