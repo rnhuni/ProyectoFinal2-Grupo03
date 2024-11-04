@@ -57,7 +57,7 @@
                     "value": "/incident/v2"
                 },
                 {
-                    "name": "ORIGIN",
+                    "name": "ORIGINS",
                     "value": "*"
                 },
                 {

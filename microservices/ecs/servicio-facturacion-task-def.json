@@ -57,7 +57,7 @@
                     "value": "/billing/v2"
                 },
                 {
-                    "name": "ORIGIN",
+                    "name": "ORIGINS",
                     "value": "*"
                 },
                 {
