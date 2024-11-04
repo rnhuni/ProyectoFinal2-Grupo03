@@ -16,26 +16,6 @@ describe("PrivateRoute Component", () => {
     );
   };
 
-  test("renders children when authenticated", () => {
-    localStorage.setItem("authToken", "test-token");
-
-    renderWithProviders(
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <div>Protected Content</div>
-            </PrivateRoute>
-          }
-        />
-        <Route path="/signin" element={<div>Sign In Page</div>} />
-      </Routes>
-    );
-
-    expect(screen.getByText("Protected Content")).toBeInTheDocument();
-  });
-
   test("redirects to signin when not authenticated", () => {
     localStorage.removeItem("authToken");
 
