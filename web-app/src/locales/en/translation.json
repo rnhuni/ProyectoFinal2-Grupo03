@@ -117,6 +117,7 @@
   },
   "incidentScreen": {
     "tittle": "Create Incident Record",
+    "tittleEdit": "Edit Incident Record",
     "subTittle": "Please complete the following form with the required information.",
     "incidentType": "Type of incident",
     "incidentTypePlaceholder": "Select an incident",
@@ -136,6 +137,7 @@
     "phonePlaceholder": "Enter your phone number",
     "attachment": "Attach files",
     "createIncident": "Create incident",
+    "editIncident": "Edit incident",
     "modalAttachment": {
       "tittle": "Attach your files",
       "selectFiles": "What file types are allowed? ",

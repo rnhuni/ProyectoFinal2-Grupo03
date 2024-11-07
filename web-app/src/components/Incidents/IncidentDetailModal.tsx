@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -12,8 +12,9 @@ import {
   Box,
   useToast,
 } from "@chakra-ui/react";
-import { IncidentTableData } from "../../interfaces/Incidents";
+import { IncidentTableData, Attachment } from "../../interfaces/Incidents";
 import apiClient from "../../services/HttpClient";
+import DownloadAttachment from "../DownloadAttachment";
 
 interface IncidentDetailModalProps {
   isOpen: boolean;
@@ -26,38 +27,40 @@ const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
   onClose,
   incident,
 }) => {
-  const [downloading, setDownloading] = useState(false);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
   const toast = useToast();
 
-  const handleDownload = async (attachmentId: string) => {
-    setDownloading(true);
+  useEffect(() => {
+    if (isOpen && incident) {
+      fetchAttachments();
+    }
+  }, [isOpen, incident]);
+
+  const fetchAttachments = async () => {
+    if (!incident) return;
+    setLoadingAttachments(true);
     try {
-      const response = await apiClient.post("/v1/incident/media/download-url", {
-        media_id: attachmentId,
-      });
-
-      const downloadUrl = response.data.url;
-
-      // Redirecciona para iniciar la descarga
-      window.location.href = downloadUrl;
-
+      const token = localStorage.getItem("id_token");
+      const response = await apiClient.get(
+        `/incident/incidents/${incident.id}/attachments`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setAttachments(response.data);
+    } catch {
       toast({
-        title: "Descarga iniciada",
-        description: "El archivo se está descargando.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: "Error en la descarga",
-        description: "No se pudo descargar el archivo.",
+        title: "Error al obtener los archivos adjuntos",
+        description: "No se pudieron cargar los archivos adjuntos.",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
     } finally {
-      setDownloading(false);
+      setLoadingAttachments(false);
     }
   };
 
@@ -96,19 +99,16 @@ const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
           </Box>
           <Box mb={4}>
             <Text fontWeight="bold">Archivos Adjuntos:</Text>
-            {incident.attachments && incident.attachments.length > 0 ? (
-              incident.attachments.map((attachment) => (
+            {loadingAttachments ? (
+              <Text>Cargando archivos adjuntos...</Text>
+            ) : attachments && attachments.length > 0 ? (
+              attachments.map((attachment) => (
                 <Box key={attachment.id} mb={2}>
                   <Text>{attachment.file_name}</Text>
-                  <Button
-                    colorScheme="blue"
-                    size="sm"
-                    onClick={() => handleDownload(attachment.id)}
-                    isLoading={downloading}
-                    loadingText="Descargando"
-                  >
-                    Descargar
-                  </Button>
+                  <DownloadAttachment
+                    attachmentInfo={attachment}
+                    incidentId={incident.id}
+                  />
                 </Box>
               ))
             ) : (
