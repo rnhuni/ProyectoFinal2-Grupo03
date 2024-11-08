@@ -80,25 +80,21 @@ def edit_permission(permission_id):
         resource = data.get('resource').strip()
         description = data.get('description').strip()
 
-        # Validar que los campos sean correctos
         if not name or not resource or len(name) < 1 or len(resource) < 1:
             return "Invalid parameters", 400
 
-        # Verificar si el permiso existe
         permission = GetPermission(permission_id).execute()
         if not permission:
             return "Permission not found", 404
 
-        # Si se cambia el nombre o el recurso, generar nuevo id y comprobar si ya existe otro permiso con ese id
         new_id = build_permission_id(resource, name)
         if new_id != permission_id and ExistsPermission(id=new_id).execute():
             return "Permission with this name and resource already exists", 400
 
-        # Actualizar el permiso con los nuevos valores
         updated_permission = UpdatePermission(permission_id, name, resource, description).execute()
 
         return jsonify({
-            "id": updated_permission.id,  # Este sería el nuevo id si cambia
+            "id": updated_permission.id,
             "name": updated_permission.name,
             "resource": updated_permission.resource,
             "description": updated_permission.description,

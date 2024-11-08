@@ -5,12 +5,18 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 loaded = load_dotenv('.env')
+
+from .services.secret_service import SecretService
+app = Flask(__name__)
+
+region = os.getenv("AWS_REGION", "us-east-1")
+secret_name = os.getenv('SECRET_NAME')
+secret_service = SecretService(secret_name, region).load_secret_to_env()
+
 from .blueprints import register_blueprints
 from .models.model import initdb, session
 
-app = Flask(__name__)
 register_blueprints(app)
-
 initdb()
 
 @app.teardown_request
