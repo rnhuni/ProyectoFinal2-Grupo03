@@ -256,3 +256,28 @@ def get_attachment(incident_id, attachment_id):
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": f"Failed to retrieve attachment. Details: {str(e)}"}), 500
+    
+@incidents_bp.route('/incidents/<incident_id>/feedback', methods=['GET'])
+def get_feedback(incident_id):
+    try:
+        return jsonify(
+            {
+                "incident_id": incident_id,
+                "support_rating": 5,
+                "ease_of_contact": 5,
+                "resolution_time": 5,
+                "support_staff_attitude": 5,
+                "additional_comments": "This is an additional comment.",
+                "created_at": "2024-11-07 15:34:000",
+                "updated_at": "2024-11-07 15:34:000"
+            }
+        ), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to retrieve feedback incident. Details: {str(e)}"}), 500
+    
+@incidents_bp.route('/incidents/<incident_id>/feedback', methods=['POST'])
+def create_feedback(incident_id):
+    try:
+        return "", 201
+    except Exception as e:
+        return jsonify({"error": f"Failed to create feedback incident feedback. Details: {str(e)}"}), 500
