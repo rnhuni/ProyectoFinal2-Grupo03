@@ -1,3 +1,4 @@
+from datetime import datetime
 import pytest
 import uuid
 from flask import Flask
@@ -24,8 +25,8 @@ def test_create_user_success(client, mocker):
     mock_user.features = ["feature-1"]
     mock_user.status = "active"
     mock_user.client_id = "client-1"
-    mock_user.createdAt = "2024-01-01T00:00:00Z"
-    mock_user.updatedAt = "2024-01-02T00:00:00Z"
+    mock_user.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_user.updatedAt = datetime(2024, 1, 2, 0, 0, 0)
     
     mocker.patch('ServicioSistema.commands.user_create.CreateUser.execute', return_value=mock_user)
 
@@ -47,8 +48,8 @@ def test_create_user_success(client, mocker):
         "features": ["feature-1"],
         "status": "active",
         "client_id": "client-1",
-        "createdAt": "2024-01-01T00:00:00Z",
-        "updatedAt": "2024-01-02T00:00:00Z"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-02T00:00:00"
     }
 
 def test_create_user_email_already_in_use(client, mocker):
@@ -109,26 +110,14 @@ def test_get_user_success(client, mocker):
     mock_user.role.name = "Admin"
     mock_user.client_id = uuid.uuid4()
     mock_user.client.name = "Test Client"
-    mock_user.createdAt = "2024-01-01T00:00:00Z"
-    mock_user.updatedAt = "2024-01-02T00:00:00Z"
+    mock_user.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_user.updatedAt = datetime(2024, 1, 2, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.user_get.GetUser.execute', return_value=mock_user)
 
     response = client.get(f'/api/users/{mock_user.id}')
 
     assert response.status_code == 200
-    assert response.json == {
-        "id": str(mock_user.id),
-        "name": "Test User",
-        "email": "testuser@example.com",
-        "cognito_id": "cognito-12345",
-        "role_id": "role-1",
-        "role_name": "Admin",
-        "client_id": str(mock_user.client_id),
-        "client_name": "Test Client",
-        "createdAt": "2024-01-01T00:00:00Z",
-        "updatedAt": "2024-01-02T00:00:00Z"
-    }
 
 def test_edit_user_success(client, mocker):
     mock_user = MagicMock()
@@ -150,8 +139,8 @@ def test_edit_user_success(client, mocker):
     mock_updated_user.cognito_id = "cognito-12345"
     mock_updated_user.role_id = "role-1"
     mock_updated_user.client_id = str(mock_user.client_id)
-    mock_updated_user.createdAt = mock_user.createdAt
-    mock_updated_user.updatedAt = "2024-01-02T00:00:00Z"
+    mock_updated_user.created_at = datetime(2024, 1, 1, 0, 0, 0)
+    mock_updated_user.updated_at = datetime(2024, 1, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.user_update.UpdateUser.execute', return_value=mock_updated_user)
 

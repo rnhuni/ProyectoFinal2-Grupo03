@@ -30,8 +30,8 @@ def create_permission():
             "id": data.id,
             "name": data.name,
             "resource": data.resource,
-            "createdAt": data.createdAt,
-            "updatedAt": data.updatedAt
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
         }), 201
     except Exception as e:
         return jsonify({'error': f'Create permission failed. Details: {str(e)}'}), 500
@@ -49,8 +49,8 @@ def get_permission(permission_id):
             "name": permission.name,
             "resource": permission.resource,
             "description": permission.description,
-            "createdAt": permission.createdAt,
-            "updatedAt": permission.updatedAt
+            "created_at": permission.createdAt.isoformat(),
+            "updated_at": permission.updatedAt.isoformat()
         }), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving permission. Details: {str(e)}'}), 500
@@ -66,8 +66,8 @@ def get_all_permissions():
             "name": perm.name,
             "resource": perm.resource,
             "description": perm.description,
-            "createdAt": perm.createdAt,
-            "updatedAt": perm.updatedAt
+            "created_at": perm.createdAt.isoformat(),
+            "updated_at": perm.updatedAt.isoformat()
         } for perm in permissions]), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving permissions. Details: {str(e)}'}), 500
@@ -98,7 +98,7 @@ def edit_permission(permission_id):
             "name": updated_permission.name,
             "resource": updated_permission.resource,
             "description": updated_permission.description,
-            "updatedAt": updated_permission.updatedAt
+            "updated_at": updated_permission.updatedAt.isoformat()
         }), 200
 
     except Exception as e:

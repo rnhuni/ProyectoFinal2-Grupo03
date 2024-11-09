@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
 
+from ServicioSistema.commands.notification_create import CreateNotification
+
 notifications_bp = Blueprint('notifications_bp', __name__)
 
 @notifications_bp.route('/notifications', methods=['GET'])
@@ -37,7 +39,24 @@ def get_all_notifications():
 @notifications_bp.route('/notifications', methods=['POST'])
 def create_notification():
     try:
-        return "", 201
+        data = request.get_json()
+        name = data.get('name')
+        service = data.get('service')
+        show_by_default = data.get('show_by_default', True)
+
+        if not name or not service or len(name) < 1 or show_by_default is None:
+            return "Invalid parameters", 400
+        
+        data = CreateNotification(name, service, show_by_default).execute()
+
+        return jsonify({
+            "id": data.id,
+            "name": data.name,
+            "service": data.service,
+            "show_by_default": bool(data.show_by_default),
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
+        }), 201
     except Exception as e:
         return jsonify({'error': f'Error creating notification. Details: {str(e)}'}), 500
     

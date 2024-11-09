@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime
 from unittest.mock import patch, MagicMock
 from ServicioSistema.models.subscription_plan import SubscriptionPlan
 from ServicioSistema.commands.subscription_plan_get_all import GetAllSubscriptions
@@ -38,8 +39,8 @@ def test_create_plan_success(client, mocker):
     mock_created_plan.status = "active"
     mock_created_plan.price = 19.99
     mock_created_plan.features = "Feature1, Feature2"
-    mock_created_plan.createdAt = "2024-10-01T12:00:00Z"
-    mock_created_plan.updatedAt = "2024-10-01T12:00:00Z"
+    mock_created_plan.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_created_plan.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.subscription_plan_create.CreateSubscriptionPlan.execute', return_value=mock_created_plan)
     
@@ -55,8 +56,8 @@ def test_create_plan_success(client, mocker):
         "price": 19.99,
         "features": "Feature1, Feature2",
         "roles": ["role-1", "role-2"],
-        "createdAt": "2024-10-01T12:00:00Z",
-        "updatedAt": "2024-10-01T12:00:00Z"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_create_plan_already_exists(client, mocker):
@@ -141,8 +142,8 @@ def test_get_subscription_plan_success(client, mocker):
     mock_plan.status = "active"
     mock_plan.price = 19.99
     mock_plan.features = "Feature1, Feature2"
-    mock_plan.createdAt = "2024-10-01T12:00:00Z"
-    mock_plan.updatedAt = "2024-10-01T12:00:00Z"
+    mock_plan.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_plan.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
     
     mock_role_1 = MagicMock()
     mock_role_1.id = "role-1"
@@ -171,8 +172,8 @@ def test_get_subscription_plan_success(client, mocker):
             {"id": "role-1", "name": "Admin"},
             {"id": "role-2", "name": "User"}
         ],
-        "createdAt": "2024-10-01T12:00:00Z",
-        "updatedAt": "2024-10-01T12:00:00Z"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_create_plan_missing_roles(client, mocker):    
@@ -239,8 +240,8 @@ def test_get_all_subscriptions_success(client, mocker):
         price=19.99,
         features="Feature1, Feature2"
     )
-    mock_plan_1.createdAt = "2024-10-20T16:56:39Z"
-    mock_plan_1.updatedAt = "2024-10-20T16:56:39Z"
+    mock_plan_1.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_plan_1.updatedAt = datetime(2024, 2, 1, 0, 0, 0)
 
     mock_plan_2 = SubscriptionPlan(
         id="plan-2",
@@ -250,8 +251,8 @@ def test_get_all_subscriptions_success(client, mocker):
         price=9.99,
         features="Feature1"
     )
-    mock_plan_2.createdAt = "2024-10-20T16:56:39Z"
-    mock_plan_2.updatedAt = "2024-10-20T16:56:39Z"
+    mock_plan_2.createdAt =  datetime(2024, 1, 1, 0, 0, 0)
+    mock_plan_2.updatedAt  = datetime(2024, 2, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.subscription_plan_get_all.GetAllSubscriptions.execute', return_value=[mock_plan_1, mock_plan_2])
 
@@ -261,8 +262,8 @@ def test_get_all_subscriptions_success(client, mocker):
 
     result = response.json
     for plan in result:
-        del plan["createdAt"]
-        del plan["updatedAt"]
+        del plan["created_at"]
+        del plan["updated_at"]
 
     assert result == [
         {
@@ -327,8 +328,8 @@ def test_update_subscriptions_success(client, mocker):
     mock_updated_plan.status = "inactive"
     mock_updated_plan.price = 29.99
     mock_updated_plan.features = "Updated Feature1, Updated Feature2"
-    mock_updated_plan.createdAt = "2024-10-01T12:00:00Z"
-    mock_updated_plan.updatedAt = "2024-10-15T12:00:00Z"
+    mock_updated_plan.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_updated_plan.updatedAt = datetime(2024, 1, 2, 0, 0, 0)
 
     mock_role_1 = MagicMock()
     mock_role_1.id = "role-1"
@@ -356,8 +357,8 @@ def test_update_subscriptions_success(client, mocker):
             {"id": "role-1", "name": "Admin"},
             {"id": "role-2", "name": "User"}
         ],
-        "createdAt": "2024-10-01T12:00:00Z",
-        "updatedAt": "2024-10-15T12:00:00Z"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-02T00:00:00"
     }
 
 def test_update_subscription_no_valid_roles(client, mocker):

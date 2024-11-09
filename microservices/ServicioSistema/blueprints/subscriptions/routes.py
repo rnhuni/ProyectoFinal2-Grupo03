@@ -50,8 +50,8 @@ def create_plan():
             "price": float(data.price),
             "features": data.features,
             "roles": valid_roles,
-            "createdAt": data.createdAt,
-            "updatedAt": data.updatedAt
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
         }), 201
     except Exception as e:
         return jsonify({'error': f'Create subscription plan failed. Details: {str(e)}'}), 500
@@ -76,8 +76,8 @@ def get_subscription(subscription_id):
             "price": float(subscription_plan.price),
             "features": subscription_plan.features,
             "roles": roles_list,
-            "createdAt": subscription_plan.createdAt,
-            "updatedAt": subscription_plan.updatedAt
+            "created_at": subscription_plan.createdAt.isoformat(),
+            "updated_at": subscription_plan.updatedAt.isoformat()
         }), 200
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve subscription plan. Details: {str(e)}'}), 500
@@ -99,8 +99,8 @@ def get_all_subscriptions():
                 "status": subscription.status,
                 "price": float(subscription.price),
                 "features": subscription.features,
-                "createdAt": subscription.createdAt,
-                "updatedAt": subscription.updatedAt
+                "created_at": subscription.createdAt.isoformat(),
+                "updated_at": subscription.updatedAt.isoformat()
             }
             
             subscription_data["roles"] = [{"id": role.id, "name": role.name} for role in subscription.roles]
@@ -114,7 +114,6 @@ def get_all_subscriptions():
 @subscriptions_bp.route('/subscriptions/<subscription_id>', methods=['PUT'])
 def update_subscription(subscription_id):
     try:
-        # Obtener los datos de la solicitud
         data = request.get_json()
         name = data.get('name')
         description = data.get('description', '').strip()
@@ -123,7 +122,6 @@ def update_subscription(subscription_id):
         features = data.get('features', '').strip()
         roles = data.get('roles', [])
 
-        # Validar roles (puedes usar el mismo patrón que en create)
         valid_roles = []
         for role in roles:
             role_id = role.get('id')
@@ -132,7 +130,6 @@ def update_subscription(subscription_id):
         if len(valid_roles) < 1:
             return jsonify({"error": "At least one valid role is required"}), 400
 
-        # Llamar al comando para actualizar la suscripción
         updated_subscription = UpdateSubscriptionPlan(
             subscription_id=subscription_id,
             name=name,
@@ -143,7 +140,6 @@ def update_subscription(subscription_id):
             roles=valid_roles
         ).execute()
 
-        # Retornar la suscripción actualizada
         return jsonify({
             "id": updated_subscription.id,
             "name": updated_subscription.name,
@@ -152,8 +148,8 @@ def update_subscription(subscription_id):
             "price": float(updated_subscription.price),
             "features": updated_subscription.features,
             "roles": [{"id": role.id, "name": role.name} for role in updated_subscription.roles],
-            "createdAt": updated_subscription.createdAt,
-            "updatedAt": updated_subscription.updatedAt
+            "created_at": updated_subscription.createdAt.isoformat(),
+            "updated_at": updated_subscription.updatedAt.isoformat()
         }), 200
 
     except ValueError as e:

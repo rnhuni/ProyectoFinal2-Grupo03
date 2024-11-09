@@ -8,6 +8,7 @@ from ServicioSistema.commands.role_get import GetRole
 from ServicioSistema.commands.role_get_all import GetAllRoles
 from ServicioSistema.commands.permission_exists import ExistsPermission
 from ServicioSistema.utils import build_role_id
+from datetime import datetime
 
 @pytest.fixture
 def client():
@@ -23,8 +24,8 @@ def test_create_role_success(client, mocker):
     mock_role = MagicMock()
     mock_role.id = "role-id"
     mock_role.name = "Admin"
-    mock_role.createdAt = "2024-01-01"
-    mock_role.updatedAt = "2024-01-01"
+    mock_role.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_role.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.role_create.CreateRole.execute', return_value=mock_role)
     mocker.patch('ServicioSistema.utils.build_role_id', return_value="role-id")
@@ -43,8 +44,8 @@ def test_create_role_success(client, mocker):
     assert response.json == {
         "id": "role-id",
         "name": "Admin",
-        "createdAt": "2024-01-01",
-        "updatedAt": "2024-01-01"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_create_role_already_exists(client, mocker):
@@ -138,8 +139,8 @@ def test_get_role_success(client, mocker):
     mock_role = MagicMock()
     mock_role.id = "role-id"
     mock_role.name = "Admin"
-    mock_role.createdAt = "2024-01-01"
-    mock_role.updatedAt = "2024-01-01"
+    mock_role.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_role.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mock_permission_1 = MagicMock()
     mock_permission_1.permission.id = "permission-1"
@@ -173,8 +174,8 @@ def test_get_role_success(client, mocker):
                 "actions": ["write"]
             }
         ],
-        "createdAt": "2024-01-01",
-        "updatedAt": "2024-01-01"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_get_role_not_found(client, mocker):
@@ -197,8 +198,8 @@ def test_get_all_roles_success(client, mocker):
     mock_role_1 = MagicMock()
     mock_role_1.id = "role-1"
     mock_role_1.name = "Admin"
-    mock_role_1.createdAt = "2024-01-01"
-    mock_role_1.updatedAt = "2024-01-01"
+    mock_role_1.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_role_1.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mock_permission_1 = MagicMock()
     mock_permission_1.permission.id = "permission-1"
@@ -211,8 +212,8 @@ def test_get_all_roles_success(client, mocker):
     mock_role_2 = MagicMock()
     mock_role_2.id = "role-2"
     mock_role_2.name = "Editor"
-    mock_role_2.createdAt = "2024-01-01"
-    mock_role_2.updatedAt = "2024-01-01"
+    mock_role_2.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_role_2.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mock_permission_2 = MagicMock()
     mock_permission_2.permission.id = "permission-2"
@@ -237,8 +238,8 @@ def test_get_all_roles_success(client, mocker):
                     "actions": ["read"]
                 }
             ],
-            "createdAt": "2024-01-01",
-            "updatedAt": "2024-01-01"
+            "created_at": "2024-01-01T00:00:00",
+            "updated_at": "2024-01-01T00:00:00"
         },
         {
             "id": "role-2",
@@ -249,8 +250,8 @@ def test_get_all_roles_success(client, mocker):
                     "actions": ["write"]
                 }
             ],
-            "createdAt": "2024-01-01",
-            "updatedAt": "2024-01-01"
+            "created_at": "2024-01-01T00:00:00",
+            "updated_at": "2024-01-01T00:00:00"
         }
     ]
 
@@ -276,7 +277,7 @@ def test_update_role_success(client, mocker):
     mock_updated_role = MagicMock()
     mock_updated_role.id = "role-name-3"
     mock_updated_role.name = "Updated Role Name 3"
-    mock_updated_role.updatedAt = "2024-10-19"
+    mock_updated_role.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
     
     mocker.patch('ServicioSistema.commands.role_update.UpdateRole.execute', return_value=mock_updated_role)
 
@@ -298,7 +299,7 @@ def test_update_role_success(client, mocker):
         "id": "role-name-3",
         "name": "Updated Role Name 3",
         "permissions": json_data["permissions"],
-        "updatedAt": "2024-10-19"
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_update_role_not_found(client, mocker):

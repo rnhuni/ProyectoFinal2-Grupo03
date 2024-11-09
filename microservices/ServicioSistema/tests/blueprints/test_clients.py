@@ -1,7 +1,7 @@
 import pytest
 from flask import Flask, json
 from unittest.mock import MagicMock
-
+from datetime import datetime
 from ServicioSistema.blueprints.clients.routes import clients_bp
 
 @pytest.fixture
@@ -16,8 +16,8 @@ def test_get_all_clients_success(client, mocker):
     mock_client.id = "client-1"
     mock_client.name = "Client 1"
     mock_client.description = "Description for Client 1"
-    mock_client.createdAt = "2024-01-01T00:00:00Z"
-    mock_client.updatedAt = "2024-01-02T00:00:00Z"
+    mock_client.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_client.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
     mock_client.active_subscription_plan = MagicMock()
     mock_client.active_subscription_plan.id = "sub-123"
     mock_client.active_subscription_plan.name = "Premium"
@@ -35,8 +35,8 @@ def test_get_all_clients_success(client, mocker):
             "name": "Premium"
         },
         "description": "Description for Client 1",
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-02T00:00:00Z"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }]
 
 def test_get_all_clients_error(client, mocker):
@@ -52,8 +52,8 @@ def test_update_client_success(client, mocker):
     mock_client.id = "client-1"
     mock_client.name = "Client 1"
     mock_client.description = "Updated description"
-    mock_client.createdAt = "2024-01-01T00:00:00Z"
-    mock_client.updatedAt = "2024-01-02T00:00:00Z"
+    mock_client.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_client.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
     mock_client.active_subscription_plan = MagicMock()
     mock_client.active_subscription_plan.id = "sub-456"
     mock_client.active_subscription_plan.name = "Standard"
@@ -72,8 +72,8 @@ def test_update_client_success(client, mocker):
             "id": "sub-456",
             "name": "Standard"
         },
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-02T00:00:00Z"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_update_client_missing_parameters(client):

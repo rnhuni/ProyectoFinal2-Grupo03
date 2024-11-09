@@ -18,8 +18,8 @@ def get_all_clients():
                 "name": cli.active_subscription_plan.name
             },
             "description": cli.description,
-            "created_at": cli.createdAt,
-            "updated_at": cli.updatedAt
+            "created_at": cli.createdAt.isoformat(),
+            "updated_at": cli.updatedAt.isoformat()
         } for cli in clients]), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving clients. Details: {str(e)}'}), 500
@@ -46,8 +46,8 @@ def client(client_id):
                 "id": updated_client.active_subscription_plan.id,
                 "name": updated_client.active_subscription_plan.name
             },
-            "created_at": updated_client.createdAt,
-            "updated_at": updated_client.updatedAt
+            "created_at": updated_client.createdAt.isoformat(),
+            "updated_at": updated_client.updatedAt.isoformat()
         }), 200
 
     except Exception as e:

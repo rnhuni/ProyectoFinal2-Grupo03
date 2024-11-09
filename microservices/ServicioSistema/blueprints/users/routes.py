@@ -61,8 +61,8 @@ def create_user():
             "features":user.features,
             "status": user.status,
             "client_id": user.client_id,
-            "createdAt": user.createdAt,
-            "updatedAt": user.updatedAt
+            "created_at": user.createdAt.isoformat(),
+            "updated_at": user.updatedAt.isoformat()
         }), 201
     except Exception as e:
         return jsonify({'error': f'Create user failed. Details: {str(e)}'}), 500
@@ -87,8 +87,8 @@ def get_user(user_id):
             "role_name": role_name,
             "client_id": str(user.client_id),
             "client_name": client_name,
-            "createdAt": user.createdAt,
-            "updatedAt": user.updatedAt
+            "created_at": user.createdAt.isoformat(),
+            "updated_at": user.updatedAt.isoformat()
         }), 200
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve user. Details: {str(e)}'}), 500
@@ -112,8 +112,8 @@ def get_all_users():
                 "role_name": role_name,
                 "client_id": str(user.client_id),
                 "client_name": client_name,
-                "createdAt": user.createdAt,
-                "updatedAt": user.updatedAt
+                "created_at": user.createdAt.isoformat(),
+                "updated_at": user.updatedAt.isoformat()
             })
 
         return jsonify(users_data), 200
@@ -164,8 +164,8 @@ def edit_user(user_id):
             "cognito_id": updated_user.cognito_id,
             "role_id": updated_user.role_id,
             "client_id": str(updated_user.client_id),
-            "createdAt": updated_user.createdAt,
-            "updatedAt": updated_user.updatedAt
+            "created_at": updated_user.createdAt.isoformat(),
+            "updated_at": updated_user.updatedAt.isoformat()
         }), 200
 
     except ValueError as e:
