@@ -36,6 +36,21 @@ def get_all_notifications():
     except Exception as e:
         return jsonify({'error': f'Error retrieving notifications. Details: {str(e)}'}), 500
     
+@notifications_bp.route('/notifications/<notification_id>', methods=['GET'])
+def get_notification(notification_id):
+    try:
+        return jsonify(
+            {
+                "id": notification_id,
+                "name": "notificacion 1",
+                "service": "servicio 1",
+                "show_by_default": False,
+                "created_at": "2024-11-07 15:34:000",
+                "updated_at": "2024-11-07 15:34:000"
+            }), 200
+    except Exception as e:
+        return jsonify({'error': f'Error retrieving notifications. Details: {str(e)}'}), 500
+        
 @notifications_bp.route('/notifications', methods=['POST'])
 def create_notification():
     try:

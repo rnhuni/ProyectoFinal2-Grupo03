@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 region = os.getenv("AWS_REGION", "us-east-1")
 secret_name = os.getenv('SECRET_NAME')
-secret_service = SecretService(secret_name, region).load_secret_to_env()
+SecretService(secret_name, region).load_secret_to_env()
 
 from .blueprints import register_blueprints
 from .models.model import initdb, session
