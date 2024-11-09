@@ -91,7 +91,7 @@ export const IncidentReportScreen = () => {
     console.log("1. cargando archivo");
     try {
       const result = await DocumentPicker.pick({
-        type: [DocumentPicker.types.plainText, DocumentPicker.types.xlsx, DocumentPicker.types.csv],
+        type: [DocumentPicker.types.allFiles],
       });
       handleFileUpload(result); // Procesa el archivo cargado
     } catch (err) {
