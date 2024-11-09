@@ -18,11 +18,12 @@ import Footer from '../../Components/Footer';
 import { Contact, Incident, Attachment } from '../../../interfaces/Incidents';
 import useIncidents from '../../../hooks/incidents/useIncidents';
 import useFileUpload from '../../../hooks/uploadFile/useFileUpload';
+import RNFetchBlob from 'react-native-blob-util';
 
 export const IncidentReportScreen = () => {
   const { t } = useTranslation(); // Usamos el hook para acceder a las traducciones
   const [incidentType, setIncidentType] = useState<string>(
-    t('incidentReportScreen.incidentType.placeholder'),
+    "t('incidentReportScreen.incidentType.placeholder')",
   );
   const [phoneNumber, setPhoneNumber] = useState('');
   const [description, setDescription] = useState('');
@@ -46,11 +47,14 @@ export const IncidentReportScreen = () => {
       for (const attachment of attachments) {
         if (attachment.fileObject && attachment.file_uri) {
           console.log("5. enviando de veritas");
+          const fileData = await RNFetchBlob.fs.readFile(attachment.fileObject.uri, 'base64');
+          console.log("5.1. el archivo en base64", fileData);
+
           const success = await uploadFile(
-            new File([await fetch(attachment.fileObject.uri).then(res => res.blob())], attachment.file_name, { type: attachment.content_type }),
+            fileData,
             attachment.file_uri
           );
-          console.log("6. a ver q paso", success );
+          console.log("6. a ver q paso", success);
           if (success) {
             uploadedAttachments.push({
               id: attachment.id,
@@ -81,7 +85,7 @@ export const IncidentReportScreen = () => {
       // Maneja la respuesta exitosa aquí
       alert('Incidente registrado con éxito');
     } catch (error) {
-      // Maneja el error aquí
+      console.error('Error al registrar el incidente:', error); // Registrar el error en la consola
       alert('Error al registrar el incidente');
     }
   };
@@ -108,18 +112,20 @@ export const IncidentReportScreen = () => {
     if (result && result.length > 0) {
       const newAttachments: Attachment[] = [];
       for (const file of Array.from(result)) {
-        const isAcceptedType = [
-          "text/csv",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ].includes(file.type ?? '');
+        // const isAcceptedType = [
+        //   "text/csv",
+        //   "application/vnd.ms-excel",
+        //   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        // ].includes(file.type ?? '');
 
-        if (!isAcceptedType) {
-          Alert.alert("Formato de archivo incorrecto");
+        // if (!isAcceptedType) {
+        //   Alert.alert("Formato de archivo incorrecto");
 
-          continue;
-        }
+        //   continue;
+        // }
         console.log("3. archivo aceptado archivo");
+        console.log(file.name);
+        console.log(file.type);
         if (file.name && file.type) {
           const uploadData = await getUploadUrl(file.name, file.type);
           if (uploadData) {
@@ -259,7 +265,7 @@ export const IncidentReportScreen = () => {
 
         </View>
 
-        {/* Subir archivo */}
+        {/* Subir archivo 
         <View style={styles.fileUpload}>
           <TouchableOpacity style={styles.uploadButton}>
             <Icon name="file-upload" size={20} style={styles.uploadIcon} />
@@ -272,7 +278,7 @@ export const IncidentReportScreen = () => {
             onPress={() => { }}
           />
         </View>
-
+*/}
         {/* Botón para registrar incidente */}
         <TouchableOpacity
           style={styles.registerButton}

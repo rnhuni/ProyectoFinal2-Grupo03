@@ -19,12 +19,15 @@ const useFileUpload = () => {
     setError("");
     setLoading(true);
     try {
+      console.log("Getting upload URL for", fileName, " - ", contentType);
       const response = await api.post<UploadResponse>("/incident/media/upload-url", {
         file_name: fileName,
         content_type: contentType,
       });
+      console.log("Response", response.data);
       return response.data; // Devuelve la respuesta completa
     } catch (err) {
+      console.error("Get upload URL error:", err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
       return null;
@@ -35,6 +38,9 @@ const useFileUpload = () => {
 
   // Función para cargar el archivo en la URL generada
   const uploadFile = async (file: File, url: string) => {
+    console.log("En la carga de archivo");
+    console.log("Uploading file", file);
+    console.log("To URL", url);
     setError("");
     setUploadProgress(0);
     setLoading(true);
@@ -56,6 +62,7 @@ const useFileUpload = () => {
       }
       return true;
     } catch (err) {
+      console.error("Upload file error:", err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
       return false;

@@ -19,8 +19,8 @@ interface LoginScreenProps extends StackScreenProps<RootStackParamList, 'LoginSc
 
 export const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const { t, i18n } = useTranslation();
-  const [username, setUsername] = useState('oeramirezb@gmail.com');
-  const [password, setPassword] = useState('T0rr3sd31nn0v0!');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async () => {
