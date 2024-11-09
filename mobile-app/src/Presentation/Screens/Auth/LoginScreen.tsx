@@ -19,16 +19,14 @@ interface LoginScreenProps extends StackScreenProps<RootStackParamList, 'LoginSc
 
 export const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const { t, i18n } = useTranslation();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('oeramirezb@gmail.com');
+  const [password, setPassword] = useState('T0rr3sd31nn0v0!');
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async () => {
     try {
       const authResult = await loginUser(username, password);
-      console.log(authResult.IdToken);
       setToken(authResult.IdToken);
-      console.log(authResult.IdToken);
 
       navigation.navigate('HomeScreen');
     } catch (error) {

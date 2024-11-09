@@ -1,3 +1,5 @@
+import { DocumentPickerResponse } from "react-native-document-picker";
+
 export interface Incident {
   id?: string;
   description: string;
@@ -14,10 +16,21 @@ export interface Attachment {
   content_type: string;
   file_name: string;
   file_uri: string;
+  fileObject?: DocumentPickerResponse;
 }
+
 
 export interface Contact {
   phone: string;
 }
 
-
+export interface IncidentTableData {
+  id: string;
+  description: string;
+  type: string;
+  createdAt: string;
+  updatedAt: string;
+  user_issuer_name: string;
+  contact: Contact;
+  attachments: Attachment[];
+}

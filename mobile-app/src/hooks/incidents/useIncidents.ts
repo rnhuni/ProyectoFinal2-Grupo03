@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import api, { setToken } from '../../api/api';
+import api from '../../api/api';
 import { AxiosError, CanceledError } from 'axios';
-import { Incident } from '../../interfaces/Indicents';
+import { Incident } from '../../interfaces/Incidents';
 
 const useIncidents = () => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
