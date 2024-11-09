@@ -17,60 +17,12 @@
             "essential": true,
             "environment": [
                 {
-                    "name": "RDS_HOSTNAME",
-                    "value": "database-1.cfkqo6ysa345.us-east-1.rds.amazonaws.com"
-                },
-                {
-                    "name": "RDS_PASSWORD",
-                    "value": "c3yEJfBk4XqfdnDibHp5"
-                },
-                {
-                    "name": "ENV",
-                    "value": "prod"
-                },
-                {
-                    "name": "RDS_PORT",
-                    "value": "5432"
-                },
-                {
-                    "name": "RDS_USERNAME",
-                    "value": "postgres"
-                },
-                {
-                    "name": "RDS_DB_NAME",
-                    "value": "postgres"
+                    "name": "SECRET_NAME",
+                    "value": "incident-prod"
                 },
                 {
                     "name": "AWS_REGION",
                     "value": "us-east-1"
-                },
-                {
-                    "name": "USER_POOL_ID",
-                    "value": "us-east-1_X4SlUF0z0"
-                },
-                {
-                    "name": "CLIENT_ID",
-                    "value": "abcall-users"
-                },
-                {
-                    "name": "BASE_URL",
-                    "value": "/incident/v2"
-                },
-                {
-                    "name": "ORIGINS",
-                    "value": "*"
-                },
-                {
-                    "name": "BUCKET_NAME",
-                    "value": "abcall-media"
-                },
-                {
-                    "name": "COGNITO_AUDIENCE",
-                    "value": "7evjfjtvscn0qsok8la2kf1ja"
-                },
-                {
-                    "name": "COGNITO_SIGN_URL",
-                    "value": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_X4SlUF0z0/.well-known/jwks.json"
                 }
             ],
             "mountPoints": [],
