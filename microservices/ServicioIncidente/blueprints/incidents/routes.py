@@ -9,6 +9,8 @@ from ServicioIncidente.commands.attachment_exists import ExistsAttachment
 from ServicioIncidente.commands.attachment_create import CreateAttachment
 from ServicioIncidente.commands.attachment_get_all import GetAllAttachments
 from ServicioIncidente.commands.attachment_get import GetAttachment
+from ServicioIncidente.commands.feedback_exists import ExistsFeedback
+from ServicioIncidente.commands.feedback_create import CreateFeedback
 from ServicioIncidente.utils import decode_user, build_incident_id
 
 incidents_bp = Blueprint('incident_bp', __name__)
@@ -51,11 +53,9 @@ def create_incident():
             "contact": json.loads(data.contact),
             "user_issuer_id": data.user_issuer_id,
             "user_issuer_name": data.user_issuer_name,
-            "createdAt": data.createdAt,
-            "updatedAt": data.updatedAt
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
         }), 201
-    except KeyError:
-        return "Invalid parameters", 400
     except Exception as e:
         return jsonify({'error': f'Create incident failed. Details: {str(e)}'}), 500
 
@@ -91,8 +91,8 @@ def create_attachment(incident_id):
             "content_type": data.content_type,
             "user_attacher_id": data.user_attacher_id,
             "user_attacher_name": data.user_attacher_name,
-            "createdAt": data.createdAt,
-            "updatedAt": data.updatedAt
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
         }), 201
     except Exception as e:
         return jsonify({'error': f'Create attachment failed. Details: {str(e)}'}), 500
@@ -111,8 +111,8 @@ def get_all_incidents():
                 "contact": json.loads(incident.contact) if incident.contact else None,
                 "user_issuer_id": incident.user_issuer_id,
                 "user_issuer_name": incident.user_issuer_name,
-                "createdAt": incident.createdAt,
-                "updatedAt": incident.updatedAt,
+                "created_at": incident.createdAt.isoformat(),
+                "updated_at": incident.updatedAt.isoformat(),
                 "attachments": [
                     {
                         "id": attachment.id,
@@ -143,8 +143,8 @@ def get_incident(incident_id):
             "contact": json.loads(incident.contact) if incident.contact else None,
             "user_issuer_id": incident.user_issuer_id,
             "user_issuer_name": incident.user_issuer_name,
-            "createdAt": incident.createdAt,
-            "updatedAt": incident.updatedAt,
+            "created_at": incident.createdAt.isoformat(),
+            "updated_at": incident.updatedAt.isoformat(),
             "attachments": [
                 {
                     "id": attachment.id,
@@ -187,8 +187,8 @@ def update_incident(incident_id):
             "contact": json.loads(updated_incident.contact) if updated_incident.contact else None,
             "user_issuer_id": updated_incident.user_issuer_id,
             "user_issuer_name": updated_incident.user_issuer_name,
-            "createdAt": updated_incident.createdAt,
-            "updatedAt": updated_incident.updatedAt
+            "created_at": updated_incident.createdAt.isoformat(),
+            "updated_at": updated_incident.updatedAt.isoformat()
         }), 200
 
     except ValueError as e:
@@ -250,8 +250,8 @@ def get_attachment(incident_id, attachment_id):
             "content_type": attachment.content_type,
             "user_attacher_id": attachment.user_attacher_id,
             "user_attacher_name": attachment.user_attacher_name,
-            "createdAt": attachment.createdAt,
-            "updatedAt": attachment.updatedAt
+            "created_at": attachment.createdAt.isoformat(),
+            "updated_at": attachment.updatedAt.isoformat()
         }
         return jsonify(result), 200
     except Exception as e:
@@ -277,7 +277,41 @@ def get_feedback(incident_id):
     
 @incidents_bp.route('/incidents/<incident_id>/feedback', methods=['POST'])
 def create_feedback(incident_id):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({"error": "Authorization header missing"}), 401
+
     try:
-        return "", 201
+        user = decode_user(auth_header)
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+        
+        data = request.get_json()
+        
+        support_rating = int(data.get('support_rating', 0))
+        ease_of_contact = int(data.get('ease_of_contact', 0))
+        resolution_time = int(data.get('resolution_time', 0))
+        support_staff_attitude = int(data.get('support_staff_attitude', 0))
+        additional_comments = data.get('additional_comments')
+
+        if ExistsFeedback(incident_id).execute():
+            return "The feedback incident already exists", 400
+
+        feedback = CreateFeedback(user["id"], incident_id, support_rating, ease_of_contact, \
+                                          resolution_time, support_staff_attitude, additional_comments).execute()
+
+        return jsonify(
+            {
+                "id": feedback.id,
+                "incident_id": feedback.incident_id,
+                "support_rating": feedback.support_rating,
+                "ease_of_contact": feedback.ease_of_contact,
+                "resolution_time": feedback.resolution_time,
+                "support_staff_attitude": feedback.support_staff_attitude,
+                "additional_comments": feedback.additional_comments,
+                "created_at": feedback.createdAt.isoformat(),
+                "updated_at": feedback.updatedAt.isoformat()
+            }
+        ), 201
     except Exception as e:
         return jsonify({"error": f"Failed to create feedback incident feedback. Details: {str(e)}"}), 500
