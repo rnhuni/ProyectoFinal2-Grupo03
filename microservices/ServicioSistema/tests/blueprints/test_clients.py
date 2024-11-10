@@ -96,3 +96,8 @@ def test_update_client_error(client, mocker):
 
     assert response.status_code == 500
     assert "Update Client failed" in response.json['error']
+
+def test_update_client_invalid_parameters(client):
+    response = client.put('/api/clients/client-1', json={"subscription_id": ""})
+    assert response.status_code == 400
+    assert response.data.decode('utf-8') == "Invalid parameters"

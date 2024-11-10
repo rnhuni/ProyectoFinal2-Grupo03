@@ -269,6 +269,13 @@ def test_create_active_subscription_exception(client, mocker):
     assert response.status_code == 500
     assert 'Create active subscription failed. Details: Service error' in response.json['error']
 
+def test_get_active_subscription_no_authentication(client, mocker):
+    # Simula que la función decode_user devuelve None, lo que significa que no hay usuario autenticado
+    mocker.patch('ServicioFacturacion.utils.decode_user', return_value=None)
 
+    headers = generate_headers()  # Se pueden generar los headers aunque no se usen en este caso
+    response = client.get('/api/subscriptions/active', headers=headers)
 
-
+    # Valida que la respuesta sea 401 (Unauthorized)
+    assert response.status_code == 401
+    assert response.json == {"error": "Unauthorized"}

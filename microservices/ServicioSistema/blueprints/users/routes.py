@@ -14,7 +14,7 @@ users_bp = Blueprint('users_bp', __name__)
 def create_user():
     try:
         data = request.get_json()
-        name = data.get('name').strip()
+        name = data.get('name', '').strip()
         email = data.get('email').strip()
         role_id = data.get('role_id').strip()
         client_id = data.get('client_id').strip()
@@ -41,11 +41,7 @@ def create_user():
         client = GetClient(client_id).execute()
         if client is None:
             return f"Client '{client_id}' does not exist", 400
-        
-        client = GetClient(client_id).execute()
-        if client is None:
-            return f"Client '{client_id}' does not exist", 400
-        
+                
         if client.active_subscription_plan is None:
             return f"Client '{client_id}' does not active subscription_plan", 400
         

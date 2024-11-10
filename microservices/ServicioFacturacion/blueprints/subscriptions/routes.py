@@ -1,6 +1,5 @@
 import json
 import uuid
-import traceback
 from flask import Blueprint, request, jsonify
 from ServicioFacturacion.utils import decode_user
 from ServicioFacturacion.commands.active_subscription_exists import ActiveSubscriptionExists
@@ -182,7 +181,6 @@ def put_active_subscription():
         }), 200
 
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': f'Failed to update active subscription. Details: {str(e)}'}), 500
     
 @subscriptions_bp.route('/subscriptions/active', methods=['POST'])
@@ -242,5 +240,4 @@ def create_active_subscription():
                 ]
         }), 200
     except Exception as e:
-        traceback.print_exc() 
         return jsonify({'error': f'"Create active subscription failed. Details: {str(e)}'}), 500

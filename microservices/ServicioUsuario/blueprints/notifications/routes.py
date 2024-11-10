@@ -16,9 +16,7 @@ def get_all_notifications():
         user = decode_user(auth_header)
 
         base_notifications = SystemService().get_notifications()
-        user_notifications = GetAllNotifications(user["id"]).execute()
-
-        
+        user_notifications = GetAllNotifications(user["id"]).execute()        
 
         notifications = []
         for bn in base_notifications:
@@ -37,11 +35,35 @@ def get_all_notifications():
                     break
             notifications.append(notify)
 
-
         return jsonify(notifications), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving notifications. Details: {str(e)}'}), 500
-    
+
+@notifications_bp.route('/notifications/<notification_id>', methods=['GET'])
+def get_notification(notification_id):
+    auth_header = request.headers.get('Authorization')
+
+    try:
+        user = decode_user(auth_header)
+
+        notification = GetAllNotifications(user["id"]).execute()
+        specific_notification = next((un for un in notification if str(un.base_id) == notification_id), None)
+
+        if not specific_notification:
+            return "Notification not found", 404
+
+        return jsonify({
+            "id": specific_notification.base_id,
+            "name": specific_notification.name,
+            "show": specific_notification.show,
+            "updated_at": specific_notification.updatedAt.isoformat(),
+            "created_at": specific_notification.createdAt.isoformat()
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Error retrieving notification. Details: {str(e)}'}), 500
+
+
 @notifications_bp.route('/notifications/<notification_id>/show/<show>', methods=['PUT'])
 def put_notification(notification_id, show):
     auth_header = request.headers.get('Authorization')
@@ -69,3 +91,4 @@ def put_notification(notification_id, show):
             }), 200
     except Exception as e:
         return jsonify({'error': f'Error editting notification. Details: {str(e)}'}), 500
+        

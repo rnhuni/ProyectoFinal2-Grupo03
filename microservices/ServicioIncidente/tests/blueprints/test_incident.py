@@ -475,3 +475,301 @@ def test_get_attachment_success(client, mocker):
     response = client.get(f'/api/incidents/{incident_id}/attachments/{attachment_id}', headers=headers)
 
     assert response.status_code == 500
+
+def test_create_incident_with_attachments(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mocker.patch('ServicioIncidente.commands.attachment_exists.ExistsAttachment.execute', return_value=False)
+    
+    mock_incident = MagicMock(
+        id="TKT-230101-123456789", type="incident_type", description="Incident description",
+        contact='""', user_issuer_id="user123", user_issuer_name="Test User",
+        createdAt=datetime(2024, 1, 1, 0, 0, 0), updatedAt=datetime(2024, 1, 1, 0, 0, 0)
+    )
+    mocker.patch('ServicioIncidente.commands.incident_create.CreateIncident.execute', return_value=mock_incident)
+    
+    mock_attachment = MagicMock(
+        id="attachment123", file_name="file.jpg", file_uri="http://example.com/file.jpg",
+        content_type="image/jpeg", user_attacher_id="user123", user_attacher_name="Test User",
+        createdAt=datetime(2024, 1, 1, 0, 0, 0), updatedAt=datetime(2024, 1, 1, 0, 0, 0)
+    )
+    mocker.patch('ServicioIncidente.commands.attachment_create.CreateAttachment.execute', return_value=mock_attachment)
+    
+    headers = generate_headers()
+    data = {
+        'type': 'incident_type',
+        'description': 'Incident description',
+        'attachments': [
+            {
+                'id': 'attachment123',
+                'content_type': 'image/jpeg',
+                'file_uri': 'http://example.com/file.jpg',
+                'file_name': 'file.jpg'
+            }
+        ]
+    }
+
+    response = client.post('/api/incidents', json=data, headers=headers)
+
+    assert response.status_code == 201
+
+def test_update_incident_with_contact(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mock_incident = MagicMock(
+        id="incident123", type="type1", description="Updated description",
+        contact='{"phone": "123456789"}', user_issuer_id="user123",
+        user_issuer_name="Test User", createdAt=datetime(2024, 1, 1, 0, 0, 0),
+        updatedAt=datetime(2024, 1, 1, 0, 0, 0)
+    )
+    mocker.patch('ServicioIncidente.commands.incident_update.UpdateIncident.execute', return_value=mock_incident)
+
+    headers = generate_headers()
+    data = {
+        "type": "new_type",
+        "description": "Updated description",
+        "contact": {"phone": "123456789"}
+    }
+
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+    assert response.status_code == 200
+    assert response.json['contact'] == {"phone": "123456789"}
+
+def test_update_incident_value_error(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mocker.patch('ServicioIncidente.commands.incident_update.UpdateIncident.execute', side_effect=ValueError("Invalid data"))
+
+    headers = generate_headers()
+    data = {
+        "type": "new_type",
+        "description": "Updated description"
+    }
+
+    response = client.put('/api/incidents/incident123', json=data, headers=headers)
+    assert response.status_code == 400
+    assert "Update incident failed. Details: Invalid data" in response.json['error']
+
+def test_get_attachment_success(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mock_attachment = MagicMock(
+        id="attachment123",
+        file_name="file.jpg",
+        file_uri="http://example.com/file.jpg",
+        content_type="image/jpeg",
+        user_attacher_id="user123",
+        user_attacher_name="Test User",
+        createdAt=datetime(2024, 1, 1, 0, 0, 0),
+        updatedAt=datetime(2024, 1, 1, 0, 0, 0)
+    )
+    mocker.patch('ServicioIncidente.commands.attachment_get.GetAttachment.execute', return_value=mock_attachment)
+
+    headers = generate_headers()
+    incident_id = 'incident123'
+    attachment_id = 'attachment123'
+
+    response = client.get(f'/api/incidents/{incident_id}/attachments/{attachment_id}', headers=headers)
+
+    assert response.status_code == 200
+    assert response.json == {
+        "id": "attachment123",
+        "file_name": "file.jpg",
+        "file_uri": "http://example.com/file.jpg",
+        "content_type": "image/jpeg",
+        "user_attacher_id": "user123",
+        "user_attacher_name": "Test User",
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
+    }
+
+def test_create_feedback_success(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mocker.patch('ServicioIncidente.commands.feedback_exists.ExistsFeedback.execute', return_value=False)
+
+    mock_feedback = MagicMock(
+        id="feedback123",
+        incident_id="incident123",
+        support_rating=5,
+        ease_of_contact=4,
+        resolution_time=3,
+        support_staff_attitude=5,
+        additional_comments="Great service",
+        createdAt=datetime(2024, 1, 1, 0, 0, 0),
+        updatedAt=datetime(2024, 1, 1, 0, 0, 0)
+    )
+    mocker.patch('ServicioIncidente.commands.feedback_create.CreateFeedback.execute', return_value=mock_feedback)
+
+    headers = generate_headers()
+    data = {
+        "support_rating": 5,
+        "ease_of_contact": 4,
+        "resolution_time": 3,
+        "support_staff_attitude": 5,
+        "additional_comments": "Great service"
+    }
+
+    response = client.post('/api/incidents/incident123/feedback', json=data, headers=headers)
+
+    assert response.status_code == 201
+    assert response.json == {
+        "id": "feedback123",
+        "incident_id": "incident123",
+        "support_rating": 5,
+        "ease_of_contact": 4,
+        "resolution_time": 3,
+        "support_staff_attitude": 5,
+        "additional_comments": "Great service",
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
+    }
+
+def test_create_feedback_already_exists(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mocker.patch('ServicioIncidente.commands.feedback_exists.ExistsFeedback.execute', return_value=True)
+
+    headers = generate_headers()
+    data = {
+        "support_rating": 5,
+        "ease_of_contact": 4,
+        "resolution_time": 3,
+        "support_staff_attitude": 5,
+        "additional_comments": "Great service"
+    }
+
+    response = client.post('/api/incidents/incident123/feedback', json=data, headers=headers)
+
+    assert response.status_code == 400
+    assert response.get_data(as_text=True) == "The feedback incident already exists"
+
+def test_create_feedback_missing_authorization(client):
+    data = {
+        "support_rating": 5,
+        "ease_of_contact": 4,
+        "resolution_time": 3,
+        "support_staff_attitude": 5,
+        "additional_comments": "Great service"
+    }
+
+    response = client.post('/api/incidents/incident123/feedback', json=data)
+
+    assert response.status_code == 401
+    assert response.json == {"error": "Authorization header missing"}
+
+def test_create_feedback_unauthorized(client, mocker):
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=None)
+
+    headers = generate_headers()
+    data = {
+        "support_rating": 5,
+        "ease_of_contact": 4,
+        "resolution_time": 3,
+        "support_staff_attitude": 5,
+        "additional_comments": "Great service"
+    }
+
+    response = client.post('/api/incidents/incident123/feedback', json=data, headers=headers)
+
+    assert response.status_code == 401
+    assert response.json == {"error": "Unauthorized"}
+
+def test_get_feedback_success(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mock_feedback = MagicMock(
+        id="feedback123",
+        incident_id="incident123",
+        support_rating=5,
+        ease_of_contact=4,
+        resolution_time=3,
+        support_staff_attitude=5,
+        additional_comments="Great service",
+        createdAt=datetime(2024, 1, 1, 0, 0, 0),
+        updatedAt=datetime(2024, 1, 1, 0, 0, 0)
+    )
+    mocker.patch('ServicioIncidente.commands.feedback_exists.ExistsFeedback.execute', return_value=mock_feedback)
+
+    headers = generate_headers()
+    response = client.get('/api/incidents/incident123/feedback', headers=headers)
+
+    assert response.status_code == 200
+    assert response.json == {
+        "id": "feedback123",
+        "incident_id": "incident123",
+        "support_rating": 5,
+        "ease_of_contact": 4,
+        "resolution_time": 3,
+        "support_staff_attitude": 5,
+        "additional_comments": "Great service",
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
+    }
+
+def test_get_feedback_not_found(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mocker.patch('ServicioIncidente.commands.feedback_exists.ExistsFeedback.execute', return_value=None)
+
+    headers = generate_headers()
+    response = client.get('/api/incidents/incident123/feedback', headers=headers)
+
+    assert response.status_code == 404
+    assert response.json == {"error": "Feedback not found"}
+
+def test_get_feedback_missing_authorization(client):
+    response = client.get('/api/incidents/incident123/feedback')
+
+    assert response.status_code == 401
+    assert response.json == {"error": "Authorization header missing"}
+
+def test_get_feedback_unauthorized(client, mocker):
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=None)
+
+    headers = generate_headers()
+    response = client.get('/api/incidents/incident123/feedback', headers=headers)
+
+    assert response.status_code == 401
+    assert response.json == {"error": "Unauthorized"}
+
+def test_get_feedback_exception(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mocker.patch('ServicioIncidente.commands.feedback_exists.ExistsFeedback.execute', side_effect=Exception("Database error"))
+
+    headers = generate_headers()
+    response = client.get('/api/incidents/incident123/feedback', headers=headers)
+
+    assert response.status_code == 500
+    assert "Failed to get feedback. Details: Database error" in response.json['error']
+
+def test_create_feedback_exception(client, mocker):
+    mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
+    mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
+
+    mocker.patch('ServicioIncidente.commands.feedback_exists.ExistsFeedback.execute', return_value=False)
+    mocker.patch('ServicioIncidente.commands.feedback_create.CreateFeedback.execute', side_effect=Exception("Unexpected error during feedback creation"))
+
+    headers = generate_headers()
+    data = {
+        "support_rating": 5,
+        "ease_of_contact": 4,
+        "resolution_time": 3,
+        "support_staff_attitude": 5,
+        "additional_comments": "Great service"
+    }
+
+    response = client.post('/api/incidents/incident123/feedback', json=data, headers=headers)
+
+    assert response.status_code == 500
+    assert "Failed to create feedback incident feedback. Details: Unexpected error during feedback creation" in response.json['error']

@@ -256,24 +256,36 @@ def get_attachment(incident_id, attachment_id):
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": f"Failed to retrieve attachment. Details: {str(e)}"}), 500
-    
+
 @incidents_bp.route('/incidents/<incident_id>/feedback', methods=['GET'])
 def get_feedback(incident_id):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({"error": "Authorization header missing"}), 401
+
     try:
-        return jsonify(
-            {
-                "incident_id": incident_id,
-                "support_rating": 5,
-                "ease_of_contact": 5,
-                "resolution_time": 5,
-                "support_staff_attitude": 5,
-                "additional_comments": "This is an additional comment.",
-                "created_at": "2024-11-07 15:34:000",
-                "updated_at": "2024-11-07 15:34:000"
-            }
-        ), 200
+        user = decode_user(auth_header)
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+        
+        feedback = ExistsFeedback(incident_id).execute()
+        if not feedback:
+            return jsonify({"error": "Feedback not found"}), 404
+
+        return jsonify({
+            "id": feedback.id,
+            "incident_id": feedback.incident_id,
+            "support_rating": feedback.support_rating,
+            "ease_of_contact": feedback.ease_of_contact,
+            "resolution_time": feedback.resolution_time,
+            "support_staff_attitude": feedback.support_staff_attitude,
+            "additional_comments": feedback.additional_comments,
+            "created_at": feedback.createdAt.isoformat(),
+            "updated_at": feedback.updatedAt.isoformat()
+        }), 200
+
     except Exception as e:
-        return jsonify({"error": f"Failed to retrieve feedback incident. Details: {str(e)}"}), 500
+        return jsonify({"error": f"Failed to get feedback. Details: {str(e)}"}), 500
     
 @incidents_bp.route('/incidents/<incident_id>/feedback', methods=['POST'])
 def create_feedback(incident_id):
