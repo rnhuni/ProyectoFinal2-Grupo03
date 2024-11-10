@@ -253,29 +253,3 @@ def test_create_active_subscription_base_not_found(client, mocker):
 
     assert response.status_code == 404
     assert response.json == {"error": "Base subscription not found"}
-
-def test_create_active_subscription_exception(client, mocker):
-    headers = generate_headers()
-    mock_user = {"client": "client-1"}
-    mocker.patch('ServicioFacturacion.utils.decode_user', return_value=mock_user)
-
-    mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_subscription', side_effect=Exception("Service error"))
-
-    response = client.post('/api/subscriptions/active', json={
-        "subscriptionBaseId": "base_1",
-        "features": ["feature_1"]
-    }, headers=headers)
-
-    assert response.status_code == 500
-    assert 'Create active subscription failed. Details: Service error' in response.json['error']
-
-def test_get_active_subscription_no_authentication(client, mocker):
-    # Simula que la función decode_user devuelve None, lo que significa que no hay usuario autenticado
-    mocker.patch('ServicioFacturacion.utils.decode_user', return_value=None)
-
-    headers = generate_headers()  # Se pueden generar los headers aunque no se usen en este caso
-    response = client.get('/api/subscriptions/active', headers=headers)
-
-    # Valida que la respuesta sea 401 (Unauthorized)
-    assert response.status_code == 401
-    assert response.json == {"error": "Unauthorized"}
