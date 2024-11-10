@@ -14,33 +14,22 @@ from ServicioFacturacion.utils import decode_user
 subscriptions_bp = Blueprint('subscriptions', __name__)
 
 @subscriptions_bp.route('/subscriptions/base', methods=['GET'])
-def get_active_all_subscriptions():
+def get_all_subscriptions():
     try:
-        subscriptions = GetAllSubscriptions().execute()
+        base_subscription = SystemService().get_subscriptions()
+        features = SystemService().get_features()
 
-        subscriptions_list = [
-            {
-                "id": subscription.id,
-                "name": subscription.base_name,
-                "description": subscription.description,
-                "status": subscription.status,
-                "price": float(subscription.price),
-                "features": [
-                    {
-                        "id": feature.feature_id,
-                        "price": float(feature.feature_price),
-                        "name": feature.feature_name
-                    }
-                    for feature in subscription.features
-                ],
-                "createdAt": subscription.createdAt,
-                "updatedAt": subscription.updatedAt
-            }
-            for subscription in subscriptions
-        ]
+        for subscription in base_subscription:
+            subscription.pop('roles', None)
+            features_list = []
+            for feature_subscription in subscription["features"].split(";"):
+                for feature in features:
+                    if feature_subscription == feature["id"]:
+                        features_list.append(feature)
+                        break
+            subscription["features"] = features_list
 
-        return jsonify(subscriptions_list), 200
-
+        return base_subscription, 200
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve subscription plans. Details: {str(e)}'}), 500
     
@@ -78,8 +67,8 @@ def get_active_subscription():
                     "price": float(feature.feature_price)
                 } for feature in (active_subscription.features or [])
             ],
-            "createdAt": active_subscription.createdAt,
-            "updatedAt": active_subscription.updatedAt
+            "created_at": active_subscription.createdAt.isoformat(),
+            "updated_at": active_subscription.updatedAt.isoformat()
         }), 200
 
     except Exception as e:
@@ -113,8 +102,8 @@ def get_suscriptions_history():
                     {"id": "frt-characteristics-sin-publicidad", "price": 1.0, "name": "Sin publicidad"},
                     {"id": "frt-characteristics-facturación-periódica", "price": 1.0, "name": "Facturación periódica"}
                 ],
-                "createdAt": "2024-10-24 19:35:55.357",
-                "updatedAt": "2024-10-24 19:35:55.357"
+                "created_at": "2024-10-24 19:35:55.357",
+                "updated_at": "2024-10-24 19:35:55.357"
             }
         ]), 200
 
