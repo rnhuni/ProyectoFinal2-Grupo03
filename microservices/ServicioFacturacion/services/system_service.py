@@ -10,6 +10,11 @@ class SystemService:
         response.raise_for_status()
         return response.json()
     
+    def get_subscriptions(self):
+        response = requests.get(f'{self.base_uri}/subscriptions')
+        response.raise_for_status()
+        return response.json()
+    
     def get_features(self):
         response = requests.get(f'{self.base_uri}/features')
         response.raise_for_status()
