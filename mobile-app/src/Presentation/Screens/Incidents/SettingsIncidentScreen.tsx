@@ -1,82 +1,73 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, Switch} from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { StyleSheet, View, Text, Switch, FlatList } from 'react-native';
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import useNotificationConfig from '../../../hooks/user/useNotificationsConfig';
+import { useFocusEffect } from '@react-navigation/native';
+import { NotificationConfig } from '../../../interfaces/NotificationConfig';
+
 
 export const SettingsIncidentScreen = () => {
-  const {t} = useTranslation(); // Usamos el hook para acceder a las traducciones
+  const { t } = useTranslation(); // Usamos el hook para acceder a las traducciones
+  const { notificationsConfig, loading, error, reloadNotificationConfig, updateNotificationConfig } = useNotificationConfig();
 
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
-  const [isStateChangesEnabled, setIsStateChangesEnabled] = useState(false);
-  const [isTaskReminderEnabled, setIsTaskReminderEnabled] = useState(false);
-  const [isSupportMessagesEnabled, setIsSupportMessagesEnabled] =
-    useState(false);
+  const [notifications, setNotifications] = useState<NotificationConfig[]>([]);
 
-  const toggleNotifications = () =>
-    setIsNotificationsEnabled(!isNotificationsEnabled);
-  const toggleStateChanges = () =>
-    setIsStateChangesEnabled(!isStateChangesEnabled);
-  const toggleTaskReminder = () =>
-    setIsTaskReminderEnabled(!isTaskReminderEnabled);
-  const toggleSupportMessages = () =>
-    setIsSupportMessagesEnabled(!isSupportMessagesEnabled);
+  // useEffect(() => {
+  //   console.log('useEffect Incidents: reload');
+  //   const loadNotifications = async () => {
+  //     const data = await reloadNotificationConfig();
+  //     console.log('data:', data);
+  //     setNotifications(data);
+  //     console.log('Notifications:', notifications);
+  //   };
+  //   loadNotifications();
+  // }, []);  
 
+  useFocusEffect(
+      useCallback(() => {
+        const loadNotifications = async () => {
+          const data = await reloadNotificationConfig();
+          setNotifications(data);
+        };
+        loadNotifications();
+      }, []),
+    );
+
+  const toggleNotifications = async (id: string) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) =>
+        notification.id === id
+          ? { ...notification, show_by_default: !notification.show_by_default }
+          : notification
+      )
+    );
+    const notification = notificationsConfig.find((notification) => notification.id === id);
+    if (notification) {
+      await updateNotificationConfig({ ...notification, show_by_default: !notification.show_by_default });
+      
+    }
+  };
   return (
     <View style={styles.container}>
       <Header />
       <View style={styles.content}>
-        {/* Habilitar notificaciones */}
-        <View style={styles.settingItem}>
-          <Text style={styles.settingText}>
-            {t('settingsIncidentScreen.enableNotifications')}
-          </Text>
-          <Switch
-            value={isNotificationsEnabled}
-            onValueChange={toggleNotifications}
-            testID='enable-notifications-switch'
+        <View style={styles.container}>
+          <FlatList
+            data={notifications}
+            keyExtractor={(item: NotificationConfig) => item.id}
+            renderItem={({ item }: { item: NotificationConfig }) => (
+              <View style={styles.settingItem}>
+                <Text style={styles.settingText}>{item.name}</Text>
+                <Switch
+                  value={item.show_by_default}
+                  onValueChange={() => toggleNotifications(item.id)}
+                />
+              </View>
+            )}
           />
         </View>
-
-        {/* Cambios de estado */}
-        {isNotificationsEnabled && (
-          <>
-            <View style={styles.settingItem}>
-              <Text style={styles.settingText}>
-                {t('settingsIncidentScreen.stateChanges')}
-              </Text>
-              <Switch
-                value={isStateChangesEnabled}
-                onValueChange={toggleStateChanges}
-                testID='enable-notifications-switch-state-changes'
-              />
-            </View>
-
-            {/* Recordatorio de tarea */}
-            <View style={styles.settingItem}>
-              <Text style={styles.settingText}>
-                {t('settingsIncidentScreen.taskReminder')}
-              </Text>
-              <Switch
-                value={isTaskReminderEnabled}
-                onValueChange={toggleTaskReminder}
-            testID='enable-notifications-switch-task-reminder'
-              />
-            </View>
-
-            {/* Mensajes de soporte */}
-            <View style={styles.settingItem}>
-              <Text style={styles.settingText}>
-                {t('settingsIncidentScreen.supportMessages')}
-              </Text>
-              <Switch
-                value={isSupportMessagesEnabled}
-                onValueChange={toggleSupportMessages}
-            testID='enable-notifications-switch-support-messages'
-              />
-            </View>
-          </>
-        )}
       </View>
       <Footer />
     </View>

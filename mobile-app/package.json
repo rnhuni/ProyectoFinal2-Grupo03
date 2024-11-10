@@ -11,10 +11,13 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.0.0",
+    "@react-native-community/netinfo": "^11.4.1",
     "@react-native-picker/picker": "^2.8.1",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
+    "aws-amplify": "^5.3.26",
     "aws-sdk": "^2.1691.0",
     "axios": "^1.7.7",
     "i18next": "^23.16.2",
