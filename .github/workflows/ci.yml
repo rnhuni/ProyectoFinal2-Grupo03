@@ -11,6 +11,7 @@ on:
       - 'microservices/ServicioUsuario/**'
       - 'microservices/ServicioIncidente/**'
       - 'microservices/ServicioFacturacion/**'
+      - 'microservices/ServicioCanal/**'
   push:
     branches:
       - main
@@ -21,6 +22,7 @@ on:
       - 'microservices/ServicioUsuario/**'
       - 'microservices/ServicioIncidente/**'
       - 'microservices/ServicioFacturacion/**'
+      - 'microservices/ServicioCanal/**'
       
 jobs:
   determine-changes:
@@ -32,6 +34,7 @@ jobs:
       servicio_usuario_changed: ${{ steps.filter.outputs.servicio_usuario }}
       servicio_incidente_changed: ${{ steps.filter.outputs.servicio_incidente }}
       servicio_facturacion_changed: ${{ steps.filter.outputs.servicio_facturacion }}
+      servicio_canal_changed: ${{ steps.filter.outputs.servicio_canal }}
       
     steps:
       - name: Checkout code
@@ -54,6 +57,8 @@ jobs:
               - 'microservices/ServicioIncidente/**'
             servicio_facturacion:
               - 'microservices/ServicioFacturacion/**'
+            servicio_canal:
+              - 'microservices/ServicioCanal/**'
             
   test-web-app:
     if: needs.determine-changes.outputs.web_app_changed == 'true'
