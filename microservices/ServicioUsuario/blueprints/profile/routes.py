@@ -1,31 +1,21 @@
 import os
 import jwt
 from flask import Blueprint, request, jsonify
+from ServicioUsuario.utils import decode_user
 from ServicioUsuario.services.cognito_service import CognitoService
-from jwt import PyJWKClient
 
 profile_bp = Blueprint('profile_bp', __name__)
-
-COGNITO_SIGN_URL=os.getenv('COGNITO_SIGN_URL')
-COGNITO_AUDIENCE=os.getenv('COGNITO_AUDIENCE')
 
 @profile_bp.route('/profile', methods=['GET'])
 def get_profile():
     auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return jsonify({"error": "Token de autorización no encontrado o inválido"}), 400
-
-    token = auth_header.split(" ")[1].strip()
-    jwk_client = PyJWKClient(COGNITO_SIGN_URL)
 
     try:
-        signing_key = jwk_client.get_signing_key_from_jwt(token)
-        token_payload = jwt.decode(token, key=signing_key.key, algorithms=["RS256"], audience=COGNITO_AUDIENCE)
+        user = decode_user(auth_header)
 
-        permissions = token_payload["custom:permissions"].split(';')
         structured_permissions = {}
 
-        for permission in permissions:
+        for permission in user["permissions"].split(';'):
             if permission:
                 parts = permission.split(':')
                 menu, action = parts[0].split('-')[1:], parts[1]
@@ -44,20 +34,20 @@ def get_profile():
             item["actions"] = list(item["actions"])
             views.append(item)
 
-        cognito_status = CognitoService().get_user_status(token_payload["email"])
+        cognito_status = "sss"#CognitoService().get_user_status(user["email"])
             
         return {
             "user":
             {
-                "id": token_payload["sub"],
-                "name": token_payload["name"],
-                "email": token_payload["email"],
+                "id": user["id"],
+                "name": user["name"],
+                "email": user["email"],
                 "status": cognito_status,
-                "client": token_payload["custom:client"],
-                "role": token_payload["custom:role"]             
+                "client": user["client"],
+                "role": user["role"]             
             },
             "views": views,
-            "features": token_payload["custom:features"].split(';')
+            "features": user["features"].split(';')
         }, 200
     except jwt.InvalidTokenError:
         return jsonify({"error": "Formato de token inválido"}), 400

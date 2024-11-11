@@ -7,6 +7,7 @@ from ServicioSistema.commands.permission_exists import ExistsPermission
 from ServicioSistema.commands.permission_get import GetPermission
 from ServicioSistema.commands.permission_get_all import GetAllPermissions
 from ServicioSistema.utils import build_permission_id
+from datetime import datetime
 
 @pytest.fixture
 def client():
@@ -22,8 +23,8 @@ def test_create_permission_success(client, mocker):
     mock_permission.id = "permission-id"
     mock_permission.name = "Test"
     mock_permission.resource = "TestService"
-    mock_permission.createdAt = "2024-01-01"
-    mock_permission.updatedAt = "2024-01-01"
+    mock_permission.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_permission.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.permission_create.CreatePermission.execute', return_value=mock_permission)
     mocker.patch('ServicioSistema.utils.build_permission_id', return_value="permission-id")
@@ -41,8 +42,8 @@ def test_create_permission_success(client, mocker):
         "id": "permission-id",
         "name": "Test",
         "resource": "TestService",
-        "createdAt": "2024-01-01",
-        "updatedAt": "2024-01-01"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_create_permission_already_exists(client, mocker):
@@ -91,8 +92,8 @@ def test_get_permission_success(client, mocker):
     mock_permission.name = "Test"
     mock_permission.resource = "TestService"
     mock_permission.description = "Permission description"
-    mock_permission.createdAt = "2024-01-01"
-    mock_permission.updatedAt = "2024-01-01"
+    mock_permission.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_permission.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.permission_get.GetPermission.execute', return_value=mock_permission)
 
@@ -104,8 +105,8 @@ def test_get_permission_success(client, mocker):
         "name": "Test",
         "resource": "TestService",
         "description": "Permission description",
-        "createdAt": "2024-01-01",
-        "updatedAt": "2024-01-01"
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_get_permission_not_found(client, mocker):
@@ -130,16 +131,16 @@ def test_get_all_permissions_success(client, mocker):
     mock_permission1.name = "Test 1"
     mock_permission1.resource = "TestService"
     mock_permission1.description = "Permission description 1"
-    mock_permission1.createdAt = "2024-01-01"
-    mock_permission1.updatedAt = "2024-01-01"
+    mock_permission1.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_permission1.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mock_permission2 = MagicMock()
     mock_permission2.id = "permission-id-2"
     mock_permission2.name = "Test 2"
     mock_permission2.resource = "TestService"
     mock_permission2.description = "Permission description 2"
-    mock_permission2.createdAt = "2024-01-01"
-    mock_permission2.updatedAt = "2024-01-01"
+    mock_permission2.createdAt = datetime(2024, 1, 1, 0, 0, 0)
+    mock_permission2.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.permission_get_all.GetAllPermissions.execute', return_value=[mock_permission1, mock_permission2])
 
@@ -152,16 +153,16 @@ def test_get_all_permissions_success(client, mocker):
             "name": "Test 1",
             "resource": "TestService",
             "description": "Permission description 1",
-            "createdAt": "2024-01-01",
-            "updatedAt": "2024-01-01"
+            "created_at": "2024-01-01T00:00:00",
+            "updated_at": "2024-01-01T00:00:00"
         },
         {
             "id": "permission-id-2",
             "name": "Test 2",
             "resource": "TestService",
             "description": "Permission description 2",
-            "createdAt": "2024-01-01",
-            "updatedAt": "2024-01-01"
+            "created_at": "2024-01-01T00:00:00",
+            "updated_at": "2024-01-01T00:00:00"
         }
     ]
 
@@ -180,7 +181,7 @@ def test_edit_permission_success(client, mocker):
     mock_permission.name = "Test"
     mock_permission.resource = "TestService"
     mock_permission.description = "Permission description"
-    mock_permission.updatedAt = "2024-01-01"
+    mock_permission.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
     
     mocker.patch('ServicioSistema.commands.permission_get.GetPermission.execute', return_value=mock_permission)
     mocker.patch('ServicioSistema.utils.build_permission_id', return_value="new-permission-id")
@@ -191,7 +192,7 @@ def test_edit_permission_success(client, mocker):
     updated_permission.name = "Updated Test"
     updated_permission.resource = "UpdatedTestService"
     updated_permission.description = "Updated description"
-    updated_permission.updatedAt = "2024-10-20"
+    updated_permission.updatedAt = datetime(2024, 1, 1, 0, 0, 0)
 
     mocker.patch('ServicioSistema.commands.permission_update.UpdatePermission.execute', return_value=updated_permission)
     
@@ -209,7 +210,7 @@ def test_edit_permission_success(client, mocker):
         "name": "Updated Test",
         "resource": "UpdatedTestService",
         "description": "Updated description",
-        "updatedAt": "2024-10-20"
+        "updated_at": "2024-01-01T00:00:00"
     }
 
 def test_edit_permission_not_found(client, mocker):

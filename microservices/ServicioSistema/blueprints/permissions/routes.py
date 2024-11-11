@@ -30,8 +30,8 @@ def create_permission():
             "id": data.id,
             "name": data.name,
             "resource": data.resource,
-            "createdAt": data.createdAt,
-            "updatedAt": data.updatedAt
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
         }), 201
     except Exception as e:
         return jsonify({'error': f'Create permission failed. Details: {str(e)}'}), 500
@@ -49,8 +49,8 @@ def get_permission(permission_id):
             "name": permission.name,
             "resource": permission.resource,
             "description": permission.description,
-            "createdAt": permission.createdAt,
-            "updatedAt": permission.updatedAt
+            "created_at": permission.createdAt.isoformat(),
+            "updated_at": permission.updatedAt.isoformat()
         }), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving permission. Details: {str(e)}'}), 500
@@ -66,8 +66,8 @@ def get_all_permissions():
             "name": perm.name,
             "resource": perm.resource,
             "description": perm.description,
-            "createdAt": perm.createdAt,
-            "updatedAt": perm.updatedAt
+            "created_at": perm.createdAt.isoformat(),
+            "updated_at": perm.updatedAt.isoformat()
         } for perm in permissions]), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving permissions. Details: {str(e)}'}), 500
@@ -80,29 +80,25 @@ def edit_permission(permission_id):
         resource = data.get('resource').strip()
         description = data.get('description').strip()
 
-        # Validar que los campos sean correctos
         if not name or not resource or len(name) < 1 or len(resource) < 1:
             return "Invalid parameters", 400
 
-        # Verificar si el permiso existe
         permission = GetPermission(permission_id).execute()
         if not permission:
             return "Permission not found", 404
 
-        # Si se cambia el nombre o el recurso, generar nuevo id y comprobar si ya existe otro permiso con ese id
         new_id = build_permission_id(resource, name)
         if new_id != permission_id and ExistsPermission(id=new_id).execute():
             return "Permission with this name and resource already exists", 400
 
-        # Actualizar el permiso con los nuevos valores
         updated_permission = UpdatePermission(permission_id, name, resource, description).execute()
 
         return jsonify({
-            "id": updated_permission.id,  # Este sería el nuevo id si cambia
+            "id": updated_permission.id,
             "name": updated_permission.name,
             "resource": updated_permission.resource,
             "description": updated_permission.description,
-            "updatedAt": updated_permission.updatedAt
+            "updated_at": updated_permission.updatedAt.isoformat()
         }), 200
 
     except Exception as e:

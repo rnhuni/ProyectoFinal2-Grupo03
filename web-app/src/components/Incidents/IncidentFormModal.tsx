@@ -20,16 +20,17 @@ import {
   Alert,
   AlertIcon,
   useToast,
+  Badge,
 } from "@chakra-ui/react";
 import { FaUpload } from "react-icons/fa6";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import incidentSchema from "./incidentSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { Attachment, Incident } from "../../interfaces/Incidents";
 import useFileUpload from "../../hooks/uploadFile/useFileUpload";
 import useIncidents from "../../hooks/incidents/useIncidents";
+import incidentSchema from "./incidentSchema";
 
 interface IncidentFormModalProps {
   isOpen: boolean;
@@ -77,6 +78,7 @@ const IncidentFormModal = ({
 
   const {
     createIncident,
+    updateIncident,
     loading: incidentLoading,
     error: incidentError,
   } = useIncidents();
@@ -123,6 +125,9 @@ const IncidentFormModal = ({
   };
 
   const onSubmit = async (data: Incident) => {
+    if (mode === "edit" && initialData) {
+      data.id = initialData.id;
+    }
     const uploadedAttachments = [];
 
     try {
@@ -148,20 +153,30 @@ const IncidentFormModal = ({
       }
 
       data.attachments = uploadedAttachments;
-      data.contact = { phone: "1234567890" }; // Asigna un teléfono genérico
+      data.contact = { phone: "1234567890" };
 
-      await createIncident(data);
-
-      toast({
-        title: "Incidente creado",
-        description: "El incidente se ha creado exitosamente.",
-        status: "success",
-        duration: 4000,
-        isClosable: true,
-      });
+      if (mode === "edit") {
+        await updateIncident(data);
+        toast({
+          title: "Incidente actualizado",
+          description: "El incidente se ha actualizado exitosamente.",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      } else {
+        await createIncident(data);
+        toast({
+          title: "Incidente creado",
+          description: "El incidente se ha creado exitosamente.",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
 
       onSave(data);
-      handleCloseModal(); // Llama a la función para limpiar el estado y cerrar el modal
+      handleCloseModal();
     } catch (error) {
       toast({
         title: "Error",
@@ -171,14 +186,14 @@ const IncidentFormModal = ({
         duration: 4000,
         isClosable: true,
       });
-      handleCloseModal(); // Llama a la función para limpiar el estado y cerrar el modal
+      handleCloseModal();
     }
   };
 
   const handleCloseModal = () => {
-    setAttachments([]); // Limpiar los adjuntos
+    setAttachments([]);
     setShowProgressBox(false);
-    reset({ type: "", description: "" }); // Limpiar los campos del formulario
+    reset({ type: "", description: "" });
     onClose();
   };
 
@@ -188,7 +203,7 @@ const IncidentFormModal = ({
       <ModalContent maxW="600px">
         <ModalHeader>
           {mode === "edit"
-            ? t("incidentScreen.tittle")
+            ? t("incidentScreen.tittleEdit")
             : t("incidentScreen.tittle")}
         </ModalHeader>
         <ModalCloseButton />
@@ -245,6 +260,18 @@ const IncidentFormModal = ({
               )}
             </FormControl>
 
+            {/* Mostrar archivos adjuntos previamente cargados */}
+            {attachments.length > 0 && (
+              <Box mb={4}>
+                <FormLabel>Archivos Adjuntos Cargados</FormLabel>
+                {attachments.map((attachment) => (
+                  <Badge key={attachment.id} colorScheme="purple" mr={3} mb={3}>
+                    {attachment.file_name}
+                  </Badge>
+                ))}
+              </Box>
+            )}
+
             <FormControl mb={4}>
               <FormLabel>{t("incidentScreen.attachment")}</FormLabel>
               <Button
@@ -257,6 +284,7 @@ const IncidentFormModal = ({
                 {t("incidentScreen.attachment")}
               </Button>
               <Input
+                data-testid="file-input"
                 multiple
                 accept=".csv, .xls, .xlsx"
                 type="file"
@@ -293,7 +321,7 @@ const IncidentFormModal = ({
             isLoading={fileLoading || incidentLoading}
           >
             {mode === "edit"
-              ? t("incidentScreen.createIncident")
+              ? t("incidentScreen.editIncident")
               : t("incidentScreen.createIncident")}
           </Button>
         </ModalFooter>

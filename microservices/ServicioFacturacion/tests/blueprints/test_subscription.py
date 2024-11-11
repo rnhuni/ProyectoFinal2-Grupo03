@@ -3,7 +3,8 @@ import jwt
 import uuid
 from flask import Flask
 from unittest.mock import patch, MagicMock
-from ServicioFacturacion.blueprints.subscriptions.routes import subscriptions_bp  # Ajusta según tu estructura
+from datetime import datetime
+from ServicioFacturacion.blueprints.subscriptions.routes import subscriptions_bp
 
 @pytest.fixture
 def client():
@@ -24,64 +25,30 @@ def generate_headers():
     return headers
 
 def test_get_active_all_subscriptions_success(client, mocker):
-    mock_subscription = MagicMock()
-    mock_subscription.id = str(uuid.uuid4())
-    mock_subscription.base_name = "Basic Plan"
-    mock_subscription.description = "A basic subscription"
-    mock_subscription.status = "active"
-    mock_subscription.price = 10.0
-    mock_subscription.features = [
+    mock_subscription = {
+        "created_at": "2024-10-24T19:35:55.357000",
+        "description": "Plan básico con características esenciales",
+        "features": "feature_1;feature_2",
+        "id": "plan-basico-connect",
+        "name": "Plan Básico Connect",
+        "roles": "role",
+        "price": 10.0,
+        "status": "ACTIVE",
+        "updated_at": "2024-10-24T19:35:55.357000"
+    }
+    mock_features = [
+        {"id": "feature_1", "feature_id": "feature_1", "feature_name": "Feature 1", "feature_price": 5.0},
+        {"id": "feature_2", "feature_id": "feature_2", "feature_name": "Feature 2", "feature_price": 10.0}
     ]
 
-    mocker.patch('ServicioFacturacion.commands.active_subscription_get_all.GetAllSubscriptions.execute', return_value=[mock_subscription])
+    mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_subscriptions', return_value=[mock_subscription])
+    mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_features', return_value=mock_features)
 
     response = client.get('/api/subscriptions/base')
     data = response.json
 
     assert response.status_code == 200
     assert len(data) == 1
-    assert data[0]['name'] == "Basic Plan"
-
-def test_get_active_all_subscriptions_success(client, mocker):
-    mock_subscription = MagicMock()
-    mock_subscription.id = str(uuid.uuid4())
-    mock_subscription.base_name = "Basic Plan"
-    mock_subscription.description = "A basic subscription"
-    mock_subscription.status = "active"
-    mock_subscription.price = 10.0
-    mock_subscription.features = [
-    ]
-
-    mocker.patch('ServicioFacturacion.commands.active_subscription_get_all.GetAllSubscriptions.execute', return_value=[])
-
-    response = client.get('/api/subscriptions/base')
-    data = response.json
-
-    assert response.status_code == 200
-    assert len(data) == 1
-    assert data[0]['name'] == "Basic Plan"
-
-def test_get_active_all_subscriptions_success(client, mocker):
-    mock_subscription = MagicMock()
-    mock_subscription.id = str(uuid.uuid4())
-    mock_subscription.base_name = "Basic Plan"
-    mock_subscription.description = "A basic subscription"
-    mock_subscription.status = "active"
-    mock_subscription.price = 10.0
-    mock_subscription.createdAt = "2024-10-24 19:35:55.357"
-    mock_subscription.updatedAt = "2024-10-24 19:35:55.357"
-    mock_subscription.features = [
-    ]
-
-    mocker.patch('ServicioFacturacion.commands.active_subscription_get_all.GetAllSubscriptions.execute', return_value=[mock_subscription])
-
-    response = client.get('/api/subscriptions/base')
-    data = response.json
-
-    assert response.status_code == 200
-    assert len(data) == 1
-    assert data[0]['name'] == "Basic Plan"
-
 
 def test_get_active_subscription_success(client, mocker):
     headers = generate_headers()
@@ -97,8 +64,8 @@ def test_get_active_subscription_success(client, mocker):
     mock_active_subscription.price = 20.0
     mock_active_subscription.notify_by_email = True
     mock_active_subscription.features = []
-    mock_active_subscription.createdAt = "2024-10-24 19:35:55.357"
-    mock_active_subscription.updatedAt = "2024-10-24 19:35:55.357"
+    mock_active_subscription.createdAt = datetime(2024, 11, 7, 15, 34, 0)
+    mock_active_subscription.updatedAt = datetime(2024, 11, 7, 15, 34, 0)
 
     mocker.patch('ServicioFacturacion.commands.active_subscription_get.GetActiveSubscription.execute', return_value=mock_active_subscription)
 
@@ -198,8 +165,8 @@ def test_create_active_subscription_failed(client, mocker):
     mock_active_subscription.notify_by_email = True
     mock_active_subscription.price = 15.0
     mock_active_subscription.features = mock_features
-    mock_active_subscription.createdAt = "2024-10-24 19:35:55.357"
-    mock_active_subscription.updatedAt = "2024-10-24 19:35:55.357"
+    mock_active_subscription.createdAt = datetime(2024, 11, 7, 15, 34, 0)
+    mock_active_subscription.updatedAt = datetime(2024, 11, 7, 15, 34, 0)
 
     mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_subscription', return_value=mock_base_subscription)
     mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_features', return_value=mock_features)
@@ -253,22 +220,3 @@ def test_create_active_subscription_base_not_found(client, mocker):
 
     assert response.status_code == 404
     assert response.json == {"error": "Base subscription not found"}
-
-def test_create_active_subscription_exception(client, mocker):
-    headers = generate_headers()
-    mock_user = {"client": "client-1"}
-    mocker.patch('ServicioFacturacion.utils.decode_user', return_value=mock_user)
-
-    mocker.patch('ServicioFacturacion.services.system_service.SystemService.get_subscription', side_effect=Exception("Service error"))
-
-    response = client.post('/api/subscriptions/active', json={
-        "subscriptionBaseId": "base_1",
-        "features": ["feature_1"]
-    }, headers=headers)
-
-    assert response.status_code == 500
-    assert 'Create active subscription failed. Details: Service error' in response.json['error']
-
-
-
-

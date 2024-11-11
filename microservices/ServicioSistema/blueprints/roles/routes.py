@@ -48,8 +48,8 @@ def create_role():
         return jsonify({
             "id": data.id,
             "name": data.name,
-            "createdAt": data.createdAt,
-            "updatedAt": data.updatedAt
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
         }), 201
     except Exception as e:
         return jsonify({'error': f'Create role failed. Details: {str(e)}'}), 500
@@ -79,8 +79,8 @@ def get_role(role_id):
             "id": role.id,
             "name": role.name,
             "permissions": permissions,
-            "createdAt": role.createdAt,
-            "updatedAt": role.updatedAt
+            "created_at": role.createdAt.isoformat(),
+            "updated_at": role.updatedAt.isoformat()
         }), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving role. Details: {str(e)}'}), 500
@@ -111,8 +111,8 @@ def get_all_roles():
                 "id": role.id,
                 "name": role.name,
                 "permissions": permissions,
-                "createdAt": role.createdAt,
-                "updatedAt": role.updatedAt
+                "created_at": role.createdAt.isoformat(),
+                "updated_at": role.updatedAt.isoformat()
             })
 
         return jsonify(result), 200
@@ -162,7 +162,7 @@ def edit_role(role_id):
             "id": updated_role.id,
             "name": updated_role.name,
             "permissions": permissions,
-            "updatedAt": updated_role.updatedAt
+            "updated_at": updated_role.updatedAt.isoformat()
         }), 200
 
     except Exception as e:

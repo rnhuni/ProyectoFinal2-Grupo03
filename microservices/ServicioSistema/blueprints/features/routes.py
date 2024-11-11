@@ -13,8 +13,8 @@ def get_all_features():
             "name": perm.name,
             "description": perm.description,
             "price": float(perm.price),
-            "createdAt": perm.createdAt,
-            "updatedAt": perm.updatedAt
+            "created_at": perm.createdAt.isoformat(),
+            "updated_at": perm.updatedAt.isoformat()
         } for perm in features]), 200
     except Exception as e:
         return jsonify({'error': f'Error retrieving features. Details: {str(e)}'}), 500

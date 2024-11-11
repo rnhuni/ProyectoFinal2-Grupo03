@@ -21,7 +21,10 @@ def get_all_payments():
                 "periodId": str(payment.period_id),
                 "date": payment.date,
                 "amount": float(payment.amount),
-                "status": payment.status
+                "status": payment.status,
+                "created_at": payment.createdAt.isoformat(),
+                "updated_at": payment.updatedAt.isoformat()
+
             } for payment in payments
         ]
 
@@ -43,7 +46,9 @@ def get_payment(payment_id):
             "periodId": str(payment.period_id),
             "date": payment.date,
             "amount": float(payment.amount),
-            "status": payment.status
+            "status": payment.status,
+            "created_at": payment.createdAt.isoformat(),
+            "updated_at": payment.updatedAt.isoformat()
         }
 
         return jsonify(payment_data), 200

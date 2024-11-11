@@ -35,7 +35,9 @@ def create_invoice():
                 "periodId": invoice.period_id,
                 "date": invoice.date,
                 "amount": invoice.amount,
-                "status": invoice.status
+                "status": invoice.status,
+                "created_at": invoice.createdAt.isoformat(),
+                "updated_at": invoice.updatedAt.isoformat()
             }), 200
     except Exception as e:
         return jsonify({'error': f'"Create period failed. Details: {str(e)}'}), 500
@@ -51,7 +53,9 @@ def get_all_invoices():
             "periodId": invoice.period_id,
             "date": invoice.date,
             "amount": invoice.amount,
-            "status": invoice.status
+            "status": invoice.status,
+            "created_at": invoice.createdAt.isoformat(),
+            "updated_at": invoice.updatedAt.isoformat()
         } for invoice in invoices]
 
         return jsonify(invoices_list), 200
@@ -72,7 +76,9 @@ def get_invoice(invoice_id):
             "periodId": invoice.period_id,
             "date": invoice.date,
             "amount": invoice.amount,
-            "status": invoice.status
+            "status": invoice.status,
+            "created_at": invoice.createdAt.isoformat(),
+            "updated_at": invoice.updatedAt.isoformat()
         }
 
         return jsonify(invoice_data), 200

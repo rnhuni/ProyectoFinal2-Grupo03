@@ -21,8 +21,8 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import useIncidents from "../hooks/incidents/useIncidents";
 import { Incident, IncidentTableData } from "../interfaces/Incidents";
-import IncidentFormModal from "../components/Incidents/IncidentFormModal";
-import IncidentDetailModal from "../components/Incidents/IncidentDetailModal";
+import IncidentFormModal from "../components/Incidents/IncidentFormModal.tsx";
+import IncidentDetailModal from "../components/Incidents/IncidentDetailModal.tsx";
 
 const Incidents = () => {
   const { t } = useTranslation();
