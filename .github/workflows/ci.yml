@@ -493,4 +493,4 @@ jobs:
           task-definition: ${{ steps.render-servicio-canal.outputs.task-definition }}
           service: ServicioCanal
           cluster: ClusterABCall
-          wait-for-service-stability: false
+          wait-for-service-stability: false 

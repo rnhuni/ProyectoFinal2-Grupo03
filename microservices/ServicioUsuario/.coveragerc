@@ -6,4 +6,5 @@ omit =
     *__init__.py
     *.py_
     tests/*
+    services/*
     */app.py
