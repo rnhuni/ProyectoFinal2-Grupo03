@@ -12,10 +12,10 @@ import Admin from "./pages/Admin";
 import Permissions from "./pages/Permissions";
 import "./internalization/i18n";
 import SuscriptionSummary from "./pages/SuscriptionSummary";
-import UserPlan from "./pages/UserPlan";
 import TestHooks from "./pages/TestHooks";
 import SubscriptionPage from "./pages/SuscriptionPage";
 import LoginCognito from "./pages/LoginCognito";
+import SubscriptionsBase from "./pages/SubscriptionsBase";
 
 function App() {
   return (
@@ -47,8 +47,8 @@ function App() {
           <Route path="admin" element={<Admin />} />
           <Route path="permissions" element={<Permissions />} />
           <Route path="user-plan" element={<SubscriptionPage />} />
-          <Route path="suscriptions" element={<SuscriptionSummary />} />
-          <Route path="manage-plan" element={<UserPlan />} />
+          <Route path="manage-plan" element={<SuscriptionSummary />} />
+          <Route path="suscriptions" element={<SubscriptionsBase />} />
           <Route path="hooks" element={<TestHooks />} />
         </Route>
       </Routes>

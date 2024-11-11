@@ -15,6 +15,17 @@ export interface Feature {
   price: number;
 }
 
+export interface BaseSubscription {
+  id: string;
+  name: string;
+  description: string;
+  features: Feature[];
+  price: number;
+  status: "request_open" | "active";
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SubscriptionBase {
   id: string;
   name: string;
@@ -48,9 +59,14 @@ export interface ActiveSubscriptionHistory {
   updatedAt: string;
 }
 
-
 export interface UpdateActiveSubscriptionData {
   notifyByEmail: boolean;
   subscriptionBaseId: string;
   features: string[];
+}
+
+export interface NewSubscriptionData {
+  notifyByEmail: boolean;
+  subscriptionBaseId: string;
+  features: string[]; // IDs de las características seleccionadas
 }
