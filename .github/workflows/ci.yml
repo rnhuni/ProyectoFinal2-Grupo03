@@ -28,7 +28,7 @@ jobs:
   determine-changes:
     runs-on: ubuntu-latest
     outputs:
-      web_app_changed: ${{ steps.filter.outputs.web_app }}
+      #web_app_changed: ${{ steps.filter.outputs.web_app }}
       mobile_app_changed: ${{ steps.filter.outputs.mobile_app }}
       servicio_sistema_changed: ${{ steps.filter.outputs.servicio_sistema }}
       servicio_usuario_changed: ${{ steps.filter.outputs.servicio_usuario }}
