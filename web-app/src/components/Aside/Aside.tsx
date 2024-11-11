@@ -53,7 +53,7 @@ const Sidebar = () => {
       path: "/dashboard/suscriptions",
     },
     {
-      name: "Manejar plan",
+      name: "Manejar planes",
       icon: <PersonBadge />,
       path: "/dashboard/manage-plan",
     },

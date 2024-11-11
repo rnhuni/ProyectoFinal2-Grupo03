@@ -85,7 +85,7 @@ describe("IncidentDetailModal Component", () => {
       )
     ).toBeInTheDocument();
     expect(
-      screen.getByText((content, element) => {
+      screen.getByText((_, element) => {
         return (
           element?.textContent ===
           new Date(mockIncident.createdAt).toLocaleString()
