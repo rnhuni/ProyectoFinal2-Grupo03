@@ -16,7 +16,7 @@ const renderWithI18n = (component: React.ReactNode) => {
 
 describe('Chat Component', () => {
   it('renders initial messages correctly', () => {
-    const {getByText} = renderWithI18n(<Chat />);
+    const {getByText} = renderWithI18n(<Chat id={''} />);
 
     expect(getByText('Hola, ¿cómo estás?')).toBeTruthy();
     expect(getByText('Bien, gracias. ¿Y tú?')).toBeTruthy();
@@ -25,7 +25,7 @@ describe('Chat Component', () => {
   });
 
   it('adds a new message when send button is pressed', () => {
-    const {getByPlaceholderText, getByText} = renderWithI18n(<Chat />);
+    const {getByPlaceholderText, getByText} = renderWithI18n(<Chat id={''} />);
     const input = getByPlaceholderText('Escribe un mensaje...');
     const sendButton = getByText('Enviar');
 
@@ -36,7 +36,7 @@ describe('Chat Component', () => {
   });
 
   it('should scroll to end on content size change', () => {
-    const { getByPlaceholderText, getByText } = renderWithI18n(<Chat />);
+    const { getByPlaceholderText, getByText } = renderWithI18n(<Chat id={''} />);
     
     const input = getByPlaceholderText('Escribe un mensaje...');
     const sendButton = getByText('Enviar');

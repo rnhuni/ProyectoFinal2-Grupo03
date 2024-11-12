@@ -23,10 +23,10 @@ import RNFetchBlob from 'react-native-blob-util';
 export const IncidentReportScreen = () => {
   const { t } = useTranslation(); // Usamos el hook para acceder a las traducciones
   const [incidentType, setIncidentType] = useState<string>(
-    "t('incidentReportScreen.incidentType.placeholder')",
+    "Incidente 1", // "t('incidentReportScreen.incidentType.placeholder')",
   );
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [description, setDescription] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('3001012375');
+  const [description, setDescription] = useState('Incident description');
   const { incidents, loading, error, createIncident } = useIncidents();
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -47,14 +47,18 @@ export const IncidentReportScreen = () => {
       for (const attachment of attachments) {
         if (attachment.fileObject && attachment.file_uri) {
           console.log("5. enviando de veritas");
-          const fileData = await RNFetchBlob.fs.readFile(attachment.fileObject.uri, 'base64');
-          console.log("5.1. el archivo en base64", fileData);
+          
+          const file = new File([attachment.file_uri], attachment.file_name, { type: attachment.content_type });
+          //const fileData = await RNFetchBlob.fs.readFile(attachment.fileObject.uri, 'base64');
+          
+          console.log("5.1. el archivo en file", file );
+
 
           const success = await uploadFile(
-            fileData,
+            file,
             attachment.file_uri
           );
-          console.log("6. a ver q paso", success);
+          console.log("6. a ver q paso >", success);
           if (success) {
             uploadedAttachments.push({
               id: attachment.id,
@@ -206,7 +210,7 @@ export const IncidentReportScreen = () => {
               />
             </Picker>
           </View>
-          <Text testID="selected-incident-type">{incidentType}</Text>
+          {/* <Text testID="selected-incident-type">{incidentType}</Text> */}
         </View>
 
         {/* Número de teléfono */}
@@ -256,10 +260,10 @@ export const IncidentReportScreen = () => {
         }
 
         <View style={styles.attach_container}>
-          <Text style={styles.attach_label}>{t("incidentScreen.attachment")}</Text>
+          <Text style={styles.attach_label}>{t("incidentReportScreen.fileUpload.buttonText")}</Text>
           <Button
             onPress={handleFilePick}
-            title={t("incidentScreen.attachment")}
+            title={t("incidentReportScreen.fileUpload.addFileButton")}
             color="#6C728F"
           />
 
@@ -395,7 +399,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   attach_badgeText: {
-    color: '#fff',
+    color: '#000',
   },
   attach_button: {
     width: '65%',

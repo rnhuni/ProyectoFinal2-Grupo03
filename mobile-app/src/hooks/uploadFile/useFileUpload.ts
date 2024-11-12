@@ -39,8 +39,8 @@ const useFileUpload = () => {
   // Función para cargar el archivo en la URL generada
   const uploadFile = async (file: File, url: string) => {
     console.log("En la carga de archivo");
-    console.log("Uploading file", file);
-    console.log("To URL", url);
+    // console.log("Uploading file", file);
+    // console.log("To URL", url);
     setError("");
     setUploadProgress(0);
     setLoading(true);
@@ -49,14 +49,19 @@ const useFileUpload = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(url, {
+      const bodyForm:any = {
         method: "PUT",
-        body: formData,
+        body: file,
         headers: {
           "Content-Type": file.type,
         },
-      });
-
+      }
+      console.log("url", url);
+      console.log("bodyForm", bodyForm);
+      
+      console.log("Response antes");
+      const response = await fetch(url, bodyForm);
+      console.log("Response", response);
       if (!response.ok) {
         throw new Error("File upload failed");
       }

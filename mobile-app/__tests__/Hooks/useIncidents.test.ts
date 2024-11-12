@@ -3,7 +3,7 @@ import useIncidents from '../../src/hooks/incidents/useIncidents';
 import api from '../../src/api/api';
 import MockAdapter from 'axios-mock-adapter';
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse, CanceledError } from 'axios';
-import { Incident } from '../../src/interfaces/Indicents';
+import { Incident } from '../../src/interfaces/Incidents';
 
 // Mockear la API
 jest.mock('../../src/api/api', () => ({
