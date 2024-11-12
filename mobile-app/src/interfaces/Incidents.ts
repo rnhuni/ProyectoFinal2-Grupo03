@@ -4,8 +4,8 @@ export interface Incident {
   id?: string;
   description: string;
   type: string;
-  createdAt?: string;
-  updatedAt?: string;
+  created_at?: string;
+  updated_at?: string;
   user_issuer_name?: string;
   contact: Contact;
   attachments?: Attachment[];

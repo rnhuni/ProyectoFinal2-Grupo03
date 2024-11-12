@@ -27,7 +27,7 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
     try {
       const authResult = await loginUser(username, password);
       setToken(authResult.IdToken);
-
+      console.log(authResult.IdToken);
       navigation.navigate('HomeScreen');
     } catch (error) {
       setToken("");

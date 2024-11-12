@@ -19,6 +19,7 @@ import { Contact, Incident, Attachment } from '../../../interfaces/Incidents';
 import useIncidents from '../../../hooks/incidents/useIncidents';
 import useFileUpload from '../../../hooks/uploadFile/useFileUpload';
 import RNFetchBlob from 'react-native-blob-util';
+import { useNavigation } from '@react-navigation/native';
 
 export const IncidentReportScreen = () => {
   const { t } = useTranslation(); // Usamos el hook para acceder a las traducciones
@@ -31,6 +32,7 @@ export const IncidentReportScreen = () => {
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [showProgressBox, setShowProgressBox] = useState(false);
+  const navigation = useNavigation<any>();
 
   const {
     getUploadUrl,
@@ -88,6 +90,7 @@ export const IncidentReportScreen = () => {
       console.log(result);
       // Maneja la respuesta exitosa aquí
       alert('Incidente registrado con éxito');
+      navigation.navigate('ResumeIncidentScreen');
     } catch (error) {
       console.error('Error al registrar el incidente:', error); // Registrar el error en la consola
       alert('Error al registrar el incidente');
