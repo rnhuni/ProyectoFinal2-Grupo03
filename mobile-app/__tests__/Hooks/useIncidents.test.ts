@@ -44,7 +44,7 @@ describe('useIncidents', () => {
 
         const mockReloadIncidents = jest.fn();
 
-        const { result: resultWithReload } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result: resultWithReload } = renderHook(() => useIncidents());
     });
 
     it('mockGet manejar correctamente errores de API', async () => {
@@ -54,7 +54,7 @@ describe('useIncidents', () => {
 
         const mockReloadIncidents = jest.fn();
         // Renderiza el hook
-        const { result } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result } = renderHook(() => useIncidents());
 
         // Simulamos un error de Axios
         const axiosError = new AxiosError('Error de red', 'ERR_NETWORK');
@@ -70,7 +70,7 @@ describe('useIncidents', () => {
         mockGet.mockRejectedValueOnce(canceledError);
         const mockReloadIncidents = jest.fn();
         // Renderiza el hook
-        const { result } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result } = renderHook(() => useIncidents());
 
         await act(async () => {
             await result.current.reloadIncidents();
@@ -104,18 +104,18 @@ describe('useIncidents', () => {
 
         const mockReloadIncidents = jest.fn();
 
-        const { result: resultWithReload } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result: resultWithReload } = renderHook(() => useIncidents());
 
 
         const newIncident: Incident = {
             id: 'TKT-241026-130439408',
             description: 'Nuevo incidente de prueba',
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
             user_issuer_name: 'Ana Ramirez',
             contact: { phone: '987654' },
             attachments: [],
             type: 'denuncia',
-            updatedAt: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         };
 
         // Mockear la respuesta de la API para la creación de incidentes
@@ -132,7 +132,7 @@ describe('useIncidents', () => {
 
         // Renderiza el hook
         const mockReloadIncidents = jest.fn();
-        const { result } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result } = renderHook(() => useIncidents());
 
         // Simulamos un error de Axios
         const axiosError = new AxiosError('Error de red', 'ERR_NETWORK');
@@ -141,12 +141,12 @@ describe('useIncidents', () => {
         const newIncident: Incident = {
             id: 'TKT-241026-130439408',
             description: 'Nuevo incidente de prueba',
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
             user_issuer_name: 'Ana Ramirez',
             contact: { phone: '987654' },
             attachments: [],
             type: 'denuncia',
-            updatedAt: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         };
 
         await act(async () => {
@@ -159,17 +159,17 @@ describe('useIncidents', () => {
         mockPost.mockRejectedValueOnce(canceledError);
 
         const mockReloadIncidents = jest.fn();
-        const { result } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result } = renderHook(() => useIncidents());
 
         const newIncident: Incident = {
             id: 'TKT-241026-130439408',
             description: 'Nuevo incidente de prueba',
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
             user_issuer_name: 'Ana Ramirez',
             contact: { phone: '987654' },
             attachments: [],
             type: 'denuncia',
-            updatedAt: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         };
 
         await act(async () => {
@@ -206,7 +206,7 @@ describe('useIncidents', () => {
 
         const mockReloadIncidents = jest.fn();
 
-        const { result: resultWithReload } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result: resultWithReload } = renderHook(() => useIncidents());
 
 
         await act(async () => {
@@ -231,7 +231,7 @@ describe('useIncidents', () => {
 
         const mockReloadIncidents = jest.fn();
 
-        const { result: resultWithReload } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result: resultWithReload } = renderHook(() => useIncidents());
 
         await act(async () => {
             await resultWithReload.current.updateIncident(mockIncident);
@@ -256,7 +256,7 @@ describe('useIncidents', () => {
 
         const mockReloadIncidents = jest.fn();
 
-        const { result: resultWithReload } = renderHook(() => useIncidents(mockReloadIncidents));
+        const { result: resultWithReload } = renderHook(() => useIncidents());
 
         await act(async () => {
             await resultWithReload.current.updateIncident(mockIncident);
