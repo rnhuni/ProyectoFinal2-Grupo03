@@ -10,7 +10,7 @@ const useNotificationsGraphql = (id: string) => {
     /** LLAMADO A GRAPHQL para lectura del chat */
     useEffect(() => {
         const subscribeToChannel = async (id: string) => {
-            const subscription = subscribeChannelFunc(id).subscribe({
+            const subscription = subscribeChannelFunc(id)?.subscribe({
                 next: ({ value }: { value: { data: { subscribe: { data: string } } } }) => {
                     console.log("value: ", value);
                     setReceived(value.data.subscribe.data);
@@ -24,7 +24,7 @@ const useNotificationsGraphql = (id: string) => {
         const sub = subscribeToChannel(id);
 
         return () => {
-            sub.then(subscription => subscription.unsubscribe());
+            sub.then(subscription => subscription?.unsubscribe());
         };
     }, [id]);  // Asegúrate de incluir `id` como dependencia aquí
 

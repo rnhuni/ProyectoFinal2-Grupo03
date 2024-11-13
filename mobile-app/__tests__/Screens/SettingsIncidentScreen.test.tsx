@@ -1,9 +1,18 @@
 import React from 'react';
-import {fireEvent, render} from '@testing-library/react-native';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
 import {SettingsIncidentScreen} from '../../src/Presentation/Screens/Incidents/SettingsIncidentScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {I18nextProvider} from 'react-i18next';
 import i18n from '../../src/internalization/i18n';
+import useNotificationConfig from '../../src/hooks/user/useNotificationsConfig';
+
+
+
+jest.mock('../../src/hooks/user/useNotificationsConfig', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 
 jest.mock('../../src/Presentation/Components/Header.tsx', () => 'Header');
 jest.mock('../../src/Presentation/Components/Footer.tsx', () => 'Footer');
@@ -16,124 +25,61 @@ const renderWithI18n = (component: React.ReactNode) => {
   );
 };
 
+
 describe('SettingsIncidentScreen', () => {
-  it('renders correctly with translated text', () => {
-    const {getByText} = renderWithI18n(<SettingsIncidentScreen />);
+  it('should render the list of notifications and toggle switch', async () => {
+    // Datos simulados para el hook
+    const mockNotifications = [
+      {
+        id: 'faa26fbd-09ec-473d-b4b8-13e7d8733af7',
+        name: 'Actualización de Estado de Ticket',
+        service: 'servicio 1',
+        show_by_default: true,
+        updated_at: '2024-11-13T03:40:40.590566',
+        created_at: '2024-11-08T21:53:50.768036',
+      },
+      {
+        id: '46cd29b8-4d0a-4a1c-92e5-76e39ef74e5c',
+        name: 'Cliente Transferido a Otro Agente',
+        service: 'State Changes',
+        show_by_default: false,
+        updated_at: '2024-11-13T03:39:58.025947',
+        created_at: '2024-11-10T13:37:17.656251',
+      },
+    ];
 
-    expect(
-      getByText(i18n.t('settingsIncidentScreen.enableNotifications')),
-    ).toBeTruthy();
-  });
+    // Mock para el hook
+    (useNotificationConfig as jest.Mock).mockReturnValue({
+      notificationsConfig: mockNotifications,
+      loading: false,
+      error: null,
+      reloadNotificationConfig: jest.fn().mockResolvedValue(mockNotifications),
+      updateNotificationConfig: jest.fn(),
+    });
 
-  it('renders the notifications switch and it starts as off', () => {
-    const {getByTestId} = renderWithI18n(<SettingsIncidentScreen />);
+    // Renderizamos el componente
+    const { getByText, getByTestId } = renderWithI18n(<SettingsIncidentScreen />);
 
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
-    expect(notificationsSwitch.props.value).toBe(false);
-  });
+    // Esperamos que los elementos estén disponibles
+    await waitFor(() => {
+      expect(getByText('Actualización de Estado de Ticket')).toBeTruthy();
+      expect(getByText('Cliente Transferido a Otro Agente')).toBeTruthy();
+    });
 
-  it('toggles the notifications switch on and off', () => {
-    const {getByTestId} = renderWithI18n(<SettingsIncidentScreen />);
+    // Verificamos si el estado inicial de los switches es correcto
+    expect(getByTestId('switch-faa26fbd-09ec-473d-b4b8-13e7d8733af7')).toHaveProp('value', true);
+    expect(getByTestId('switch-46cd29b8-4d0a-4a1c-92e5-76e39ef74e5c')).toHaveProp('value', false);
 
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
+    // Simulamos el cambio de estado del switch
+    fireEvent(getByTestId('switch-faa26fbd-09ec-473d-b4b8-13e7d8733af7'), 'valueChange', false);
 
-    fireEvent(notificationsSwitch, 'valueChange', true);
-    expect(notificationsSwitch.props.value).toBe(true);
-
-    fireEvent(notificationsSwitch, 'valueChange', false);
-    expect(notificationsSwitch.props.value).toBe(false);
-  });
-
-  // -------------------- state-changes
-  it('enables state-changes changes switch when notifications are enabled', () => {
-    const {getByTestId, getByText} = renderWithI18n(<SettingsIncidentScreen />);
-
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
-
-    fireEvent(notificationsSwitch, 'valueChange', true);
-    expect(notificationsSwitch.props.value).toBe(true);
-
-    const stateChangesSwitch = getByTestId(
-      'enable-notifications-switch-state-changes',
-    );
-    expect(stateChangesSwitch).toBeTruthy();
-
-    expect(stateChangesSwitch.props.value).toBe(false);
-
-    fireEvent(stateChangesSwitch, 'valueChange', true);
-    expect(stateChangesSwitch.props.value).toBe(true);
-  });
-
-  it('renders the state-changes changes switch and it starts as off when notifications are disabled', () => {
-    const {getByTestId} = renderWithI18n(<SettingsIncidentScreen />);
-
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
-    expect(notificationsSwitch.props.value).toBe(false);
-
-    expect(() =>
-      getByTestId('enable-notifications-switch-state-changes'),
-    ).toThrow();
-  });
-
-  // -------------------- task-reminder
-  it('enables task-reminder changes switch when notifications are enabled', () => {
-    const {getByTestId, getByText} = renderWithI18n(<SettingsIncidentScreen />);
-
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
-
-    fireEvent(notificationsSwitch, 'valueChange', true);
-    expect(notificationsSwitch.props.value).toBe(true);
-
-    const stateChangesSwitch = getByTestId(
-      'enable-notifications-switch-task-reminder',
-    );
-    expect(stateChangesSwitch).toBeTruthy();
-
-    expect(stateChangesSwitch.props.value).toBe(false);
-
-    fireEvent(stateChangesSwitch, 'valueChange', true);
-    expect(stateChangesSwitch.props.value).toBe(true);
-  });
-
-  it('renders the task-reminder changes switch and it starts as off when notifications are disabled', () => {
-    const {getByTestId} = renderWithI18n(<SettingsIncidentScreen />);
-
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
-    expect(notificationsSwitch.props.value).toBe(false);
-
-    expect(() =>
-      getByTestId('enable-notifications-switch-task-reminder'),
-    ).toThrow();
-  });
-
-  // -------------------- support-messages
-  it('enables support-messages changes switch when notifications are enabled', () => {
-    const {getByTestId, getByText} = renderWithI18n(<SettingsIncidentScreen />);
-
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
-
-    fireEvent(notificationsSwitch, 'valueChange', true);
-    expect(notificationsSwitch.props.value).toBe(true);
-
-    const stateChangesSwitch = getByTestId(
-      'enable-notifications-switch-support-messages',
-    );
-    expect(stateChangesSwitch).toBeTruthy();
-
-    expect(stateChangesSwitch.props.value).toBe(false);
-
-    fireEvent(stateChangesSwitch, 'valueChange', true);
-    expect(stateChangesSwitch.props.value).toBe(true);
-  });
-
-  it('renders the support-messages changes switch and it starts as off when notifications are disabled', () => {
-    const {getByTestId} = renderWithI18n(<SettingsIncidentScreen />);
-
-    const notificationsSwitch = getByTestId('enable-notifications-switch');
-    expect(notificationsSwitch.props.value).toBe(false);
-
-    expect(() =>
-      getByTestId('enable-notifications-switch-support-messages'),
-    ).toThrow();
+    // Esperamos que la función de actualización sea llamada
+    await waitFor(() => {
+      expect(useNotificationConfig().updateNotificationConfig).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'faa26fbd-09ec-473d-b4b8-13e7d8733af7', show_by_default: false })
+      );
+    });
   });
 });
+
+

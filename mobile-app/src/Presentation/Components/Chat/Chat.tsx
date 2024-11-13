@@ -10,12 +10,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import useNotificationsGraphql from '../../../hooks/user/useNotificationsGraphql';
 import { message } from 'aws-sdk/clients/sns';
-
-interface Message {
-  text: string;
-  sender: 'user' | 'agent';
-  name?: string;
-}
+import useChannels from '../../../hooks/channel/useChannels';
+import { Message } from '../../../interfaces/Messages';
 
 interface ChatProps {
   id: string; // Nueva prop para el id
@@ -23,21 +19,22 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ id }) => {
   const { t } = useTranslation();
-  const [messages, setMessages] = useState<Message[]>([
-    { text: 'Hola, ¿cómo estás?', sender: 'agent' },
-    { text: 'Bien, gracias. ¿Y tú?', sender: 'user', name: 'John' },
-    { text: 'Estoy aquí para ayudarte con tus preguntas.', sender: 'agent' },
-    { text: 'Gracias, tengo una duda sobre mi cuenta.', sender: 'user', name: 'John' },
-    { text: 'Claro, ¿en qué puedo ayudarte?', sender: 'agent' },
-    { text: 'Necesito saber el estado de mi pedido.', sender: 'user', name: 'John' },
-    { text: 'Tu pedido está en camino.', sender: 'agent' },
-    { text: '¿Cuándo llegará?', sender: 'user' },
-    { text: 'Llegará mañana por la tarde.', sender: 'agent', name: 'John' },
-  ]);
+  const [messagesLocal, setMessagesLocal] = useState<Message[]>([]);
+
+  const { messages, loading, error, reloadMessages } = useChannels();
   const [input, setInput] = useState<string>('');
   const scrollViewRef = useRef<ScrollView>(null);
 
   const { notifications, data, received } = useNotificationsGraphql(id);
+
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      const data = await reloadMessages();
+      setMessagesLocal(data);
+    };
+    loadNotifications();
+  }, []);
 
   useEffect(() => {
     console.log("received: ", received);
@@ -50,7 +47,7 @@ const Chat: React.FC<ChatProps> = ({ id }) => {
     console.log("useEffect received: ", received);
     if (received) {
       // Agregar la notificación recibida al chat como un mensaje del agente
-      setMessages((prevMessages) => [
+      setMessagesLocal((prevMessages) => [
         ...prevMessages,
         { text: received, sender: 'agent' },
       ]);
@@ -59,7 +56,7 @@ const Chat: React.FC<ChatProps> = ({ id }) => {
 
   const handleSend = () => {
     if (input.trim()) {
-      setMessages([...messages, { text: input, sender: 'user' }]);
+      setMessagesLocal([...messagesLocal, { text: input, sender: 'user' }]);
       setInput('');
       // Aquí puedes agregar la lógica para continuar la conversación
       // Por ejemplo, enviar el mensaje a un backend o usar un bot
@@ -76,7 +73,7 @@ const Chat: React.FC<ChatProps> = ({ id }) => {
 
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+  }, [messagesLocal]);
 
   const handleContentSizeChange = () => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -88,7 +85,7 @@ const Chat: React.FC<ChatProps> = ({ id }) => {
         style={styles.chatWindow}
         ref={scrollViewRef}
         onContentSizeChange={handleContentSizeChange}>
-        {messages.map((msg, index) => (
+        {messagesLocal.map((msg, index) => (
           <View
             key={index}
             style={[

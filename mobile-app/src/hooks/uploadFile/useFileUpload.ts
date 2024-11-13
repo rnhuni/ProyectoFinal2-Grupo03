@@ -19,12 +19,12 @@ const useFileUpload = () => {
     setError("");
     setLoading(true);
     try {
-      console.log("Getting upload URL for", fileName, " - ", contentType);
+      //console.log("Getting upload URL for", fileName, " - ", contentType);
       const response = await api.post<UploadResponse>("/incident/media/upload-url", {
         file_name: fileName,
         content_type: contentType,
       });
-      console.log("Response", response.data);
+      //console.log("Response", response.data);
       return response.data; // Devuelve la respuesta completa
     } catch (err) {
       console.error("Get upload URL error:", err);
@@ -38,9 +38,9 @@ const useFileUpload = () => {
 
   // Función para cargar el archivo en la URL generada
   const uploadFile = async (file: File, url: string) => {
-    console.log("En la carga de archivo");
-    // console.log("Uploading file", file);
-    // console.log("To URL", url);
+    //console.log("En la carga de archivo");
+    // //console.log("Uploading file", file);
+    // //console.log("To URL", url);
     setError("");
     setUploadProgress(0);
     setLoading(true);
@@ -56,12 +56,12 @@ const useFileUpload = () => {
           "Content-Type": file.type,
         },
       }
-      console.log("url", url);
-      console.log("bodyForm", bodyForm);
+      //console.log("url", url);
+      //console.log("bodyForm", bodyForm);
       
-      console.log("Response antes");
+      //console.log("Response antes");
       const response = await fetch(url, bodyForm);
-      console.log("Response", response);
+      //console.log("Response", response);
       if (!response.ok) {
         throw new Error("File upload failed");
       }

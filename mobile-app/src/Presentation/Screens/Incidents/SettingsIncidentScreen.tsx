@@ -14,26 +14,26 @@ export const SettingsIncidentScreen = () => {
 
   const [notifications, setNotifications] = useState<NotificationConfig[]>([]);
 
-  // useEffect(() => {
-  //   console.log('useEffect Incidents: reload');
-  //   const loadNotifications = async () => {
-  //     const data = await reloadNotificationConfig();
-  //     console.log('data:', data);
-  //     setNotifications(data);
-  //     console.log('Notifications:', notifications);
-  //   };
-  //   loadNotifications();
-  // }, []);  
+  useEffect(() => {
+    // console.log('useEffect Incidents: reload');
+    const loadNotifications = async () => {
+      const data = await reloadNotificationConfig();
+      // console.log('data:', data);
+      setNotifications(data);
+      // console.log('Notifications:', notifications);
+    };
+    loadNotifications();
+  }, []);  
 
-  useFocusEffect(
-      useCallback(() => {
-        const loadNotifications = async () => {
-          const data = await reloadNotificationConfig();
-          setNotifications(data);
-        };
-        loadNotifications();
-      }, []),
-    );
+  // useFocusEffect(
+  //     useCallback(() => {
+  //       const loadNotifications = async () => {
+  //         const data = await reloadNotificationConfig();
+  //         setNotifications(data);
+  //       };
+  //       loadNotifications();
+  //     }, []),
+  //   );
 
   const toggleNotifications = async (id: string) => {
     setNotifications((prevNotifications) =>
@@ -60,7 +60,7 @@ export const SettingsIncidentScreen = () => {
             renderItem={({ item }: { item: NotificationConfig }) => (
               <View style={styles.settingItem}>
                 <Text style={styles.settingText}>{item.name}</Text>
-                <Switch
+                <Switch testID={`switch-${item.id}`}
                   value={item.show_by_default}
                   onValueChange={() => toggleNotifications(item.id)}
                 />
