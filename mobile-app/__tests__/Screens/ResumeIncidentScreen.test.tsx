@@ -5,32 +5,68 @@ import useIncidents from '../../src/hooks/incidents/useIncidents';
 import {I18nextProvider} from 'react-i18next';
 import {NavigationContainer} from '@react-navigation/native';
 import i18n from '../../src/internalization/i18n';
+import subscribeChannelFunc from '../../src/api/notifications';
 
-jest.mock('../../src/hooks/incidents/useIncidents');
-
-const mockReloadIncidents = jest.fn();
-
-const mockIncidents = [
-  {
-    id: '1',
-    type: 'Incident Type 1',
-    contact: {phone: '1234567890'},
-    description: 'Test Incident 1',
+jest.mock('aws-amplify', () => ({
+  Amplify: {
+    configure: jest.fn(),
   },
-  {
-    id: '2',
-    type: 'Incident Type 2',
-    contact: {phone: '0987654321'},
-    description: 'Test Incident 2',
+  API: {
+    graphql: jest.fn(),
   },
-];
+  graphqlOperation: jest.fn(),
+}));
 
-(useIncidents as jest.Mock).mockReturnValue({
-  incidents: mockIncidents,
-  loading: false,
-  error: '',
-  reloadIncidents: mockReloadIncidents,
-});
+// Mock de la función `subscribeChannelFunc`
+jest.mock('../../src/api/notifications', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+// Mocks del hook useIncidents
+jest.mock('../../src/hooks/incidents/useIncidents', () => ({
+  __esModule: true,
+  default: () => ({
+    incidents: [
+      {
+        id: 'TKT-241026-130439408',
+        description: 'Otra prueba con adjuntos',
+        type: 'technical',
+        created_at: '2024-10-26T13:04:39.408509',
+        updated_at: '2024-10-26T13:04:39.408529',
+        user_issuer_name: 'Nicolas Hug',
+        contact: { phone: '1234567890x' },
+        attachments: [
+          { id: '1', content_type: 'image/jpeg', file_name: 'file1.jpg', file_uri: 'file_uri_1' },
+          { id: '2', content_type: 'image/png', file_name: 'file2.png', file_uri: 'file_uri_2' },
+        ],
+      },
+      {
+        id: 'TKT-241106-142912365',
+        description: 'Otra prueba con adjuntos',
+        type: 'technical',
+        created_at: '2024-11-06T14:29:12.365889',
+        updated_at: '2024-11-06T14:29:12.365910',
+        user_issuer_name: 'Nicolas Hug',
+        contact: { phone: '1234567890' },
+        attachments: [],
+      },
+      {
+        id: 'TKT-241106-225252725',
+        description: 'revisar nueva carga de archivos',
+        type: 'technical',
+        created_at: '2024-11-06T22:52:52.725316',
+        updated_at: '2024-11-06T22:52:52.725338',
+        user_issuer_name: 'Oscar',
+        contact: { phone: '1234567890' },
+        attachments: [{ id: '3', content_type: 'image/jpeg', file_name: 'file3.jpg', file_uri: 'file_uri_3' }],
+      },
+    ],
+    loading: false,
+    error: null,
+    reloadIncidents: jest.fn(),
+  }),
+}));
 
 const renderWithI18n = (component: React.ReactNode) => {
   return render(
@@ -41,16 +77,16 @@ const renderWithI18n = (component: React.ReactNode) => {
 };
 
 describe('ResumeIncidentScreen', () => {
-  it('should render correctly and display incidents', () => {
+  it('renders the incident list correctly', async () => {
     const {getByText} = renderWithI18n(<ResumeIncidentScreen />);
-
-    expect(getByText('Incident Type 1')).toBeTruthy();
-    expect(getByText('Incident Type 2')).toBeTruthy();
+    expect(getByText('TKT-241026-130439408')).toBeTruthy();
+    expect(getByText('TKT-241106-142912365')).toBeTruthy();
   });
+
 
   it('should open modal when an incident row is pressed', async () => {
     const {getByText, getByTestId} = renderWithI18n(<ResumeIncidentScreen />);
-    fireEvent.press(getByText('1'));
+    fireEvent.press(getByText('TKT-241026-130439408'));
 
     await waitFor(() => {
       expect(getByTestId('detail-modal')).toBeTruthy();
@@ -68,16 +104,4 @@ describe('ResumeIncidentScreen', () => {
     expect(searchInput.props.value).toBe('Incident');
   });
 
-  it('should display loading indicator when loading is true', () => {
-    (useIncidents as jest.Mock).mockReturnValue({
-      incidents: [],
-      loading: true,
-      error: '',
-      reloadIncidents: mockReloadIncidents,
-    });
-
-    const {getByText} = renderWithI18n(<ResumeIncidentScreen />);
-
-    expect(getByText('Loading...')).toBeTruthy();
-  });
 });

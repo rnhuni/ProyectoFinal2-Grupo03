@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,52 +7,76 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import useNotificationsGraphql from '../../../hooks/user/useNotificationsGraphql';
+import { message } from 'aws-sdk/clients/sns';
+import useChannels from '../../../hooks/channel/useChannels';
+import { Message } from '../../../interfaces/Messages';
 
-interface Message {
-  text: string;
-  sender: 'user' | 'agent';
+interface ChatProps {
+  id: string; // Nueva prop para el id
 }
 
-const Chat: React.FC = () => {
-  const {t} = useTranslation();
-  const [messages, setMessages] = useState<Message[]>([
-    {text: 'Hola, ¿cómo estás?', sender: 'agent'},
-    {text: 'Bien, gracias. ¿Y tú?', sender: 'user'},
-    {text: 'Estoy aquí para ayudarte con tus preguntas.', sender: 'agent'},
-    {text: 'Gracias, tengo una duda sobre mi cuenta.', sender: 'user'},
-    {text: 'Claro, ¿en qué puedo ayudarte?', sender: 'agent'},
-    {text: 'Necesito saber el estado de mi pedido.', sender: 'user'},
-    {text: 'Tu pedido está en camino.', sender: 'agent'},
-    {text: '¿Cuándo llegará?', sender: 'user'},
-    {text: 'Llegará mañana por la tarde.', sender: 'agent'},
-  ]);
+const Chat: React.FC<ChatProps> = ({ id }) => {
+  const { t } = useTranslation();
+  const [messagesLocal, setMessagesLocal] = useState<Message[]>([]);
+
+  const { messages, loading, error, reloadMessages } = useChannels();
   const [input, setInput] = useState<string>('');
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const { notifications, data, received } = useNotificationsGraphql(id);
+
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      const data = await reloadMessages();
+      setMessagesLocal(data);
+    };
+    loadNotifications();
+  }, []);
+
+  useEffect(() => {
+    console.log("received: ", received);
+    console.log("notifications: ", notifications);
+    console.log("data: ", data);
+  }, []);
+
+
+  useEffect(() => {
+    console.log("useEffect received: ", received);
+    if (received) {
+      // Agregar la notificación recibida al chat como un mensaje del agente
+      setMessagesLocal((prevMessages) => [
+        ...prevMessages,
+        { text: received, sender: 'agent' },
+      ]);
+    }
+  }, [received]);
+
   const handleSend = () => {
     if (input.trim()) {
-      setMessages([...messages, {text: input, sender: 'user'}]);
+      setMessagesLocal([...messagesLocal, { text: input, sender: 'user' }]);
       setInput('');
       // Aquí puedes agregar la lógica para continuar la conversación
       // Por ejemplo, enviar el mensaje a un backend o usar un bot
     }
   };
 
-  const getInitial = (sender: string) => {
-    return sender.charAt(0).toUpperCase();
-  };
+  const getInitial = (message: Message) => {
+    return message.name?.charAt(0).toUpperCase() || message.sender.charAt(0).toUpperCase();
+  }
 
   const getCircleStyle = (sender: string) => {
     return sender === 'user' ? styles.userCircle : styles.agentCircle;
   };
 
   useEffect(() => {
-    scrollViewRef.current?.scrollToEnd({animated: true});
-  }, [messages]);
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [messagesLocal]);
 
   const handleContentSizeChange = () => {
-    scrollViewRef.current?.scrollToEnd({animated: true});
+    scrollViewRef.current?.scrollToEnd({ animated: true });
   }
 
   return (
@@ -60,8 +84,8 @@ const Chat: React.FC = () => {
       <ScrollView
         style={styles.chatWindow}
         ref={scrollViewRef}
-        onContentSizeChange={ handleContentSizeChange }>
-        {messages.map((msg, index) => (
+        onContentSizeChange={handleContentSizeChange}>
+        {messagesLocal.map((msg, index) => (
           <View
             key={index}
             style={[
@@ -71,7 +95,7 @@ const Chat: React.FC = () => {
             {msg.sender === 'agent' ? (
               <>
                 <View style={[styles.circle, getCircleStyle(msg.sender)]}>
-                  <Text style={styles.initial}>{getInitial(msg.sender)}</Text>
+                  <Text style={styles.initial}>{getInitial(msg)}</Text>
                 </View>
                 <Text style={styles.message}>{msg.text}</Text>
               </>
@@ -79,7 +103,7 @@ const Chat: React.FC = () => {
               <>
                 <Text style={styles.message}>{msg.text}</Text>
                 <View style={[styles.circle, getCircleStyle(msg.sender)]}>
-                  <Text style={styles.initial}>{getInitial(msg.sender)}</Text>
+                  <Text style={styles.initial}>{getInitial(msg)}</Text>
                 </View>
               </>
             )}

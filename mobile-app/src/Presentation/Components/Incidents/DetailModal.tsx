@@ -70,7 +70,7 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
             {/* Render attachments if needed */}
             {/* Añadir el componente Chat al final */}
             <View style={styles.chatContainer}>
-              <Chat />
+              <Chat id={data.id} />
             </View>
           </ScrollView>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
