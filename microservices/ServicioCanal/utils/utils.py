@@ -36,5 +36,6 @@ def decode_user(auth_header):
         "permissions": token_payload["custom:permissions"],
         "client": token_payload["custom:client"],
         "role": token_payload["custom:role"],
+        "role_type": token_payload["custom:role"].split("-")[1],
         "features": token_payload["custom:features"],
     }

@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID
 
 class Notification(Model):
-    __tablename__ = 'user_ notification'
+    __tablename__ = 'user_notification'
     user_id = Column(UUID(as_uuid=True), primary_key=True)
     base_id = Column(UUID(as_uuid=True), primary_key=True)
     name = Column(String, nullable=False)
