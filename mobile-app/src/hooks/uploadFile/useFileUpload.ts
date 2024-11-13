@@ -39,8 +39,8 @@ const useFileUpload = () => {
   // Función para cargar el archivo en la URL generada
   const uploadFile = async (file: File, url: string) => {
     //console.log("En la carga de archivo");
-    // //console.log("Uploading file", file);
-    // //console.log("To URL", url);
+    //console.log("Uploading file", file);
+    //console.log("To URL", url);
     setError("");
     setUploadProgress(0);
     setLoading(true);
