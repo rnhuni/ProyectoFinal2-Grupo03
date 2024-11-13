@@ -20,12 +20,12 @@ import useFileUpload from '../../../hooks/uploadFile/useFileUpload';
 import { useNavigation } from '@react-navigation/native';
 
 export const IncidentReportScreen = () => {
-  const { t } = useTranslation(); // Usamos el hook para acceder a las traducciones
+  const { t } = useTranslation(); 
   const [incidentType, setIncidentType] = useState<string>(
-    "Incidente 1", // "t('incidentReportScreen.incidentType.placeholder')",
+    "t('incidentReportScreen.incidentType.placeholder')",
   );
-  const [phoneNumber, setPhoneNumber] = useState('3001012375');
-  const [description, setDescription] = useState('Incident description');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [description, setDescription] = useState('');
   const { createIncident } = useIncidents();
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -40,17 +40,17 @@ export const IncidentReportScreen = () => {
   } = useFileUpload();
 
   const handleRegisterIncident = async () => {
-
+    debugger
     const uploadedAttachments = [];
 
     try {
       for (const attachment of attachments) {
         if (attachment.fileObject && attachment.file_uri) {
           //console.log("5. enviando de veritas");
-          
+
           const file = new File([attachment.file_uri], attachment.file_name, { type: attachment.content_type });
           //const fileData = await RNFetchBlob.fs.readFile(attachment.fileObject.uri, 'base64');
-          
+
           //console.log("5.1. el archivo en file", file );
 
 
@@ -104,11 +104,7 @@ export const IncidentReportScreen = () => {
       });
       handleFileUpload(result); // Procesa el archivo cargado
     } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        //console.log('User canceled the picker');
-      } else {
-        console.error(err);
-      }
+     // console.error(err);
     }
   };
 
@@ -144,8 +140,6 @@ export const IncidentReportScreen = () => {
           }// Guarda el archivo seleccionado en el estado
           //console.log("4. digamos que esta en cache, hay que darle guardar para enviarlo de veritas");
           // Alert.alert("Archivo cargado", `Archivo: ${file.name}`); // Mostrar una alerta con el nombre del archivo
-        } else {
-          Alert.alert("Error", "No se seleccionó ningún archivo.");
         }
       };
 
