@@ -1,32 +1,33 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { ChakraProvider } from "@chakra-ui/react";
 import { I18nextProvider } from "react-i18next";
-import i18n from "../../internalization/i18n"; // Asegúrate de importar tu configuración de i18n
+import { ChakraProvider } from "@chakra-ui/react";
+import i18n from "../../internalization/i18n";
 import IncidentDetailModal from "./IncidentDetailModal";
 import { IncidentTableData } from "../../interfaces/Incidents";
 import apiClient from "../../services/HttpClient";
+// Mock del módulo HttpClient
+jest.mock("../../services/HttpClient", () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  interceptors: {
+    request: { use: jest.fn(), eject: jest.fn() },
+    response: { use: jest.fn(), eject: jest.fn() },
+  },
+}));
 
-// Mock del servicio apiClient
-jest.mock("../../services/HttpClient");
+const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const mockIncident: IncidentTableData = {
   id: "1",
   type: "technical",
-  description: "Technical issue",
-  attachments: [
-    {
-      id: "1",
-      content_type: "application/pdf",
-      file_name: "file1.pdf",
-      file_uri: "http://example.com/file1.pdf",
-    },
-  ],
+  description: "Problema técnico",
+  attachments: [],
   contact: { phone: "123456789" },
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  user_issuer_name: "John Doe",
+  createdAt: "2024-11-08T21:02:00.000Z",
+  updatedAt: "2024-11-08T21:02:00.000Z",
+  user_issuer_name: "Juan Pérez",
 };
 
 const renderWithProviders = (ui: React.ReactNode) => {
@@ -40,86 +41,32 @@ const renderWithProviders = (ui: React.ReactNode) => {
 describe("IncidentDetailModal Component", () => {
   const onClose = jest.fn();
 
+  beforeAll(() => {
+    jest
+      .spyOn(Date.prototype, "toLocaleString")
+      .mockImplementation(function () {
+        return "08/11/2024, 21:02:00";
+      });
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.setItem("id_token", "mocked_token");
     i18n.changeLanguage("es");
   });
 
-  test("should render incident details", () => {
-    renderWithProviders(
-      <IncidentDetailModal
-        isOpen={true}
-        onClose={onClose}
-        incident={mockIncident}
-      />
-    );
-
-    expect(
-      screen.getByText(i18n.t("incidentDetail.title", "Detalles del Incidente"))
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(i18n.t("incidentDetail.id", "ID") + ":")
-    ).toBeInTheDocument();
-    expect(screen.getByText(mockIncident.id)).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        i18n.t("incidentDetail.description", "Descripción") + ":"
-      )
-    ).toBeInTheDocument();
-    expect(screen.getByText(mockIncident.description)).toBeInTheDocument();
-    expect(
-      screen.getByText(i18n.t("incidentDetail.type", "Tipo") + ":")
-    ).toBeInTheDocument();
-    expect(screen.getByText(mockIncident.type)).toBeInTheDocument();
-    expect(
-      screen.getByText(i18n.t("incidentDetail.user", "Usuario") + ":")
-    ).toBeInTheDocument();
-    expect(screen.getByText(mockIncident.user_issuer_name)).toBeInTheDocument();
-    expect(
-      screen.getByText(i18n.t("incidentDetail.phone", "Teléfono") + ":")
-    ).toBeInTheDocument();
-    expect(screen.getByText(mockIncident.contact.phone)).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        i18n.t("incidentDetail.createdAt", "Fecha de Creación") + ":"
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText((_, element) => {
-        return (
-          element?.textContent ===
-          new Date(mockIncident.createdAt).toLocaleString()
-        );
-      })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        i18n.t("incidentDetail.attachments", "Archivos Adjuntos") + ":"
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(mockIncident.attachments[0].file_name)
-    ).toBeInTheDocument();
+  afterEach(() => {
+    localStorage.clear();
   });
 
-  test("should call onClose when close button is clicked", () => {
-    renderWithProviders(
-      <IncidentDetailModal
-        isOpen={true}
-        onClose={onClose}
-        incident={mockIncident}
-      />
-    );
+  test("renderiza correctamente los detalles del incidente", async () => {
+    mockedApiClient.get.mockResolvedValueOnce({ data: [] });
 
-    fireEvent.click(screen.getByText(i18n.t("incidentDetail.close", "Cerrar")));
-
-    expect(onClose).toHaveBeenCalled();
-  });
-
-  test("should handle download button click", async () => {
-    (apiClient.post as jest.Mock).mockResolvedValue({
-      data: { url: "http://example.com/file1.pdf" },
-    });
+    const formattedDate = "08/11/2024, 21:02:00";
 
     renderWithProviders(
       <IncidentDetailModal
@@ -127,19 +74,182 @@ describe("IncidentDetailModal Component", () => {
         onClose={onClose}
         incident={mockIncident}
       />
-    );
-
-    fireEvent.click(
-      screen.getByText(i18n.t("incidentDetail.download", "Descargar"))
     );
 
     await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith(
-        "/v1/incident/media/download-url",
-        {
-          media_id: mockIncident.attachments[0].id,
-        }
-      );
+      expect(screen.getByText("Detalles del Incidente")).toBeInTheDocument();
+      expect(screen.getByText("ID:")).toBeInTheDocument();
+      expect(screen.getByText(mockIncident.id)).toBeInTheDocument();
+      expect(screen.getByText("Descripción:")).toBeInTheDocument();
+      expect(screen.getByText(mockIncident.description)).toBeInTheDocument();
+      expect(screen.getByText("Tipo:")).toBeInTheDocument();
+      expect(screen.getByText(mockIncident.type)).toBeInTheDocument();
+      expect(screen.getByText("Usuario:")).toBeInTheDocument();
+      expect(
+        screen.getByText(mockIncident.user_issuer_name)
+      ).toBeInTheDocument();
+      expect(screen.getByText("Teléfono:")).toBeInTheDocument();
+      expect(screen.getByText(mockIncident.contact.phone)).toBeInTheDocument();
+      expect(screen.getByText("Fecha de Creación:")).toBeInTheDocument();
+      expect(screen.getByText(formattedDate)).toBeInTheDocument();
     });
+  });
+
+  test("muestra estado de carga al obtener los archivos adjuntos", () => {
+    mockedApiClient.get.mockImplementation(() => new Promise(() => {}));
+
+    renderWithProviders(
+      <IncidentDetailModal
+        isOpen={true}
+        onClose={onClose}
+        incident={mockIncident}
+      />
+    );
+
+    expect(
+      screen.getByText("Cargando archivos adjuntos...")
+    ).toBeInTheDocument();
+  });
+
+  test("muestra mensaje cuando no hay archivos adjuntos", async () => {
+    mockedApiClient.get.mockResolvedValueOnce({ data: [] });
+
+    renderWithProviders(
+      <IncidentDetailModal
+        isOpen={true}
+        onClose={onClose}
+        incident={mockIncident}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("No hay archivos adjuntos")).toBeInTheDocument();
+    });
+  });
+
+  test("llama a onClose al hacer clic en el botón de cerrar", () => {
+    mockedApiClient.get.mockResolvedValueOnce({ data: [] });
+
+    renderWithProviders(
+      <IncidentDetailModal
+        isOpen={true}
+        onClose={onClose}
+        incident={mockIncident}
+      />
+    );
+
+    fireEvent.click(screen.getByText("Cerrar"));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  //   // Simular un rechazo en la llamada a la API
+  //   mockedApiClient.get.mockRejectedValueOnce(new Error("Error"));
+
+  //   // Crear el mock de useToast con todos los métodos necesarios
+  //   const mockToast = Object.assign(jest.fn(), {
+  //     update: jest.fn(),
+  //     promise: jest.fn(),
+  //     closeAll: jest.fn(),
+  //     close: jest.fn(),
+  //     isActive: jest.fn(),
+  //   }) as ReturnType<typeof Chakra.useToast>;
+
+  //   // Mockear useToast para que retorne mockToast
+  //   jest.spyOn(Chakra, "useToast").mockReturnValue(mockToast);
+
+  //   console.log("Antes de renderizar el componente");
+
+  //   // Renderizar el componente
+  //   renderWithProviders(
+  //     <IncidentDetailModal
+  //       isOpen={true}
+  //       onClose={onClose}
+  //       incident={mockIncident}
+  //     />
+  //   );
+
+  //   console.log("Después de renderizar el componente");
+
+  //   // Espera a que el mensaje de error aparezca en el DOM
+  //   const errorMessage = await screen.findByText(
+  //     "No se pudieron cargar los archivos adjuntos."
+  //   );
+  //   console.log("Dentro de waitFor");
+  //   screen.debug(); // Imprime el DOM actual en la consola
+  //   expect(errorMessage).toBeInTheDocument();
+
+  //   console.log("Antes de verificar mockToast");
+
+  //   // Verifica que mockToast se haya llamado con los parámetros correctos
+  //   expect(mockToast).toHaveBeenCalledWith({
+  //     title: "Error al obtener los archivos adjuntos",
+  //     description: "No se pudieron cargar los archivos adjuntos.",
+  //     status: "error",
+  //     duration: 3000,
+  //     isClosable: true,
+  //   });
+
+  //   console.log("Después de verificar mockToast");
+  // });
+  test("maneja error al obtener los archivos adjuntos", async () => {
+    // Simular un rechazo en la llamada a la API
+    mockedApiClient.get.mockRejectedValueOnce(new Error("Error"));
+
+    // Renderizar el componente sin mockear `useToast`
+    renderWithProviders(
+      <IncidentDetailModal
+        isOpen={true}
+        onClose={onClose}
+        incident={mockIncident}
+      />
+    );
+
+    // Esperar a que el mensaje de error del toast aparezca en el DOM
+    const toastTitle = await screen.findByText(
+      "Error al obtener los archivos adjuntos"
+    );
+    const toastDescription = await screen.findByText(
+      "No se pudieron cargar los archivos adjuntos."
+    );
+
+    // Verificar que los mensajes están en el documento
+    expect(toastTitle).toBeInTheDocument();
+    expect(toastDescription).toBeInTheDocument();
+
+    // También puedes verificar el rol de alerta si es necesario
+    const alert = await screen.findByRole("status");
+    expect(alert).toBeInTheDocument();
+  });
+
+  test("renderiza correctamente los archivos adjuntos", async () => {
+    // Datos de prueba: incidente con archivos adjuntos
+    const incidentWithAttachments = {
+      ...mockIncident,
+      attachments: [
+        { id: "file1", filename: "archivo1.pdf", url: "/path/to/archivo1.pdf", content_type: "application/pdf", file_name: "archivo1.pdf", file_uri: "/path/to/archivo1.pdf" },
+        { id: "file2", filename: "imagen1.jpg", url: "/path/to/imagen1.jpg", content_type: "image/jpeg", file_name: "imagen1.jpg", file_uri: "/path/to/imagen1.jpg" },
+      ],
+    };
+
+    // Simular la respuesta de la API con los archivos adjuntos
+    mockedApiClient.get.mockResolvedValueOnce({
+      data: incidentWithAttachments.attachments,
+    });
+
+    // Renderizar el componente con el incidente que tiene archivos adjuntos
+    renderWithProviders(
+      <IncidentDetailModal
+        isOpen={true}
+        onClose={onClose}
+        incident={incidentWithAttachments}
+      />
+    );
+
+    // Esperar a que los archivos adjuntos aparezcan en el DOM
+    for (const attachment of incidentWithAttachments.attachments) {
+      const attachmentElement = await screen.findByText(attachment.filename);
+      expect(attachmentElement).toBeInTheDocument();
+    }
   });
 });

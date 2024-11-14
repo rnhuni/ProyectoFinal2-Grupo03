@@ -159,5 +159,23 @@
       "attachmentFileSize": "File size must be 10MB or less",
       "attachmentFileType": "Invalid file type"
     }
+  },
+  "chat": {
+    "send": "Send",
+    "typeMessage": "Type a message...",
+    "attachment": "Attachment",
+    "me": "Me",
+    "computer": "Computer",
+    "welcome": "Hi, My Name is HoneyChat",
+    "greeting": "Hey there",
+    "introduction": "Myself Ferin Patel",
+    "reply": "Nice to meet you. You can send me a message and I'll reply with the same message.",
+    "online": "Online"
+  },
+  "dashboard": {
+    "openChat": "Abrir Chat",
+    "openChatTooltip": "Abrir Tooltip del Chat",
+    "chat": "Chat",
+    "close": "Cerrar"
   }
 }

@@ -1,7 +1,14 @@
 // src/components/Incidents/IncidentFormModal.test.tsx
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+  within,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ChakraProvider, useToast } from "@chakra-ui/react";
 import { I18nextProvider } from "react-i18next";
@@ -37,6 +44,7 @@ describe("IncidentFormModal Component", () => {
   const onClose = jest.fn();
   const onSave = jest.fn();
   const createIncident = jest.fn();
+  const updateIncident = jest.fn();
   const getUploadUrl = jest.fn();
   const uploadFile = jest.fn();
 
@@ -51,10 +59,15 @@ describe("IncidentFormModal Component", () => {
     });
     (useIncidents as jest.Mock).mockReturnValue({
       createIncident,
+      updateIncident,
       loading: false,
       error: null,
     });
     i18n.changeLanguage("es");
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   test("should render form fields and submit button", () => {
@@ -151,7 +164,7 @@ describe("IncidentFormModal Component", () => {
     });
   });
 
-  test("should call onSave and createIncident when form is submitted in edit mode", async () => {
+  test("should call onSave and updateIncident when form is submitted in edit mode", async () => {
     const initialData: Incident = {
       id: "1",
       type: "technical",
@@ -186,12 +199,12 @@ describe("IncidentFormModal Component", () => {
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: i18n.t("incidentScreen.createIncident", "Crear incidente"),
+        name: i18n.t("incidentScreen.editIncident", "Actualizar incidente"),
       })
     );
 
     await waitFor(() => {
-      expect(createIncident).toHaveBeenCalledWith(
+      expect(updateIncident).toHaveBeenCalledWith(
         expect.objectContaining({
           type: initialData.type,
           description: "Updated description",
@@ -239,8 +252,19 @@ describe("IncidentFormModal Component", () => {
     });
     fireEvent.change(fileInput);
 
+    // Limitar la búsqueda al contenedor de archivos adjuntos
     await waitFor(() => {
-      expect(screen.getByText("test.xlsx")).toBeInTheDocument();
+      const attachmentsLabel = screen.getByText("Archivos Adjuntos Cargados");
+      expect(attachmentsLabel).toBeInTheDocument();
+      const attachmentsContainer = attachmentsLabel.parentElement;
+      expect(attachmentsContainer).toBeInTheDocument();
+      if (attachmentsContainer) {
+        const { getByText } = within(attachmentsContainer);
+        const badgeElement = getByText("test.xlsx");
+        expect(badgeElement).toBeInTheDocument();
+        // Opcional: Verificar que el Badge tiene la clase correcta
+        expect(badgeElement).toHaveClass("chakra-badge");
+      }
     });
 
     fireEvent.change(
@@ -303,7 +327,7 @@ describe("IncidentFormModal Component", () => {
       upload_url: "http://example.com/upload",
     });
 
-    // Ajuste: Mockear para lanzar el error esperado
+    // Mockear para lanzar el error esperado
     uploadFile.mockRejectedValue(
       new Error("Error al cargar el archivo: test.xlsx")
     );
@@ -330,8 +354,21 @@ describe("IncidentFormModal Component", () => {
     });
     fireEvent.change(fileInput);
 
+    // Limitar la búsqueda al contenedor de archivos adjuntos
     await waitFor(() => {
-      expect(screen.getByText("test.xlsx")).toBeInTheDocument();
+      const attachmentsLabel = screen.getByText("Archivos Adjuntos Cargados");
+      expect(attachmentsLabel).toBeInTheDocument();
+
+      const attachmentsContainer = attachmentsLabel.parentElement;
+      expect(attachmentsContainer).toBeInTheDocument();
+
+      if (attachmentsContainer) {
+        const { getByText } = within(attachmentsContainer);
+        const badgeElement = getByText("test.xlsx");
+        expect(badgeElement).toBeInTheDocument();
+        // Verificar que el elemento encontrado es un Badge
+        expect(badgeElement.closest("span")).toHaveClass("chakra-badge");
+      }
     });
 
     fireEvent.change(
@@ -357,6 +394,18 @@ describe("IncidentFormModal Component", () => {
     );
 
     await waitFor(() => {
+      expect(uploadFile).toHaveBeenCalledWith(
+        file,
+        "http://example.com/upload"
+      );
+
+      // Asegurar que createIncident NO fue llamado
+      expect(createIncident).not.toHaveBeenCalled();
+
+      // Asegurar que onSave NO fue llamado
+      expect(onSave).not.toHaveBeenCalled();
+
+      // Verificar que el toast de error fue llamado correctamente
       expect(toastMock).toHaveBeenCalledWith(
         expect.objectContaining({
           title: "Error",
@@ -366,6 +415,8 @@ describe("IncidentFormModal Component", () => {
           isClosable: true,
         })
       );
+
+      // Asegurar que onClose fue llamado si es parte del manejo de errores
       expect(onClose).toHaveBeenCalled();
     });
   });
