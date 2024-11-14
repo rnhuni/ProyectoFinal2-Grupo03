@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import httpClient from "../../services/HttpClient";
-import { AxiosError, CanceledError } from "axios";
 import { Client } from "../../interfaces/Client";
 
 const useClients = () => {
@@ -15,10 +14,8 @@ const useClients = () => {
     try {
       const response = await httpClient.get<Client[]>(service);
       setClients(response.data);
-    } catch (err) {
-      if (err instanceof CanceledError) return;
-      const axiosError = err as AxiosError;
-      setError(axiosError.message);
+    } catch {
+      setError("Error fetching clients");
     } finally {
       setLoading(false);
     }
