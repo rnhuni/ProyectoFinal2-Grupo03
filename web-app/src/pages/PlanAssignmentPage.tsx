@@ -64,7 +64,6 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
     reloadPlans();
   }, []);
 
-  // Obtener los detalles del plan del cliente al montar el componente
   useEffect(() => {
     if (
       client.subscription_plan.id &&
@@ -74,7 +73,6 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
     }
   }, [client.subscription_plan.id, plan]);
 
-  // Manejar la selección de un plan en el `Select`
   const handleSelectPlan = () => {
     const selectedPlan = plans.find((p) => p.id === selectedPlanId);
     if (selectedPlan) {
@@ -130,10 +128,8 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
     <Box mx="auto" p="6" maxW="1200px">
       <Flex direction="column" gap={4}>
         {" "}
-        {/* Reduce el `gap` aquí */}
         <Heading as="h2" size="lg" mb={2}>
           {" "}
-          {/* Reduce margin bottom */}
           Asignación de plan
         </Heading>
         <Text>
@@ -142,14 +138,13 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
         </Text>
         <Text fontSize="xl" fontWeight="bold" color="purple.500" mt={1}>
           {" "}
-          {/* Reduce margin top */}
           Cliente: <Badge colorScheme="purple">{client.name}</Badge>
         </Text>
         <Flex
           direction={{ base: "column", md: "row" }}
           align="center"
           gap={2}
-          mt={3} // Reduce el espacio superior
+          mt={3}
         >
           <Select
             placeholder="Seleccionar un plan"
@@ -173,15 +168,14 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
         </Flex>
         {selectedPlanDetails && (
           <Box
-            mt={5} // Reduce el margen superior
-            p={3} // Reduce el padding interno
+            mt={5}
+            p={3}
             borderRadius="md"
             border="1px"
             borderColor="gray.300"
           >
             <Heading as="h3" size="md" mb={1}>
               {" "}
-              {/* Reduce margin bottom */}
               Plan seleccionado: {selectedPlanDetails.name}
             </Heading>
             <Text color="gray.600" mb={2}>
@@ -189,7 +183,6 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
             </Text>
             <Box mt={2}>
               {" "}
-              {/* Reduce margin top */}
               <Text fontWeight="bold" mb={1}>
                 Características:
               </Text>
@@ -199,10 +192,8 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
         )}
         <Box mt={6} maxW="100%">
           {" "}
-          {/* Reduce el margin-top */}
           <Heading as="h3" size="md" mb="3">
             {" "}
-            {/* Reduce margin bottom */}
             Historial de asignaciones
           </Heading>
           <TableContainer
@@ -214,7 +205,6 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
             <Table variant="simple" size="sm">
               <Thead bg="#F2F7FF" h={9}>
                 {" "}
-                {/* Reduce altura del encabezado */}
                 <Tr>
                   <Th>Plan</Th>
                   <Th>Fecha</Th>
@@ -253,14 +243,12 @@ const PlanAssignmentPage: React.FC<PlanAssignmentPageProps> = ({
         <Flex align="center" mt={6}>
           <Text fontWeight="bold" mr="3">
             {" "}
-            {/* Reduce margen derecho */}
             Enviar notificaciones por correo electrónico
           </Text>
           <Switch size="lg" colorScheme="blue" />
         </Flex>
         <Flex justify="flex-end" mt={5} gap={3}>
           {" "}
-          {/* Reduce gap y margin-top */}
           <Button
             colorScheme="blue"
             maxW="200px"
