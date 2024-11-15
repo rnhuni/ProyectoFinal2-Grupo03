@@ -17,5 +17,4 @@ def register_blueprints(app):
                 module = import_module(f'{__name__}.{module_name}.routes')
                 blueprint = getattr(module, f'{module_name}_bp', None)
                 if blueprint:
-                    print(f"{blueprint} {base_url}")
                     app.register_blueprint(blueprint, url_prefix=base_url)

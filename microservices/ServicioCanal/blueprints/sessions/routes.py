@@ -79,13 +79,13 @@ def create_message(session_id):
         data = CreateMessage(session_id, source_id, source_name, source_type, content_type, body).execute()
         NotificationService().publish_new_message(data)
 
-        return jsonify([{
+        return jsonify({
             "id": str(data.id),
             "session_id": data.session_id,
             "content_type": data.content_type,
             "body": data.body,
             "created_at": data.createdAt.isoformat(),
             "updated_at": data.updatedAt.isoformat()
-        }]), 201
+        }), 201
     except Exception as e:
-        return jsonify({'error': f'Error creating sessmessageion. Details: {str(e)}'}), 500
+        return jsonify({'error': f'Error creating message. Details: {str(e)}'}), 500
