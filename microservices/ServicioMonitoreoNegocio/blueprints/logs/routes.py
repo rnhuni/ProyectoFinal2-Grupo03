@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ServicioCanal.utils import decode_user
+from ServicioMonitoreoNegocio.utils import decode_user
 from datetime import datetime
 
 from ServicioMonitoreoNegocio.commands.log_get_by_filters import GetLogs
