@@ -1,6 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import { API, graphqlOperation } from 'aws-amplify';
 import { Observable } from 'zen-observable-ts';
+import Config from 'react-native-config';
 
 
 export const subscribeChannel = /* GraphQL */ `
@@ -10,16 +11,17 @@ export const subscribeChannel = /* GraphQL */ `
     }
   }
 `
+const awsConfig = {
+  aws_appsync_graphqlEndpoint: Config.AWS_APPSYNC_GRAPHQLENDPOINT,
+  aws_appsync_region: Config.AWS_APPSYNC_REGION,
+  aws_appsync_authenticationType: Config.AWS_APPSYNC_AUTHENTICATIONTYPE,
+  aws_appsync_apiKey: Config.AWS_APPSYNC_APIKEY,
+};
 
-Amplify.configure({
-  aws_appsync_graphqlEndpoint: 'https://oxi2wohj5fh35d4ifwpt7cdava.appsync-api.us-east-1.amazonaws.com/graphql',
-  aws_appsync_region: 'us-east-1',
-  aws_appsync_authenticationType: 'API_KEY',
-  aws_appsync_apiKey: 'da2-smradqbjynf2dce5r4yblzds6q',
-});
+Amplify.configure(awsConfig);
 
+const subscribeChannelFunc = async (id: string) => {
 
-const subscribeChannelFunc =  async (id: string) => {
   try {
     const obj = await (API.graphql(graphqlOperation(subscribeChannel, { id })) as Observable<object>);
     console.log("subscribeChannelFunc: ", obj);

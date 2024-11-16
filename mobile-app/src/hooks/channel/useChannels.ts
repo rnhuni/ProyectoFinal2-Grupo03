@@ -2,51 +2,95 @@ import { useState } from 'react';
 import api from '../../api/api';
 import { AxiosError, CanceledError } from 'axios';
 import { Message } from '../../interfaces/Messages';
+import { LoadSession } from '../../interfaces/LoadSession';
+import { CreateSession } from '../../interfaces/CreateSession';
+
 
 const useChannels = () => {
 
   const channel_id = 'chan-support-channel';
   const [messages, setMessages] = useState<Message[]>([]);
+  const [incidentSession, setIncidentSession] = useState<LoadSession | CreateSession | null>(null);
   const [error, setError] = useState('');
-  const [channelSessionId, setChannelSessionId] = useState('');
   const [loading, setLoading] = useState(false);
   const service = '/channel/channels/:channel_id/sessions/:session_id/messages';
-  const createSession = `/channel/channels/${channel_id}/sessions`;
 
-  const reloadMessages = async (): Promise<Message[]> => {
+
+
+
+  const loadIncidentSession = async (Id: string): Promise<LoadSession | undefined> => {
+
+    const filterByTopicRefId = (incidents: LoadSession[], topicRefId: string): LoadSession[] => {
+      return incidents.filter(incident => incident.topic_refid === topicRefId);
+    };
+
+    const url = `/channel/channels/${channel_id}/sessions`;
+
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.get<LoadSession[]>(url);
+      // console.log('res.data:', res.data);
+      const filteredIncidents = filterByTopicRefId(res.data, Id);
+      console.log('filteredIncidents:', filteredIncidents);
+      setIncidentSession(filteredIncidents[0]);
+      console.log('loadIncidentSession incidentSession:', incidentSession);
+      return filteredIncidents[0];
+    } catch (err) {
+      console.error('Load session Error:', err); // Registrar el error en la consola
+      if (err instanceof CanceledError) {
+        return undefined;
+      }
+      const axiosError = err as AxiosError;
+      setError(axiosError.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  const reloadMessages = async (id_session?: string): Promise<Message[]> => {
+    var session_id = id_session;
+    if (!id_session) {
+      session_id = incidentSession?.id;
+    }
+
+    console.log('session_id:', session_id);
+
+    const loadMessages = `/channel/sessions/${session_id}/messages`
     setLoading(true);
     setError('');
 
-    const convertedMessages: Message[] = [
-      { id: 'msg-1', text: 'Hola, ¿cómo estás?', sender: 'agent' },
-      { id: 'msg-2', text: 'Bien, gracias. ¿Y tú?', sender: 'user', name: 'John' },
-      { id: 'msg-3', text: 'Estoy aquí para ayudarte con tus preguntas.', sender: 'agent' },
-      { id: 'msg-4', text: 'Gracias, tengo una duda sobre mi cuenta.', sender: 'user', name: 'John' },
-      { id: 'msg-5', text: 'Claro, ¿en qué puedo ayudarte?', sender: 'agent' },
-      { id: 'msg-6', text: 'Necesito saber el estado de mi pedido.', sender: 'user', name: 'John' },
-      { id: 'msg-7', text: 'Tu pedido está en camino.', sender: 'agent' },
-      { id: 'msg-8', text: '¿Cuándo llegará?', sender: 'user' },
-      { id: 'msg-9', text: 'Llegará mañana por la tarde.', sender: 'agent', name: 'John' }
-    ];
-
-    await setMessages(convertedMessages);
-    setLoading(false)
-
-    return convertedMessages;
-  };
-
-  const createChannelSession = async (Id: string) => {
-    setLoading(true);
-    setError('');
 
     try {
-      const url = createSession
+      console.log('loadMessages:', loadMessages);
+      const res = await api.get<Message[]>(loadMessages);
+      setMessages(res.data);
+      return res.data;
+    } catch (err) {
+      console.error('Load messages Error:', err); // Registrar el error en la consola
+      if (err instanceof CanceledError) {
+        return [];
+      }
+      const axiosError = err as AxiosError;
+      setError(axiosError.message);
+    } finally {
+      setLoading(false);
+    }
+    return [];
+  };
+
+  const createIncidentSession = async (Id: string) => {
+    setLoading(true);
+    setError('');
+    const createSession = `/channel/channels/${channel_id}/sessions`;
+    try {
       const data = {
         "topic": "incident",
-        "topic_detail": Id
-    }
-      const res = await api.post(url, data);
-      setChannelSessionId(res.data.id);
+        "topic_refid": Id
+      }
+      const res = await api.post<CreateSession>(createSession, data);
+      setIncidentSession(res.data);
       return res.data.id;
     } catch (err) {
       console.error('Create session Error:', err); // Registrar el error en la consola
@@ -60,6 +104,28 @@ const useChannels = () => {
     }
   }
 
+  const createIncidentMessage = async (message: string) => {
+    const session_id = incidentSession?.id;
+    const url = `/channel/sessions/${session_id}/messages`;
+    try {
+      const data = {
+        "content_type": "text/plain",
+        "body": message
+      }
+      const res = await api.post<Message>(url, data);
+      setMessages([...messages, res.data]);
+    } catch (err) {
+      console.error('Create message Error:', err); // Registrar el error en la consola
+      if (err instanceof CanceledError) {
+        return;
+      }
+      const axiosError = err as AxiosError;
+      setError(axiosError.message);
+    }
+  }
+
+
+
 
 
 
@@ -67,9 +133,11 @@ const useChannels = () => {
     messages,
     loading,
     error,
-    channelSessionId,
+    incidentSession,
     reloadMessages,
-    createChannelSession,
+    createIncidentSession,
+    loadIncidentSession,
+    createIncidentMessage,
   };
 };
 
