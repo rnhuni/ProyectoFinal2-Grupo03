@@ -8,18 +8,6 @@ import unicodedata
 COGNITO_SIGN_URL=os.getenv('COGNITO_SIGN_URL')
 COGNITO_AUDIENCE=os.getenv('COGNITO_AUDIENCE')
 
-def build_channel_id(name):
-    slug = generate_slug(name)
-    return f"chan-{slug}" if not slug.startswith("chan-") else slug
-
-def generate_slug(name):
-    name = name.lower()
-    name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
-    name = re.sub(r'[^\w\s-]', '', name)
-    name = re.sub(r'[-\s]+', '-', name).strip('-')
-    
-    return name
-
 def decode_user(auth_header):
     if not auth_header or len(auth_header.split(" ")) < 2:
         raise Exception("Invalid token")
