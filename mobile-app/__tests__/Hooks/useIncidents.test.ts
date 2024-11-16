@@ -4,7 +4,7 @@ import api from '../../src/api/api';
 import MockAdapter from 'axios-mock-adapter';
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse, CanceledError } from 'axios';
 import { Incident } from '../../src/interfaces/Incidents';
-
+import { Feedback } from '../../src/interfaces/Feedback';
 // Mockear la API
 jest.mock('../../src/api/api', () => ({
     get: jest.fn(),
@@ -14,7 +14,7 @@ jest.mock('../../src/api/api', () => ({
 
 const mockPut = api.put as jest.Mock<Promise<AxiosResponse>>;
 
-const mockPost = api.post as jest.Mock<Promise<Incident>>;
+const mockPost = api.post as jest.Mock<Promise<AxiosResponse>>;
 
 const mockGet = api.get as jest.Mock<Promise<AxiosResponse>>;
 
@@ -37,7 +37,7 @@ describe('useIncidents', () => {
             statusText: 'OK',
             headers: {},
             config: {
-                headers: { 'Content-Type': 'application/json' } as AxiosRequestHeaders
+                headers: new axios.AxiosHeaders({ 'Content-Type': 'application/json' })
             },
         });
 
@@ -119,7 +119,15 @@ describe('useIncidents', () => {
         };
 
         // Mockear la respuesta de la API para la creación de incidentes
-        mockPost.mockResolvedValueOnce(newIncident);
+        mockPost.mockResolvedValueOnce({
+            data: newIncident,
+            status: 201,
+            statusText: 'Created',
+            headers: {},
+            config: {
+                headers: new axios.AxiosHeaders({ 'Content-Type': 'application/json' })
+            },
+        });
 
         await act(async () => {
             await resultWithReload.current.createIncident(newIncident);
@@ -270,3 +278,71 @@ describe('useIncidents', () => {
 
 
 
+describe('createFeedback', () => {
+    it('should create feedback correctly', async () => {
+        const mockReloadIncidents = jest.fn();
+        const { result: resultWithReload } = renderHook(() => useIncidents());
+        const feedbackData: Feedback = {
+            support_rating: 5,
+            ease_of_contact: 4,
+            resolution_time: 3,
+            support_staff_attitude: 5,
+            additional_comments: 'Great support team, quick resolution.',
+        };
+
+        // Mockear la respuesta de la API para la creación de incidentes
+        mockPost.mockResolvedValueOnce({
+            data: feedbackData,
+            status: 201,
+            statusText: 'Created',
+            headers: {},
+            config: {
+                headers: new axios.AxiosHeaders({ 'Content-Type': 'application/json' })
+            },
+        });
+
+        await act(async () => {
+            await resultWithReload.current.createFeedback("TKT-241026-130439408", feedbackData);
+        });
+    });
+
+    it('should handle network error correctly', async () => {
+        const mockReloadIncidents = jest.fn();
+        const { result: resultWithReload } = renderHook(() => useIncidents());
+
+        const feedbackData: Feedback = {
+            support_rating: 5,
+            ease_of_contact: 4,
+            resolution_time: 3,
+            support_staff_attitude: 5,
+            additional_comments: 'Great support team, quick resolution.',
+        };
+
+        const axiosError = new AxiosError('Network Error', 'ERR_NETWORK');
+        mockPost.mockRejectedValueOnce(axiosError);
+
+        await act(async () => {
+            await resultWithReload.current.createFeedback("TKT-241026-130439408", feedbackData);
+        });
+    });
+
+    it('should handle CanceledError correctly', async () => {
+        const mockReloadIncidents = jest.fn();
+        const { result: resultWithReload } = renderHook(() => useIncidents());
+
+        const feedbackData: Feedback = {
+            support_rating: 5,
+            ease_of_contact: 4,
+            resolution_time: 3,
+            support_staff_attitude: 5,
+            additional_comments: 'Great support team, quick resolution.',
+        };
+
+        const canceledError = new CanceledError('Request canceled');
+        mockPost.mockRejectedValueOnce(canceledError);
+
+        await act(async () => {
+            await resultWithReload.current.createFeedback("TKT-241026-130439408", feedbackData);
+        });
+    });
+});

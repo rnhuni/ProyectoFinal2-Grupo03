@@ -121,12 +121,40 @@
     "help": {
       "title": "¿Necesitas ayuda?",
       "button": "Abrir un nuevo ticket"
+    },
+    "detailModal": {
+      "title": "Detalle del incidente",
+      "id": "Id",
+      "id_tiquet": "Id del tiquete",
+      "description": "Descripción",
+      "type": "Tipo",
+      "cretedAt": "Creado en",
+      "updatedAt": "Actualizado en",
+      "user_name": "Nombre usuario",
+      "contact_phone": "Teléfono contacto",
+      "close_button": "Cerrar",
+      "survey_button": "Encuesta de satisfacción"
     }
+
   },
   "settingsIncidentScreen": {
     "enableNotifications": "Habilitar notificaciones",
     "stateChanges": "Cambios de estado",
     "taskReminder": "Recordatorio tarea",
     "supportMessages": "Mensajes de soporte"
-  }
+  },
+    "surveyScreen": {
+      "title": "Encuesta de Satisfacción",
+      "description": "Ayúdenos a mejorar respondiendo esta breve encuesta.",
+      "escale": "Escala de 1 a 5",
+      "question1": "¿Cómo calificaría el soporte recibido en general?",
+      "question2": "¿Qué tan satisfecho está con el tiempo de resolución?",
+      "question3": "¿Fue fácil contactar con el equipo de soporte?",
+      "question4": "¿Cómo describiría la actitud del personal de soporte?",
+      "question5": "¿Desea agregar algún comentario adicional?",
+      "placeholder": "Escriba aquí sus comentarios",
+      "submitButton": "Enviar Encuesta",
+      "successMessage": "¡Gracias por ayudarnos a mejorar!"
+    }
+  
 }
