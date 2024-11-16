@@ -12,20 +12,16 @@ export const subscribeChannel = /* GraphQL */ `
 `
 
 Amplify.configure({
-  API: {
-    GraphQL: {
-      endpoint: 'https://oxi2wohj5fh35d4ifwpt7cdava.appsync-api.us-east-1.amazonaws.com/graphql',
-      region: 'us-east-1',
-      defaultAuthMode: 'apiKey',
-      apiKey: 'da2-smradqbjynf2dce5r4yblzds6q'
-    },
-  },
+  aws_appsync_graphqlEndpoint: 'https://oxi2wohj5fh35d4ifwpt7cdava.appsync-api.us-east-1.amazonaws.com/graphql',
+  aws_appsync_region: 'us-east-1',
+  aws_appsync_authenticationType: 'API_KEY',
+  aws_appsync_apiKey: 'da2-smradqbjynf2dce5r4yblzds6q',
 });
 
 
-const subscribeChannelFunc = (id: string) => {
+const subscribeChannelFunc =  async (id: string) => {
   try {
-    const obj = (API.graphql(graphqlOperation(subscribeChannel, { id: String })) as Observable<object>);
+    const obj = await (API.graphql(graphqlOperation(subscribeChannel, { id })) as Observable<object>);
     console.log("subscribeChannelFunc: ", obj);
     return obj;
   } catch (error) {

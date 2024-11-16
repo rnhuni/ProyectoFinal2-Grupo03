@@ -25,9 +25,10 @@ const Chat: React.FC<ChatProps> = ({ id }) => {
   const [input, setInput] = useState<string>('');
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const { channelSessionId, createChannelSession } = useChannels();
   const { notifications, data, received } = useNotificationsGraphql(id);
 
-
+  // leer los mensajes actuales
   useEffect(() => {
     const loadNotifications = async () => {
       const data = await reloadMessages();
@@ -36,20 +37,32 @@ const Chat: React.FC<ChatProps> = ({ id }) => {
     loadNotifications();
   }, []);
 
+  // crear la sesion de chat
+  // aqui se deberia consultar el ID de la sesion de chat
+  /*
   useEffect(() => {
-    console.log("received: ", received);
-    console.log("notifications: ", notifications);
-    console.log("data: ", data);
+    const createSession = async () => {
+      const data = await createChannelSession(id);
+    };
+    createSession();
   }, []);
+  */
 
+  // useEffect(() => {
+  //   console.log("received: ", received);
+  //   console.log("notifications: ", notifications);
+  //   console.log("data: ", data);
+  // }, []);
 
+// leer los mensajes de chat que llegan
   useEffect(() => {
     console.log("useEffect received: ", received);
     if (received) {
       // Agregar la notificación recibida al chat como un mensaje del agente
+      const message = JSON.parse(received);
       setMessagesLocal((prevMessages) => [
         ...prevMessages,
-        { text: received, sender: 'agent' },
+        { text: message.msg, sender: 'agent', name: message.agent_name },
       ]);
     }
   }, [received]);

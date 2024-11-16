@@ -5,19 +5,20 @@ const useNotificationsGraphql = (id: string) => {
     const [notifications, setNotifications] = useState<string[]>([]);
     const [data, setData] = useState('');
     const [received, setReceived] = useState('');
-    console.log("useNotifications: ", id)
+    console.log("1 useNotifications: ", id)
 
     /** LLAMADO A GRAPHQL para lectura del chat */
     useEffect(() => {
+        console.log("2 useEffect: ", id)
         const subscribeToChannel = async (id: string) => {
-            const subscription = subscribeChannelFunc(id)?.subscribe({
+            const subscription =  (await subscribeChannelFunc(id))?.subscribe({
                 next: ({ value }: { value: { data: { subscribe: { data: string } } } }) => {
-                    console.log("value: ", value);
+                    console.log("3 value next: ", value);
                     setReceived(value.data.subscribe.data);
                 },
-                error: (error: any) => console.log("value: ", error),
+                error: (error: any) => console.log("4 value error: ", JSON.stringify(error, null, 2))
             });
-            console.log("subscribeToChannel: ", subscription)
+            console.log("5 subscribeToChannel: ", subscription)
             return subscription;
         };
 

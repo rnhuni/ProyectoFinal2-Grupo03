@@ -4,10 +4,14 @@ import { AxiosError, CanceledError } from 'axios';
 import { Message } from '../../interfaces/Messages';
 
 const useChannels = () => {
+
+  const channel_id = 'chan-support-channel';
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState('');
+  const [channelSessionId, setChannelSessionId] = useState('');
   const [loading, setLoading] = useState(false);
   const service = '/channel/channels/:channel_id/sessions/:session_id/messages';
+  const createSession = `/channel/channels/${channel_id}/sessions`;
 
   const reloadMessages = async (): Promise<Message[]> => {
     setLoading(true);
@@ -31,12 +35,41 @@ const useChannels = () => {
     return convertedMessages;
   };
 
+  const createChannelSession = async (Id: string) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const url = createSession
+      const data = {
+        "topic": "incident",
+        "topic_detail": Id
+    }
+      const res = await api.post(url, data);
+      setChannelSessionId(res.data.id);
+      return res.data.id;
+    } catch (err) {
+      console.error('Create session Error:', err); // Registrar el error en la consola
+      if (err instanceof CanceledError) {
+        return;
+      }
+      const axiosError = err as AxiosError;
+      setError(axiosError.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+
 
   return {
     messages,
     loading,
     error,
+    channelSessionId,
     reloadMessages,
+    createChannelSession,
   };
 };
 

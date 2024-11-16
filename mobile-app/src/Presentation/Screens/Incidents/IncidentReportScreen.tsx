@@ -18,6 +18,7 @@ import { Contact, Incident, Attachment } from '../../../interfaces/Incidents';
 import useIncidents from '../../../hooks/incidents/useIncidents';
 import useFileUpload from '../../../hooks/uploadFile/useFileUpload';
 import { useNavigation } from '@react-navigation/native';
+import useChannels from '../../../hooks/channel/useChannels';
 
 export const IncidentReportScreen = () => {
   const { t } = useTranslation(); 
@@ -27,6 +28,7 @@ export const IncidentReportScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [description, setDescription] = useState('');
   const { createIncident } = useIncidents();
+  const { createChannelSession } = useChannels();
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [showProgressBox, setShowProgressBox] = useState(false);
@@ -47,13 +49,9 @@ export const IncidentReportScreen = () => {
       for (const attachment of attachments) {
         if (attachment.fileObject && attachment.file_uri) {
           //console.log("5. enviando de veritas");
-
           const file = new File([attachment.file_uri], attachment.file_name, { type: attachment.content_type });
           //const fileData = await RNFetchBlob.fs.readFile(attachment.fileObject.uri, 'base64');
-
           //console.log("5.1. el archivo en file", file );
-
-
           const success = await uploadFile(
             file,
             attachment.file_uri
@@ -86,7 +84,14 @@ export const IncidentReportScreen = () => {
       //console.log(incidentData);
       const result = await createIncident(incidentData);
       //console.log(result);
-      // Maneja la respuesta exitosa aquí
+      // crer la suscripcion
+      /*
+      const id = result?.id;
+      if( id ) {
+        console.log("creando la sesion para el chat !!!!!!!!!!!!!!!!");
+        await createChannelSession(id);
+      }
+      */
       alert('Incidente registrado con éxito');
       navigation.navigate('ResumeIncidentScreen');
     } catch (error) {

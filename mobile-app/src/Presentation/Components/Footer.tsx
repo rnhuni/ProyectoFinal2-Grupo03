@@ -17,7 +17,7 @@ const Footer = () => {
   }
 
   const handleSettingsIncidentScreen = () => {
-    navigation.navigate('SettingsIncidentScreen');
+    navigation.navigate('SurveyScreen'); // SettingsIncidentScreen
   }
 
   return (
