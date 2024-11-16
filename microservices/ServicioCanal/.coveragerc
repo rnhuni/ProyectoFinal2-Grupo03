@@ -1,0 +1,9 @@
+# .coveragerc
+[run]
+relative_files = True
+omit =
+    */__init__.py
+    *__init__.py
+    *.py_
+    tests/*
+    */app.py

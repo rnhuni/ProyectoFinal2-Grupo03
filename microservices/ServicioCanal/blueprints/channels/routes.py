@@ -4,6 +4,9 @@ import uuid
 
 from ServicioCanal.commands.channel_create import CreateChannel
 from ServicioCanal.commands.channel_exists import ExistsChannel
+from ServicioCanal.commands.channel_get_all import GetAllChannels
+from ServicioCanal.commands.channel_get import GetChannel
+from ServicioCanal.commands.session_get_all import GetAllSessions
 from ServicioCanal.commands.session_create import CreateSession
 from ServicioCanal.services.notification_service import NotificationService
 from ServicioCanal.services.monitor_service import MonitorService
@@ -16,40 +19,50 @@ def get_all_channels():
 
     try:
         user = decode_user(auth_header)
-        #TODO: check agent
 
-        return jsonify([{
-            "id":"support-chat",
-            "name": "Canal de soporte",
-            "description": "Canal de soporte para gestionar los problemas en incidencias",
-            "type": "chat",
-            "platforms":"mobile;webapp",
-            "created_at":"2024-01-01T00:00:00",
-            "updated_at":"2024-01-01T00:00:00"
-        }]), 200
+        channels = GetAllChannels().execute()
+
+        channels_list = [
+            {
+                "id": channel.id,
+                "name": channel.name,
+                "description": channel.description,
+                "type": channel.type,
+                "platforms": channel.platforms.split(";")
+            }
+            for channel in channels
+        ]
+
+        return jsonify(channels_list), 200
+
     except Exception as e:
         return jsonify({'error': f'Error retrieving channels. Details: {str(e)}'}), 500
-    
+
 @channels_bp.route('/channels/<channel_id>', methods=['GET'])
 def get_channel(channel_id):
-    #TODO: check agent
     auth_header = request.headers.get('Authorization')
 
     try:
         user = decode_user(auth_header)
 
-        return jsonify({
-            "id":"support-chat",
-            "name": "Canal de soporte",
-            "description": "Canal de soporte para gestionar los problemas en incidencias",
-            "type": "chat",
-            "platforms":"mobile;webapp",
-            "created_at":"2024-01-01T00:00:00",
-            "updated_at":"2024-01-01T00:00:00"
-        }), 200
+        channel = GetChannel(channel_id).execute()
+
+        if not channel:
+            return jsonify({'error': 'Channel not found'}), 404
+
+        channel_data = {
+            "id": channel.id,
+            "name": channel.name,
+            "description": channel.description,
+            "type": channel.type,
+            "platforms": channel.platforms.split(";")
+        }
+
+        return jsonify(channel_data), 200
+
     except Exception as e:
         return jsonify({'error': f'Error retrieving channel. Details: {str(e)}'}), 500
-    
+
 @channels_bp.route('/channels', methods=['POST'])
 def create_channel():
     auth_header = request.headers.get('Authorization')
@@ -82,27 +95,38 @@ def create_channel():
         return jsonify({'error': f'Error creating channel. Details: {str(e)}'}), 500
 
 @channels_bp.route('/channels/<channel_id>/sessions', methods=['GET'])
-def get_all_sessions(channel_id):
+def get_sessions_by_channel(channel_id):
     auth_header = request.headers.get('Authorization')
-    #TODO: check agent
 
     try:
         user = decode_user(auth_header)
 
-        return jsonify([{
-            "id":str(uuid.uuid4()),
-            "channel_id": channel_id,
-            "status": "OPEN",
-            "topic":"incident",
-            "topic_refid":"TXT-asasasas",
-            "opened_by_id": "user_id",
-            "opened_by_name": "user_name",
-            "assigned_to_type": "agent|system",
-            "assigned_to_id": "agent_id",
-            "assigned_to_name": "agent_name",
-            "created_at":"2024-01-01T00:00:00",
-            "updated_at":"2024-01-01T00:00:00"
-        }]), 200
+        if not ExistsChannel(channel_id).execute():
+            return jsonify({'error': 'Channel not found'}), 404
+
+        sessions = GetAllSessions(channel_id).execute()
+
+        if not sessions:
+            return jsonify([]), 200
+
+        sessions_list = [
+            {
+                "id": session.id,
+                "channel_id": session.channel_id,
+                "status": session.status,
+                "topic": session.topic,
+                "topic_refid": session.topic_refid,
+                "opened_by_id": session.opened_by_id,
+                "opened_by_name": session.opened_by_name,
+                "assigned_to_type": session.assigned_to_type,
+                "assigned_to_id": session.assigned_to_id,
+                "assigned_to_name": session.assigned_to_name
+            }
+            for session in sessions
+        ]
+
+        return jsonify(sessions_list), 200
+
     except Exception as e:
         return jsonify({'error': f'Error retrieving sessions. Details: {str(e)}'}), 500
 

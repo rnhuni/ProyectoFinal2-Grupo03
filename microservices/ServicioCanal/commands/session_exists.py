@@ -11,7 +11,3 @@ class ExistsSession(BaseCommannd):
             raise ValueError("Invalid data provided")
         
         return session.query(Session).get(self.id) is not None
-        
-        
-        
-        
