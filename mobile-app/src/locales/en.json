@@ -128,5 +128,18 @@
     "stateChanges": "State changes",
     "taskReminder": "Task reminder",
     "supportMessages": "Support messages"
+  },
+  "surveyScreen": {
+    "title": "Satisfaction Survey",
+    "description": "Help us improve by answering this brief survey.",
+    "escale": "Scale from 1 to 5",
+    "question1": "How would you rate the support you received overall?",
+    "question2": "How satisfied are you with the resolution time?",
+    "question3": "Was it easy to contact the support team?",
+    "question4": "How would you describe the attitude of the support staff?",
+    "question5": "Would you like to add any additional comments?",
+    "placeholder": "Write your comments here",
+    "submitButton": "Submit Survey",
+    "successMessage": "Thank you for helping us improve!"
   }
 }
