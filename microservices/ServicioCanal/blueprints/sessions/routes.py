@@ -6,6 +6,7 @@ import uuid
 from ServicioCanal.commands.message_create import CreateMessage
 from ServicioCanal.commands.session_exists import ExistsSession
 from ServicioCanal.services.notification_service import NotificationService
+from ServicioCanal.services.monitor_service import MonitorService
 
 sessions_bp = Blueprint('sessions_bp', __name__)
 
@@ -78,6 +79,7 @@ def create_message(session_id):
 
         data = CreateMessage(session_id, source_id, source_name, source_type, content_type, body).execute()
         NotificationService().publish_new_message(data)
+        MonitorService().enqueue_event(user, "CREATE-MESSAGE", f"MESSAGE_ID={str(data.id)}")
 
         return jsonify({
             "id": str(data.id),

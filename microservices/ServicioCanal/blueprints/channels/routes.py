@@ -6,6 +6,7 @@ from ServicioCanal.commands.channel_create import CreateChannel
 from ServicioCanal.commands.channel_exists import ExistsChannel
 from ServicioCanal.commands.session_create import CreateSession
 from ServicioCanal.services.notification_service import NotificationService
+from ServicioCanal.services.monitor_service import MonitorService
 
 channels_bp = Blueprint('channels_bp', __name__)
 
@@ -129,6 +130,7 @@ def create_session(channel_id):
                              opened_by_name, opened_by_type).execute()
         
         NotificationService().publish_new_session(data)
+        MonitorService().enqueue_event(user, "CREATE-SESSION", f"SESSION_ID={str(data.id)}")
 
         return jsonify({
             "id": str(data.id),

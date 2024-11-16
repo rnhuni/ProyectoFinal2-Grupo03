@@ -38,6 +38,7 @@ def test_get_profile_success(client, mocker):
     }
     mocker.patch('ServicioUsuario.blueprints.profile.routes.decode_user', return_value=mock_user)
     mocker.patch('ServicioUsuario.services.cognito_service.CognitoService.get_user_status', return_value="ACTIVE")
+    mocker.patch('ServicioUsuario.services.monitor_service.MonitorService.enqueue_event', return_value="")
 
     response = client.get('/profile', headers=headers)
 
@@ -88,6 +89,7 @@ def test_get_profile_no_permissions_or_features(client, mocker):
     }
     mocker.patch('ServicioUsuario.blueprints.profile.routes.decode_user', return_value=mock_user)
     mocker.patch('ServicioUsuario.services.cognito_service.CognitoService.get_user_status', return_value="ACTIVE")
+    mocker.patch('ServicioUsuario.services.monitor_service.MonitorService.enqueue_event', return_value="")
 
     response = client.get('/profile', headers=headers)
 
