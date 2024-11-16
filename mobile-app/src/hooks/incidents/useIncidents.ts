@@ -2,12 +2,14 @@ import { useState } from 'react';
 import api from '../../api/api';
 import { AxiosError, CanceledError } from 'axios';
 import { Incident } from '../../interfaces/Incidents';
+import { Feedback } from '../../interfaces/Feedback';
 
 const useIncidents = () => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const service = '/incident/incidents';
+  
 
   const reloadIncidents = () => {
     setLoading(true);
@@ -79,6 +81,25 @@ const useIncidents = () => {
     }
   };
 
+  const createFeedback = async (id: string, feedback: Feedback) => {
+    const feedbackService = '/incident/incidents/' + id + '/feedback';
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.post(feedbackService, feedback);
+      return res.data;
+    } catch (err) {
+      console.error('Create Incident feedback Error:', err); // Registrar el error en la consola
+      if (err instanceof CanceledError) {
+        return;
+      }
+      const axiosError = err as AxiosError;
+      setError(axiosError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     incidents,
     loading,
@@ -86,6 +107,7 @@ const useIncidents = () => {
     reloadIncidents,
     createIncident,
     updateIncident,
+    createFeedback,
   };
 };
 

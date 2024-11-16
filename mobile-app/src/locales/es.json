@@ -121,7 +121,21 @@
     "help": {
       "title": "¿Necesitas ayuda?",
       "button": "Abrir un nuevo ticket"
+    },
+    "detailModal": {
+      "title": "Detalle del incidente",
+      "id": "Id",
+      "id_tiquet": "Id del tiquete",
+      "description": "Descripción",
+      "type": "Tipo",
+      "cretedAt": "Creado en",
+      "updatedAt": "Actualizado en",
+      "user_name": "Nombre usuario",
+      "contact_phone": "Teléfono contacto",
+      "close_button": "Cerrar",
+      "survey_button": "Encuesta de satisfacción"
     }
+
   },
   "settingsIncidentScreen": {
     "enableNotifications": "Habilitar notificaciones",

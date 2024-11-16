@@ -98,7 +98,7 @@ describe('ResumeIncidentScreen', () => {
   it('should handle search input change', () => {
     const {getByPlaceholderText} = renderWithI18n(<ResumeIncidentScreen />);
 
-    const searchInput = getByPlaceholderText('Ticket Number');
+    const searchInput = getByPlaceholderText(i18n.t('resumeIncidentScreen.ticketNumber'));
     fireEvent.changeText(searchInput, 'Incident');
 
     expect(searchInput.props.value).toBe('Incident');

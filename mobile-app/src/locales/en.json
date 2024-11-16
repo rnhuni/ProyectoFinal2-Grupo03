@@ -5,15 +5,15 @@
     "username": "Username",
     "password": "Password",
     "rememberMe": "Remember me",
-    "login": "Login",
-    "loginSuccess": "Login Successful",
+    "login": "Log in",
+    "loginSuccess": "Login successful",
     "welcomeMessage": "Welcome to the app!",
-    "loginFailed": "Login Failed",
+    "loginFailed": "Login failed",
     "invalidCredentials": "Invalid username or password",
-    "forgotPassword": "Forgot Password?",
-    "navigateToForgotPassword": "Navigate to Forgot Password Screen",
-    "register": "Register",
-    "changeLanguage": "Change Language"
+    "forgotPassword": "Forgot your password?",
+    "navigateToForgotPassword": "Navigate to forgot password screen",
+    "register": "Sign up",
+    "changeLanguage": "Change language"
   },
   "registerScreen": {
     "title": "Let's get started",
@@ -28,13 +28,13 @@
     "paisPlaceholder": "Select a country",
     "city": "City",
     "ciudadPlaceholder": "Enter your city",
-    "phone": "Phone Number",
+    "phone": "Phone number",
     "telefonoPlaceholder": "Phone number",
     "telefonoInvalid": "Must be at least 7 characters",
     "password": "Password",
     "contrasenaPlaceholder": "Enter your password",
     "submitButton": "Get Started",
-    "registrationMessage": "You have successfully registered!",
+    "registrationMessage": "You have registered successfully!",
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
     "emailRequired": "Email is required",
@@ -47,22 +47,22 @@
     "registerFailed": "Registration failed"
   },
   "footerScreen": {
-    "registerIncident": "Register Incident",
+    "registerIncident": "Report incident",
     "summary": "Summary",
     "settings": "Settings"
   },
   "homeScreen": {
-    "sectionTitle": "Predefined Messages",
+    "sectionTitle": "Predefined messages",
     "tableHeaders": {
-      "id": "Id",
+      "id": "ID",
       "template": "Template",
       "status": "Status"
     },
     "rows": {
       "welcome": "Welcome",
-      "additionalInfo": "Additional Information",
-      "satisfactionSurvey": "Satisfaction Survey",
-      "chatEnd": "Chat End"
+      "additionalInfo": "Additional information",
+      "satisfactionSurvey": "Satisfaction survey",
+      "chatEnd": "End chat"
     },
     "status": {
       "active": "Active"
@@ -71,15 +71,15 @@
       "show": "Show 10",
       "page": "of 10"
     },
-    "alert": "Feature under construction"
+    "alert": "Functionality under construction"
   },
   "incidentReportScreen": {
     "tabs": {
       "summary": "Summary",
-      "register": "Register Incident"
+      "register": "Report incident"
     },
     "incidentType": {
-      "label": "Incident Type",
+      "label": "Incident type",
       "placeholder": "Select a type",
       "incidents": {
         "incident1": "Incident 1",
@@ -88,7 +88,7 @@
       }
     },
     "phoneNumber": {
-      "label": "Phone Number",
+      "label": "Phone number",
       "placeholder": "+57"
     },
     "description": {
@@ -99,15 +99,15 @@
       "buttonText": "Browse file to upload",
       "addFileButton": "Add file"
     },
-    "registerButton": "Register Incident"
+    "registerButton": "Report incident"
   },
   "resumeIncidentScreen": {
-    "ticketNumber": "Ticket Number",
+    "ticketNumber": "Ticket number",
     "searchPlaceholder": "Search",
     "loading": "Loading...",
     "table": {
       "ticket": "# Ticket",
-      "incidentType": "Incident Type",
+      "incidentType": "Incident type",
       "data": {
         "row1": "Text cell tables",
         "row2": "Text cell tables",
@@ -117,10 +117,23 @@
     "pagination": {
       "label": "1 of 10"
     },
-    "downloadButton": "Download Report",
+    "downloadButton": "Download report",
     "help": {
-      "title": "Need Help?",
-      "button": "Open a New Ticket"
+      "title": "Need help?",
+      "button": "Open a new ticket"
+    },
+    "detailModal": {
+      "title": "Incident details",
+      "id": "ID",
+      "id_tiquet": "Id ticket",
+      "description": "Description",
+      "type": "Type",
+      "cretedAt": "Created at",
+      "updatedAt": "Updated at",
+      "user_name": "User name",
+      "contact_phone": "Contact phone",
+      "close_button": "Close",
+      "survey_button": "Satisfaction survey"
     }
   },
   "settingsIncidentScreen": {
@@ -133,12 +146,12 @@
     "title": "Satisfaction Survey",
     "description": "Help us improve by answering this brief survey.",
     "escale": "Scale from 1 to 5",
-    "question1": "How would you rate the support you received overall?",
+    "question1": "How would you rate the support received overall?",
     "question2": "How satisfied are you with the resolution time?",
-    "question3": "Was it easy to contact the support team?",
+    "question3": "How easy was it to contact the support team?",
     "question4": "How would you describe the attitude of the support staff?",
     "question5": "Would you like to add any additional comments?",
-    "placeholder": "Write your comments here",
+    "placeholder": "Enter your comments here",
     "submitButton": "Submit Survey",
     "successMessage": "Thank you for helping us improve!"
   }
