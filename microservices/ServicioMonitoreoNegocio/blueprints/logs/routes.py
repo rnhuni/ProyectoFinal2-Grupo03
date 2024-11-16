@@ -101,7 +101,7 @@ def get_report(report_id):
         #TODO: check agent
         task = GetTask(report_id).execute()
         if not task:
-            return "Task not found", 404
+            return jsonify({"error": "Task not found"}), 404
         
         download_url = ""
         if task.status == "COMPLETED":
