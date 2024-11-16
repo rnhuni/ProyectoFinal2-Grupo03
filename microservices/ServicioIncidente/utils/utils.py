@@ -24,5 +24,10 @@ def decode_user(auth_header):
     return {
         "id": token_payload["sub"], 
         "name": token_payload["name"], 
-        "email": token_payload["email"]
+        "email": token_payload["email"],
+        "permissions": token_payload["custom:permissions"],
+        "client": token_payload["custom:client"],
+        "role": token_payload["custom:role"],
+        "features": token_payload["custom:features"],
+        "role_type": token_payload["custom:role"].split("-")[1]
     }

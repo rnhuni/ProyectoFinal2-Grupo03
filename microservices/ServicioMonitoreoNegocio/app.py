@@ -18,6 +18,7 @@ SecretService(secret_name, region).load_secret_to_env()
 from .blueprints import register_blueprints
 from .models.model import initdb, session
 from ServicioMonitoreoNegocio.services.monitor_service import MonitorService
+from ServicioMonitoreoNegocio.services.task_service import TaskService
 
 register_blueprints(app)
 initdb()
@@ -49,12 +50,16 @@ CORS(app, resources={r"/*": {
     "supports_credentials": True
 }})
 
-def start_polling():
+def start_monitor_polling():
     with app.app_context():
         MonitorService().poll_queue()
 
-sqs_thread = threading.Thread(target=start_polling, daemon=True)
-sqs_thread.start()
+def start_task_polling():
+    with app.app_context():
+        TaskService().poll_queue()
+
+threading.Thread(target=start_monitor_polling, daemon=True).start()
+threading.Thread(target=start_task_polling, daemon=True).start()
 
 if __name__ == '__main__':
     print("ServicioMonitoreoNegocio is running on 5000")
