@@ -2,12 +2,12 @@
     "family": "TareaServicioMonitoreoNegocio",
     "containerDefinitions": [
         {
-            "name": "servicio-canal",
-            "image": "203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-canal:latest",
+            "name": "servicio-monitoreo-negocio",
+            "image": "203918887101.dkr.ecr.us-east-1.amazonaws.com/servicio-monitoreo-negocio:latest",
             "cpu": 0,
             "portMappings": [
                 {
-                    "name": "servicio-canal-5000-tcp",
+                    "name": "servicio-monitoreo-negocio-5000-tcp",
                     "containerPort": 5000,
                     "hostPort": 5000,
                     "protocol": "tcp",
