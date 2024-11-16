@@ -506,7 +506,7 @@ jobs:
           wait-for-service-stability: false 
 
   test-and-deploy-servicio-monitoreo-negocio:
-    if: needs.determine-changes.outputs.servicio_canal_changed == 'true'
+    if: needs.determine-changes.outputs.servicio_monitoreo_negocio_changed == 'true'
     runs-on: ubuntu-latest
     environment: production
     needs: [determine-changes]
