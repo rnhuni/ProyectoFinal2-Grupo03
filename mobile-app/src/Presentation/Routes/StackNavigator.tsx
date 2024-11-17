@@ -86,6 +86,13 @@ export const StackNavigator = () => {
         name="SurveyScreen"
         component={SurveyScreen}
       />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SurveyScreen"
+        component={SurveyScreen}
+      />
     </Stack.Navigator>
   );
 };

@@ -3,6 +3,7 @@ import jwt
 from flask import Blueprint, request, jsonify
 from ServicioUsuario.utils import decode_user
 from ServicioUsuario.services.cognito_service import CognitoService
+from ServicioUsuario.services.monitor_service import MonitorService
 
 profile_bp = Blueprint('profile_bp', __name__)
 
@@ -34,7 +35,9 @@ def get_profile():
             item["actions"] = list(item["actions"])
             views.append(item)
 
-        cognito_status = "sss"#CognitoService().get_user_status(user["email"])
+        cognito_status = CognitoService().get_user_status(user["email"])
+
+        MonitorService().enqueue_event(user, "LOGIN-WEB-APP", "Login to web app")
             
         return {
             "user":

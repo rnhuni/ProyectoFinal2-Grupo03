@@ -23,4 +23,5 @@ def decode_user(auth_header):
         "client": token_payload["custom:client"],
         "role": token_payload["custom:role"],
         "features": token_payload["custom:features"],
+        "role_type": token_payload["custom:role"].split("-")[1]
     }
