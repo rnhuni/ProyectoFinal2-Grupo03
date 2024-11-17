@@ -37,9 +37,10 @@ const Chat: React.FC<ChatProps> = ({id}) => {
   // leer los mensajes actuales
   useEffect(() => {
     const loadNotifications = async () => {
-      debugger;
       const sess = await loadIncidentSession(id);
+      console.log('sess: ', sess);
       const data = await reloadMessages(sess?.id);
+      console.log('data: ', data);
       setMessagesLocal(data);
     };
     loadNotifications();
@@ -64,8 +65,7 @@ const Chat: React.FC<ChatProps> = ({id}) => {
 
   // leer los mensajes de chat que llegan
   useEffect(() => {
-    debugger;
-    // console.log('useEffect received: ', received);
+    console.log('useEffect received: ', received);
     if (received) {
       // Agregar la notificación recibida al chat como un mensaje del agente
       const message: Message = JSON.parse(received);
@@ -82,7 +82,6 @@ const Chat: React.FC<ChatProps> = ({id}) => {
   }, [received]);
 
   const handleSend = async () => {
-    debugger;
     if (input.trim()) {
       setMessagesLocal([
         ...messagesLocal,

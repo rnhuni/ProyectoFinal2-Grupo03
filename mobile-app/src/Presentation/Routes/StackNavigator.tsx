@@ -15,7 +15,7 @@ export type RootStackParamList = {
   IncidentReportScreen: undefined;
   ResumeIncidentScreen: undefined;
   SettingsIncidentScreen: undefined;
-  SurveyScreen: undefined;
+  SurveyScreen: {ticketId: string};
   Main: undefined;
 };
 

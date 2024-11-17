@@ -10,15 +10,15 @@ const Footer = () => {
 
   const handleIncidentReportScreen = () => {
     navigation.navigate('IncidentReportScreen');
-  }
+  };
 
   const handleResumeIncidentScreen = () => {
     navigation.navigate('ResumeIncidentScreen');
-  }
+  };
 
   const handleSettingsIncidentScreen = () => {
-    navigation.navigate('SurveyScreen'); // SettingsIncidentScreen
-  }
+    navigation.navigate('SettingsIncidentScreen');
+  };
 
   return (
     <View style={styles.container}>
@@ -27,7 +27,7 @@ const Footer = () => {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleIncidentReportScreen}
-          testID='incident-report'>
+          testID="incident-report">
           <View style={styles.iconWrapper}>
             <Icon name="plus" style={styles.icon} />
           </View>
@@ -40,12 +40,12 @@ const Footer = () => {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleResumeIncidentScreen}
-          testID='resume-incident'>
+          testID="resume-incident">
           <View style={styles.iconWrapper}>
             <Icon name="view-dashboard" style={styles.icon} />
           </View>
         </TouchableOpacity>
-          <Text style={styles.label}>{t('footerScreen.summary')}</Text>
+        <Text style={styles.label}>{t('footerScreen.summary')}</Text>
       </View>
 
       {/* Botón para configuración */}
@@ -53,7 +53,7 @@ const Footer = () => {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleSettingsIncidentScreen}
-          testID='settings-incident'>
+          testID="settings-incident">
           <View style={styles.iconWrapper}>
             <Icon name="cog" style={styles.icon} />
           </View>

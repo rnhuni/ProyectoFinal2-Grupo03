@@ -17,8 +17,8 @@ interface DetailModalProps {
     id: string;
     description: string;
     type: string;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
     user_issuer_id?: string;
     user_issuer_name: string;
     contact: {
@@ -29,8 +29,14 @@ interface DetailModalProps {
 }
 
 const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
+  console.log('data DetailModalProps : ', data);
+
   return (
-    <Modal visible={visible} transparent={true} animationType="slide" testID='detail-modal'>
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="slide"
+      testID="detail-modal">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>Incident Details</Text>
@@ -49,11 +55,11 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.label}>Created At:</Text>
-              <Text style={styles.value}>{data.createdAt}</Text>
+              <Text style={styles.value}>{data.created_at}</Text>
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.label}>Updated At:</Text>
-              <Text style={styles.value}>{data.updatedAt}</Text>
+              <Text style={styles.value}>{data.updated_at}</Text>
             </View>
             {/* <View style={styles.detailRow}>
               <Text style={styles.label}>User Issuer ID:</Text>
