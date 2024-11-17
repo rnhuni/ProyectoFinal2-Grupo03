@@ -35,10 +35,20 @@ jest.mock('../../src/hooks/incidents/useIncidents', () => ({
         created_at: '2024-10-26T13:04:39.408509',
         updated_at: '2024-10-26T13:04:39.408529',
         user_issuer_name: 'Nicolas Hug',
-        contact: { phone: '1234567890x' },
+        contact: {phone: '1234567890x'},
         attachments: [
-          { id: '1', content_type: 'image/jpeg', file_name: 'file1.jpg', file_uri: 'file_uri_1' },
-          { id: '2', content_type: 'image/png', file_name: 'file2.png', file_uri: 'file_uri_2' },
+          {
+            id: '1',
+            content_type: 'image/jpeg',
+            file_name: 'file1.jpg',
+            file_uri: 'file_uri_1',
+          },
+          {
+            id: '2',
+            content_type: 'image/png',
+            file_name: 'file2.png',
+            file_uri: 'file_uri_2',
+          },
         ],
       },
       {
@@ -48,7 +58,7 @@ jest.mock('../../src/hooks/incidents/useIncidents', () => ({
         created_at: '2024-11-06T14:29:12.365889',
         updated_at: '2024-11-06T14:29:12.365910',
         user_issuer_name: 'Nicolas Hug',
-        contact: { phone: '1234567890' },
+        contact: {phone: '1234567890'},
         attachments: [],
       },
       {
@@ -58,8 +68,15 @@ jest.mock('../../src/hooks/incidents/useIncidents', () => ({
         created_at: '2024-11-06T22:52:52.725316',
         updated_at: '2024-11-06T22:52:52.725338',
         user_issuer_name: 'Oscar',
-        contact: { phone: '1234567890' },
-        attachments: [{ id: '3', content_type: 'image/jpeg', file_name: 'file3.jpg', file_uri: 'file_uri_3' }],
+        contact: {phone: '1234567890'},
+        attachments: [
+          {
+            id: '3',
+            content_type: 'image/jpeg',
+            file_name: 'file3.jpg',
+            file_uri: 'file_uri_3',
+          },
+        ],
       },
     ],
     loading: false,
@@ -83,7 +100,6 @@ describe('ResumeIncidentScreen', () => {
     expect(getByText('TKT-241106-142912365')).toBeTruthy();
   });
 
-
   it('should open modal when an incident row is pressed', async () => {
     const {getByText, getByTestId} = renderWithI18n(<ResumeIncidentScreen />);
     fireEvent.press(getByText('TKT-241026-130439408'));
@@ -92,16 +108,28 @@ describe('ResumeIncidentScreen', () => {
       expect(getByTestId('detail-modal')).toBeTruthy();
     });
 
-    fireEvent.press(getByText('Close'));
+    fireEvent.press(getByTestId('close-button'));
+  });
+
+  it('should open modal when an incident row is pressed and survey fired', async () => {
+    const {getByText, getByTestId} = renderWithI18n(<ResumeIncidentScreen />);
+    fireEvent.press(getByText('TKT-241026-130439408'));
+
+    await waitFor(() => {
+      expect(getByTestId('detail-modal')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('survey-button'));
   });
 
   it('should handle search input change', () => {
     const {getByPlaceholderText} = renderWithI18n(<ResumeIncidentScreen />);
 
-    const searchInput = getByPlaceholderText(i18n.t('resumeIncidentScreen.ticketNumber'));
+    const searchInput = getByPlaceholderText(
+      i18n.t('resumeIncidentScreen.ticketNumber'),
+    );
     fireEvent.changeText(searchInput, 'Incident');
 
     expect(searchInput.props.value).toBe('Incident');
   });
-
 });

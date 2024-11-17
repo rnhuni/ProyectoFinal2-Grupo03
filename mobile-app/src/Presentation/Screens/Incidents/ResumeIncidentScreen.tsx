@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,34 +7,35 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import {Picker} from '@react-native-picker/picker';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import useIncidents from '../../../hooks/incidents/useIncidents';
 import DetailModal from '../../Components/Incidents/DetailModal';
 import Loading from '../../Components/Loading';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 
 export const ResumeIncidentScreen = () => {
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [ticketNumber, setTicketNumber] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [modalLoading, setModalLoading] = useState(false);
-  const { incidents, loading, error, reloadIncidents } = useIncidents();
+  const {incidents, loading, error, reloadIncidents} = useIncidents();
 
   useFocusEffect(
     useCallback(() => {
-      console.log('Incidents: reload');
+      // console.log('Incidents: reload');
       reloadIncidents();
     }, []),
   );
   const handleRowPress = async (item: any) => {
     setModalLoading(true);
+    // console.log('item: ', item);
     setSelectedIncident(item);
     setModalVisible(true);
     setTimeout(() => {

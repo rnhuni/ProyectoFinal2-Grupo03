@@ -7,7 +7,7 @@ import {ResumeIncidentScreen} from '../Screens/Incidents/ResumeIncidentScreen';
 import {SettingsIncidentScreen} from '../Screens/Incidents/SettingsIncidentScreen';
 import TabNavigator from './TabNavigator';
 import {Animated} from 'react-native';
-import { SurveyScreen } from '../Screens/Survey/SurveyScreen';
+import {SurveyScreen} from '../Screens/Survey/SurveyScreen';
 
 export type RootStackParamList = {
   LoginScreen: undefined;
@@ -15,9 +15,8 @@ export type RootStackParamList = {
   IncidentReportScreen: undefined;
   ResumeIncidentScreen: undefined;
   SettingsIncidentScreen: undefined;
-  SurveyScreen: { ticketId: string };
+  SurveyScreen: {ticketId: string};
   Main: undefined;
-  
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

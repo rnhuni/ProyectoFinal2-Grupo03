@@ -17,7 +17,7 @@ const useIncidents = () => {
     api
       .get<Incident[]>(service)
       .then(res => {
-// console.log("Incidents", res.data);
+        // console.log("Incidents", res.data);
 
         const sortedIncidents = res.data.sort((a: Incident, b: Incident) => {
           // console.log("Incident A", a.created_at);
@@ -26,11 +26,11 @@ const useIncidents = () => {
           const dateB = new Date(b.created_at || '').getTime();
           // console.log("Date A", dateA);
           // console.log("Date B", dateB);
-          
+
           return dateA - dateB; // Orden ascendente
           // Para orden descendente usa `dateB - dateA`
         });
-// console.log("Sorted Incidents", sortedIncidents);
+        // console.log("Sorted Incidents", sortedIncidents);
         setIncidents(sortedIncidents);
       })
       .catch(err => {

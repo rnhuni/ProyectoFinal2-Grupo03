@@ -9,7 +9,8 @@ import {
   ScrollView,
 } from 'react-native';
 import Chat from '../Chat/Chat';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
 
 interface DetailModalProps {
   visible: boolean;
@@ -18,8 +19,8 @@ interface DetailModalProps {
     id: string;
     description: string;
     type: string;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
     user_issuer_id?: string;
     user_issuer_name: string;
     contact: {
@@ -30,43 +31,69 @@ interface DetailModalProps {
 }
 
 const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
-  const { t } = useTranslation();
+  const navigation = useNavigation<any>();
+  const {t} = useTranslation();
+
+  const surveyLaunch = () => {
+    console.log('Survey Launch', data.id);
+    navigation.navigate('SurveyScreen', {ticketId: data.id});
+  };
   return (
-    <Modal visible={visible} transparent={true} animationType="slide" testID='detail-modal'>
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="slide"
+      testID="detail-modal">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.title}>{t('resumeIncidentScreen.detailModal.title')}</Text>
+          <Text style={styles.title}>
+            {t('resumeIncidentScreen.detailModal.title')}
+          </Text>
           <ScrollView>
             <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('resumeIncidentScreen.detailModal.id')}</Text>
+              <Text style={styles.label}>
+                {t('resumeIncidentScreen.detailModal.id')}
+              </Text>
               <Text style={styles.value}>{data.id}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('resumeIncidentScreen.detailModal.description')}</Text>
+              <Text style={styles.label}>
+                {t('resumeIncidentScreen.detailModal.description')}
+              </Text>
               <Text style={styles.value}>{data.description}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('resumeIncidentScreen.detailModal.type')}</Text>
+              <Text style={styles.label}>
+                {t('resumeIncidentScreen.detailModal.type')}
+              </Text>
               <Text style={styles.value}>{data.type}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('resumeIncidentScreen.detailModal.createdAt')}</Text>
-              <Text style={styles.value}>{data.createdAt}</Text>
+              <Text style={styles.label}>
+                {t('resumeIncidentScreen.detailModal.createdAt')}
+              </Text>
+              <Text style={styles.value}>{data.created_at}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('resumeIncidentScreen.detailModal.updatedAt')}</Text>
-              <Text style={styles.value}>{data.updatedAt}</Text>
+              <Text style={styles.label}>
+                {t('resumeIncidentScreen.detailModal.updatedAt')}
+              </Text>
+              <Text style={styles.value}>{data.updated_at}</Text>
             </View>
             {/* <View style={styles.detailRow}>
               <Text style={styles.label}>User Issuer ID:</Text>
               <Text style={styles.value}>{data.user_issuer_id}</Text>
             </View> */}
             <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('resumeIncidentScreen.detailModal.user_name')}</Text>
+              <Text style={styles.label}>
+                {t('resumeIncidentScreen.detailModal.user_name')}
+              </Text>
               <Text style={styles.value}>{data.user_issuer_name}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('resumeIncidentScreen.detailModal.contact_phone')}</Text>
+              <Text style={styles.label}>
+                {t('resumeIncidentScreen.detailModal.contact_phone')}
+              </Text>
               <Text style={styles.value}>{data.contact.phone}</Text>
             </View>
             {/* Render attachments if needed */}
@@ -75,12 +102,22 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
               <Chat id={data.id} />
             </View>
           </ScrollView>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>{t('resumeIncidentScreen.detailModal.close_button')}</Text>
+          <TouchableOpacity
+            onPress={onClose}
+            style={styles.closeButton}
+            testID="close-button">
+            <Text style={styles.closeButtonText}>
+              {t('resumeIncidentScreen.detailModal.close_button')}
+            </Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>{t('resumeIncidentScreen.detailModal.survey_button')}</Text>
+
+          <TouchableOpacity
+            onPress={surveyLaunch}
+            style={styles.closeButton}
+            testID="survey-button">
+            <Text style={styles.closeButtonText}>
+              {t('resumeIncidentScreen.detailModal.survey_button')}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

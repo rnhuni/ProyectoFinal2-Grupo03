@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,77 +7,115 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import useNotificationsGraphql from '../../../hooks/user/useNotificationsGraphql';
-import { message } from 'aws-sdk/clients/sns';
+import {message} from 'aws-sdk/clients/sns';
 import useChannels from '../../../hooks/channel/useChannels';
-import { Message } from '../../../interfaces/Messages';
+import {Message} from '../../../interfaces/Messages';
 
 interface ChatProps {
   id: string; // Nueva prop para el id
 }
 
-const Chat: React.FC<ChatProps> = ({ id }) => {
-  const { t } = useTranslation();
+const Chat: React.FC<ChatProps> = ({id}) => {
+  const {t} = useTranslation();
   const [messagesLocal, setMessagesLocal] = useState<Message[]>([]);
 
-  const { messages, loading, error, reloadMessages } = useChannels();
+  const {
+    messages,
+    loading,
+    error,
+    reloadMessages,
+    incidentSession,
+    loadIncidentSession,
+    createIncidentMessage,
+  } = useChannels();
   const [input, setInput] = useState<string>('');
   const scrollViewRef = useRef<ScrollView>(null);
+  const {received}: {received: string} = useNotificationsGraphql(id);
 
-  const { notifications, data, received } = useNotificationsGraphql(id);
-
-
+  // leer los mensajes actuales
   useEffect(() => {
     const loadNotifications = async () => {
-      const data = await reloadMessages();
+      const sess = await loadIncidentSession(id);
+      // console.log('sess: ', sess);
+      const data = await reloadMessages(sess?.id);
+      // console.log('data: ', data);
       setMessagesLocal(data);
     };
     loadNotifications();
   }, []);
 
+  // crear la sesion de chat
+  // aqui se deberia consultar el ID de la sesion de chat
+  /*
   useEffect(() => {
-    console.log("received: ", received);
-    console.log("notifications: ", notifications);
-    console.log("data: ", data);
+    const createSession = async () => {
+      const data = await createChannelSession(id);
+    };
+    createSession();
   }, []);
+  */
 
+  // useEffect(() => {
+  //   console.log("received: ", received);
+  //   console.log("notifications: ", notifications);
+  //   console.log("data: ", data);
+  // }, []);
 
+  // leer los mensajes de chat que llegan
   useEffect(() => {
-    console.log("useEffect received: ", received);
+    // console.log('useEffect received: ', received);
     if (received) {
       // Agregar la notificación recibida al chat como un mensaje del agente
-      setMessagesLocal((prevMessages) => [
+      const message: Message = JSON.parse(received);
+      setMessagesLocal(prevMessages => [
         ...prevMessages,
-        { text: received, sender: 'agent' },
+        {
+          body: message.body,
+          session_id: message.session_id,
+          source_name: message.source_name,
+          source_type: message.source_type,
+        },
       ]);
     }
   }, [received]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
-      setMessagesLocal([...messagesLocal, { text: input, sender: 'user' }]);
+      setMessagesLocal([
+        ...messagesLocal,
+        {
+          body: input,
+          session_id: incidentSession?.id,
+          source_name: 'Oscar',
+          source_type: 'user',
+        },
+      ]);
       setInput('');
-      // Aquí puedes agregar la lógica para continuar la conversación
-      // Por ejemplo, enviar el mensaje a un backend o usar un bot
+      // enviar al backend
+      await createIncidentMessage(input);
     }
   };
 
   const getInitial = (message: Message) => {
-    return message.name?.charAt(0).toUpperCase() || message.sender.charAt(0).toUpperCase();
-  }
+    return (
+      message.source_name?.charAt(0).toUpperCase() ||
+      message.source_type.charAt(0).toUpperCase()
+    );
+  };
 
   const getCircleStyle = (sender: string) => {
     return sender === 'user' ? styles.userCircle : styles.agentCircle;
   };
 
   useEffect(() => {
-    scrollViewRef.current?.scrollToEnd({ animated: true });
+    scrollViewRef.current?.scrollToEnd({animated: true});
   }, [messagesLocal]);
 
   const handleContentSizeChange = () => {
-    scrollViewRef.current?.scrollToEnd({ animated: true });
-  }
+    scrollViewRef.current?.scrollToEnd({animated: true});
+  };
 
   return (
     <View style={styles.container}>
@@ -90,19 +128,21 @@ const Chat: React.FC<ChatProps> = ({ id }) => {
             key={index}
             style={[
               styles.messageContainer,
-              msg.sender === 'agent' ? styles.agentMessage : styles.userMessage,
+              msg.source_type === 'agent'
+                ? styles.agentMessage
+                : styles.userMessage,
             ]}>
-            {msg.sender === 'agent' ? (
+            {msg.source_type === 'agent' ? (
               <>
-                <View style={[styles.circle, getCircleStyle(msg.sender)]}>
+                <View style={[styles.circle, getCircleStyle(msg.source_type)]}>
                   <Text style={styles.initial}>{getInitial(msg)}</Text>
                 </View>
-                <Text style={styles.message}>{msg.text}</Text>
+                <Text style={styles.message}>{msg.body}</Text>
               </>
             ) : (
               <>
-                <Text style={styles.message}>{msg.text}</Text>
-                <View style={[styles.circle, getCircleStyle(msg.sender)]}>
+                <Text style={styles.message}>{msg.body}</Text>
+                <View style={[styles.circle, getCircleStyle(msg.source_type)]}>
                   <Text style={styles.initial}>{getInitial(msg)}</Text>
                 </View>
               </>

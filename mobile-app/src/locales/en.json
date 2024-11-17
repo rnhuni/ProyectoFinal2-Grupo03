@@ -153,6 +153,11 @@
     "question5": "Would you like to add any additional comments?",
     "placeholder": "Enter your comments here",
     "submitButton": "Submit Survey",
-    "successMessage": "Thank you for helping us improve!"
+    "successMessage": "Thank you for helping us improve!",
+    "validations": {
+      "number": "Numbers between 1 y 5",
+      "string": "A text string",
+      "error": "Please, fill all fields"
+    }
   }
 }
