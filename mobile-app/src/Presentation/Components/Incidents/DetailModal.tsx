@@ -35,7 +35,7 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
   const {t} = useTranslation();
 
   const surveyLaunch = () => {
-    console.log('Survey Launch', data.id);
+    // console.log('Survey Launch', data.id);
     navigation.navigate('SurveyScreen', {ticketId: data.id});
   };
   return (

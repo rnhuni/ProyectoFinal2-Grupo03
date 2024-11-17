@@ -8,7 +8,8 @@ import {
   ScrollView,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
-import useNotificationsGraphql from '../../../hooks/user/useNotificationsGraphql';
+import useSuscribeGraphql from '../../../hooks/user/useSuscribeGraphql';
+import usePublishGraphql from '../../../hooks/user/usePublishGraphql';
 import {message} from 'aws-sdk/clients/sns';
 import useChannels from '../../../hooks/channel/useChannels';
 import {Message} from '../../../interfaces/Messages';
@@ -32,7 +33,7 @@ const Chat: React.FC<ChatProps> = ({id}) => {
   } = useChannels();
   const [input, setInput] = useState<string>('');
   const scrollViewRef = useRef<ScrollView>(null);
-  const {received}: {received: string} = useNotificationsGraphql(id);
+  const {received}: {received: string} = useSuscribeGraphql(id);
 
   // leer los mensajes actuales
   useEffect(() => {
@@ -69,11 +70,11 @@ const Chat: React.FC<ChatProps> = ({id}) => {
     if (received) {
       // Agregar la notificación recibida al chat como un mensaje del agente
       const message: Message = JSON.parse(received);
+      // console.log('message received: ', message);
       setMessagesLocal(prevMessages => [
         ...prevMessages,
         {
           body: message.body,
-          session_id: message.session_id,
           source_name: message.source_name,
           source_type: message.source_type,
         },
@@ -82,6 +83,7 @@ const Chat: React.FC<ChatProps> = ({id}) => {
   }, [received]);
 
   const handleSend = async () => {
+    // console.log('000 handleSend: ', input);
     if (input.trim()) {
       setMessagesLocal([
         ...messagesLocal,
@@ -94,15 +96,32 @@ const Chat: React.FC<ChatProps> = ({id}) => {
       ]);
       setInput('');
       // enviar al backend
+      // enviarlo a graphql
+      const dataToSend = {
+        body: input,
+        source_name: 'Oscar',
+        source_type: 'user',
+      };
+      const jsonData = JSON.stringify({data: dataToSend});
+
+      // console.log('dataToSend usePublishGraphql: ', jsonData);
+      const resp = await usePublishGraphql(jsonData, id);
+      // console.log('resp usePublishGraphql: ', resp);
+      // console.log('createIncidentMessage: ', input);
       await createIncidentMessage(input);
     }
   };
 
-  const getInitial = (message: Message) => {
-    return (
-      message.source_name?.charAt(0).toUpperCase() ||
-      message.source_type.charAt(0).toUpperCase()
-    );
+  const getInitial = (message: Message | null) => {
+    if (message && message.source_type) {
+      return (
+        message.source_name?.charAt(0).toUpperCase() ||
+        message.source_type.charAt(0).toUpperCase()
+      );
+    } else {
+      console.log('message error: ', message);
+      return '';
+    }
   };
 
   const getCircleStyle = (sender: string) => {
@@ -132,21 +151,25 @@ const Chat: React.FC<ChatProps> = ({id}) => {
                 ? styles.agentMessage
                 : styles.userMessage,
             ]}>
-            {msg.source_type === 'agent' ? (
-              <>
-                <View style={[styles.circle, getCircleStyle(msg.source_type)]}>
-                  <Text style={styles.initial}>{getInitial(msg)}</Text>
-                </View>
-                <Text style={styles.message}>{msg.body}</Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.message}>{msg.body}</Text>
-                <View style={[styles.circle, getCircleStyle(msg.source_type)]}>
-                  <Text style={styles.initial}>{getInitial(msg)}</Text>
-                </View>
-              </>
-            )}
+            {msg.body ? (
+              msg.source_type === 'agent' ? (
+                <>
+                  <View
+                    style={[styles.circle, getCircleStyle(msg.source_type)]}>
+                    <Text style={styles.initial}>{getInitial(msg)}</Text>
+                  </View>
+                  <Text style={styles.message}>{msg.body}</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.message}>{msg.body}</Text>
+                  <View
+                    style={[styles.circle, getCircleStyle(msg.source_type)]}>
+                    <Text style={styles.initial}>{getInitial(msg)}</Text>
+                  </View>
+                </>
+              )
+            ) : null}
           </View>
         ))}
       </ScrollView>

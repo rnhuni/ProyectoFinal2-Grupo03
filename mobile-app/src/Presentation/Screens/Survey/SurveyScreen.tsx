@@ -37,7 +37,7 @@ export const SurveyScreen = ({route}: SurveyScreenProps) => {
 
   // ID del tiquete pasado por la navegación (por ejemplo, a través de react-navigation)
   const ticketId = route?.params?.ticketId;
-  console.log('Ticket ID:', ticketId);
+  // console.log('Ticket ID:', ticketId);
 
   const validateFields = (): boolean => {
     // Convertir los valores a números
@@ -89,8 +89,8 @@ export const SurveyScreen = ({route}: SurveyScreenProps) => {
       additional_comments: additionalComments,
     };
     try {
-      console.log('Ticket ID:', ticketId);
-      console.log('Feedback Data:', feedbackData);
+      // console.log('Ticket ID:', ticketId);
+      // console.log('Feedback Data:', feedbackData);
       const result = await createFeedback(ticketId, feedbackData);
       navigation.navigate('ResumeIncidentScreen');
     } catch (error) {}
