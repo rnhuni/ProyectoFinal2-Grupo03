@@ -170,12 +170,13 @@
     "greeting": "Hey there",
     "introduction": "Myself Ferin Patel",
     "reply": "Nice to meet you. You can send me a message and I'll reply with the same message.",
-    "online": "Online"
+    "online": "Online",
+    "openChat": "Open Chat"
   },
   "dashboard": {
-    "openChat": "Abrir Chat",
-    "openChatTooltip": "Abrir Tooltip del Chat",
+    "openChat": "Open Chat",
+    "openChatTooltip": "Open Chat Tooltip",
     "chat": "Chat",
-    "close": "Cerrar"
+    "close": "Close"
   }
 }

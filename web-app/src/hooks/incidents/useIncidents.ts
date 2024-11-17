@@ -3,7 +3,6 @@ import httpClient from "../../services/HttpClient";
 import { AxiosError, CanceledError } from "axios";
 import { Incident, IncidentTableData } from "../../interfaces/Incidents";
 
-
 const useIncidents = () => {
   const [incidents, setIncidents] = useState<IncidentTableData[]>([]);
   const [error, setError] = useState("");
@@ -30,7 +29,7 @@ const useIncidents = () => {
     setError("");
     try {
       const res = await httpClient.post<Incident>(service, newIncident);
-      reloadIncidents();
+      await reloadIncidents();
       return res.data;
     } catch (err) {
       if (err instanceof CanceledError) return;

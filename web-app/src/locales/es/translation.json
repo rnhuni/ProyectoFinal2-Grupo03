@@ -160,21 +160,22 @@
     }
   },
   "chat": {
-    "send": "Send",
-    "typeMessage": "Type a message...",
-    "attachment": "Attachment",
-    "me": "Me",
-    "computer": "Computer",
-    "welcome": "Hi, My Name is HoneyChat",
-    "greeting": "Hey there",
-    "introduction": "Myself Ferin Patel",
-    "reply": "Nice to meet you. You can send me a message and I'll reply with the same message.",
-    "online": "Online"
+    "send": "Enviar",
+    "typeMessage": "Escribe un mensaje...",
+    "attachment": "Adjunto",
+    "me": "Yo",
+    "computer": "Computadora",
+    "welcome": "Hola, mi nombre es HoneyChat",
+    "greeting": "Hola",
+    "introduction": "Soy Ferin Patel",
+    "reply": "Encantado de conocerte. Puedes enviarme un mensaje y te responderé con el mismo mensaje.",
+    "online": "En línea",
+    "openChat": "Abrir Chat"
   },
   "dashboard": {
-    "openChat": "Open Chat",
-    "openChatTooltip": "Open Chat Tooltip",
+    "openChat": "Abrir Chat",
+    "openChatTooltip": "Abrir Tooltip del Chat",
     "chat": "Chat",
-    "close": "Close"
+    "close": "Cerrar"
   }
 }

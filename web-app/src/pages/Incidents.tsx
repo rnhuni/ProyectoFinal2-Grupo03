@@ -15,14 +15,28 @@ import {
   Spinner,
   Alert,
   AlertIcon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } from "@chakra-ui/react";
-import { AddIcon, EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  EditIcon,
+  DeleteIcon,
+  ViewIcon,
+  ChatIcon,
+} from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import useIncidents from "../hooks/incidents/useIncidents";
 import { Incident, IncidentTableData } from "../interfaces/Incidents";
 import IncidentFormModal from "../components/Incidents/IncidentFormModal.tsx";
 import IncidentDetailModal from "../components/Incidents/IncidentDetailModal.tsx";
+import Chat from "../components/Chat/Chat.tsx";
 
 const Incidents = () => {
   const { t } = useTranslation();
@@ -42,6 +56,10 @@ const Incidents = () => {
     useState<IncidentTableData | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const [showChat, setShowChat] = useState(false);
+  const [currentIncidentId, setCurrentIncidentId] = useState<string | null>(
+    null
+  );
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedIncidentForDetails, setSelectedIncidentForDetails] =
@@ -95,6 +113,34 @@ const Incidents = () => {
     setIsDetailModalOpen(true);
   };
 
+  const handleOpenChat = (incidentId: string) => {
+    setCurrentIncidentId(incidentId);
+    setShowChat(true);
+  };
+
+  const handleCloseChat = () => {
+    setShowChat(false);
+    setCurrentIncidentId(null);
+  };
+
+  const showModalChat = (incidentId: string) => {
+    return (
+      <Modal isOpen={showChat} onClose={handleCloseChat} size="xl" isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Chat</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Chat incidentId={incidentId} />
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={handleCloseChat}>Close Chat</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
   return (
     <Box p={6}>
       <Stack
@@ -139,6 +185,7 @@ const Incidents = () => {
               <Th>{t("incidents.details", "Detalles")}</Th>
               <Th>{t("incidents.edit", "Editar")}</Th>
               <Th>{t("incidents.delete", "Eliminar")}</Th>
+              <Th>{t("incidents.chat", "Chat")}</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -177,12 +224,20 @@ const Incidents = () => {
                     variant="ghost"
                   />
                 </Td>
+                <Td>
+                  <IconButton
+                    aria-label="Open Chat"
+                    icon={<ChatIcon />}
+                    variant="ghost"
+                    onClick={() => handleOpenChat(incident.id)}
+                  />
+                </Td>
               </Tr>
             ))}
           </Tbody>
         </Table>
       )}
-
+      {currentIncidentId && showModalChat(currentIncidentId)}
       <IncidentFormModal
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
