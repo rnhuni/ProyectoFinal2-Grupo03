@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Chat from '../Chat/Chat';
 import {useTranslation} from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
 
 interface DetailModalProps {
   visible: boolean;
@@ -30,7 +31,13 @@ interface DetailModalProps {
 }
 
 const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
+  const navigation = useNavigation<any>();
   const {t} = useTranslation();
+
+  const surveyLaunch = () => {
+    console.log('Survey Launch', data.id);
+    navigation.navigate('SurveyScreen', {ticketId: data.id});
+  };
   return (
     <Modal
       visible={visible}
@@ -95,13 +102,19 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
               <Chat id={data.id} />
             </View>
           </ScrollView>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <TouchableOpacity
+            onPress={onClose}
+            style={styles.closeButton}
+            testID="close-button">
             <Text style={styles.closeButtonText}>
               {t('resumeIncidentScreen.detailModal.close_button')}
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <TouchableOpacity
+            onPress={surveyLaunch}
+            style={styles.closeButton}
+            testID="survey-button">
             <Text style={styles.closeButtonText}>
               {t('resumeIncidentScreen.detailModal.survey_button')}
             </Text>
