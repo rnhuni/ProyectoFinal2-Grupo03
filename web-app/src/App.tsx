@@ -14,7 +14,6 @@ import "./internalization/i18n";
 import SuscriptionSummary from "./pages/SuscriptionSummary";
 import SubscriptionPage from "./pages/SuscriptionPage";
 import LoginCognito from "./pages/LoginCognito";
-import Chat from "./components/Chat/Chat";
 import SubscriptionsBase from "./pages/SubscriptionsBase";
 
 function App() {
@@ -49,7 +48,6 @@ function App() {
           <Route path="user-plan" element={<SubscriptionPage />} />
           <Route path="manage-plan" element={<SuscriptionSummary />} />
           <Route path="suscriptions" element={<SubscriptionsBase />} />
-          <Route path="chat" element={<Chat />} />
         </Route>
       </Routes>
     </Router>
