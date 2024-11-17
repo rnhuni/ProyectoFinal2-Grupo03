@@ -13,7 +13,6 @@ const useChannels = () => {
   const [incidentSession, setIncidentSession] = useState<LoadSession | CreateSession | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const service = '/channel/channels/:channel_id/sessions/:session_id/messages';
 
 
 
@@ -30,17 +29,11 @@ const useChannels = () => {
     setError('');
     try {
       const res = await api.get<LoadSession[]>(url);
-      // console.log('res.data:', res.data);
       const filteredIncidents = filterByTopicRefId(res.data, Id);
-      console.log('filteredIncidents:', filteredIncidents);
       setIncidentSession(filteredIncidents[0]);
-      console.log('loadIncidentSession incidentSession:', incidentSession);
       return filteredIncidents[0];
     } catch (err) {
-      console.error('Load session Error:', err); // Registrar el error en la consola
-      if (err instanceof CanceledError) {
-        return undefined;
-      }
+      console.error('Load session Error:', err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
@@ -55,23 +48,15 @@ const useChannels = () => {
       session_id = incidentSession?.id;
     }
 
-    console.log('session_id:', session_id);
-
     const loadMessages = `/channel/sessions/${session_id}/messages`
     setLoading(true);
     setError('');
-
-
     try {
-      console.log('loadMessages:', loadMessages);
       const res = await api.get<Message[]>(loadMessages);
       setMessages(res.data);
       return res.data;
     } catch (err) {
-      console.error('Load messages Error:', err); // Registrar el error en la consola
-      if (err instanceof CanceledError) {
-        return [];
-      }
+      console.error('Load messages Error:', err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
@@ -94,9 +79,6 @@ const useChannels = () => {
       return res.data.id;
     } catch (err) {
       console.error('Create session Error:', err); // Registrar el error en la consola
-      if (err instanceof CanceledError) {
-        return;
-      }
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
@@ -116,9 +98,6 @@ const useChannels = () => {
       setMessages([...messages, res.data]);
     } catch (err) {
       console.error('Create message Error:', err); // Registrar el error en la consola
-      if (err instanceof CanceledError) {
-        return;
-      }
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     }
@@ -134,9 +113,9 @@ const useChannels = () => {
     loading,
     error,
     incidentSession,
+    loadIncidentSession,
     reloadMessages,
     createIncidentSession,
-    loadIncidentSession,
     createIncidentMessage,
   };
 };

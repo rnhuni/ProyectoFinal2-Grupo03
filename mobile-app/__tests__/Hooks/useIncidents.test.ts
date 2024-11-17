@@ -21,7 +21,7 @@ const mockGet = api.get as jest.Mock<Promise<AxiosResponse>>;
 describe('useIncidents', () => {
     it('mockGet cargar los incidentes correctamente', async () => {
         const mockIncidents = [{
-            id: 'TKT-241026-130439408',
+            id: 'TKT-241026-1',
             description: 'lore ipsum update',
             createdAt: 'Sat, 26 Oct 2024 13:04:39 GMT',
             user_issuer_name: 'Nicolas Hug',
@@ -29,7 +29,27 @@ describe('useIncidents', () => {
             attachments: [],
             type: 'denuncia update',
             updatedAt: 'Sat, 26 Oct 2024 13:04:39 GMT',
-        },];
+        },
+        {
+            id: 'TKT-241026-2',
+            description: 'lore ipsum update',
+            createdAt: 'Sat, 26 Oct 2024 13:04:39 GMT',
+            user_issuer_name: 'Nicolas Hug',
+            contact: { phone: '123456' },
+            attachments: [],
+            type: 'denuncia update',
+            updatedAt: 'Sat, 26 Oct 2024 13:04:39 GMT',
+        },
+        {
+            id: 'TKT-241026-3',
+            description: 'lore ipsum update',
+            createdAt: 'Sat, 26 Oct 2024 13:04:39 GMT',
+            user_issuer_name: 'Nicolas Hug',
+            contact: { phone: '123456' },
+            attachments: [],
+            type: 'denuncia update',
+            updatedAt: 'Sat, 26 Oct 2024 13:04:39 GMT',
+        }];
 
         mockGet.mockResolvedValueOnce({
             data: mockIncidents,
@@ -44,7 +64,12 @@ describe('useIncidents', () => {
 
         const mockReloadIncidents = jest.fn();
 
-        const { result: resultWithReload } = renderHook(() => useIncidents());
+
+        const { result } = renderHook(() => useIncidents());
+
+        await act(async () => {
+            await result.current.reloadIncidents();
+        });
     });
 
     it('mockGet manejar correctamente errores de API', async () => {
