@@ -29,13 +29,13 @@ export const ResumeIncidentScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('Incidents: reload');
+      // console.log('Incidents: reload');
       reloadIncidents();
     }, []),
   );
   const handleRowPress = async (item: any) => {
     setModalLoading(true);
-    console.log('item: ', item);
+    // console.log('item: ', item);
     setSelectedIncident(item);
     setModalVisible(true);
     setTimeout(() => {

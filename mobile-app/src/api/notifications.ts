@@ -24,10 +24,10 @@ const subscribeChannelFunc = async (id: string) => {
 
   try {
     const obj = await (API.graphql(graphqlOperation(subscribeChannel, { id })) as Observable<object>);
-    console.log("subscribeChannelFunc: ", obj);
+    // console.log("subscribeChannelFunc: ", obj);
     return obj;
   } catch (error) {
-    console.log("subscribeChannelFunc error: ", error);
+    // console.log("subscribeChannelFunc error: ", error);
     return null as unknown as Observable<object>;
   }
 

@@ -29,7 +29,7 @@ interface DetailModalProps {
 }
 
 const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
-  console.log('data DetailModalProps : ', data);
+  // console.log('data DetailModalProps : ', data);
 
   return (
     <Modal

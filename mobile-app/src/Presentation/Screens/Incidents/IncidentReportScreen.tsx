@@ -87,7 +87,7 @@ export const IncidentReportScreen = () => {
       // crer la suscripcion
       const id = result?.id;
       if (id) {
-        console.log('creando la sesion para el chat !!!!!!!!!!!!!!!!');
+        // console.log('creando la sesion para el chat !!!!!!!!!!!!!!!!');
         await createIncidentSession(id);
       }
       alert('Incidente registrado con éxito');

@@ -18,7 +18,7 @@ const useNotificationConfig = () => {
       .then(res => {
         sortedData = res.data.sort((a, b) => a.name.localeCompare(b.name));
         setNotificationsConfig(sortedData);
-        
+
         // console.log('Notifications Config response:', res.data);
       })
       .catch(err => {
@@ -28,14 +28,14 @@ const useNotificationConfig = () => {
         setError(err.message);
       })
       .finally(() => setLoading(false));
-      return sortedData;
+    return sortedData;
   };
 
-  const updateNotificationConfig= async (notificationConfig: NotificationConfig) => {
+  const updateNotificationConfig = async (notificationConfig: NotificationConfig) => {
     setLoading(true);
     setError('');
     try {
-      console.log('Update notificationConfig:', notificationConfig);
+      // console.log('Update notificationConfig:', notificationConfig);
       const res = await api.put<NotificationConfig>(
         `${service}/${notificationConfig.id}`,
         notificationConfig,

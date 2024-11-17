@@ -1,6 +1,6 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   View,
   Text,
@@ -11,14 +11,15 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { RootStackParamList } from '../../Routes/StackNavigator';
-import { loginUser } from '../../../services/authService';
-import { setToken } from '../../../api/api';
+import {RootStackParamList} from '../../Routes/StackNavigator';
+import {loginUser} from '../../../services/authService';
+import {setToken} from '../../../api/api';
 
-interface LoginScreenProps extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
+interface LoginScreenProps
+  extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
 
-export const LoginScreen = ({ navigation }: LoginScreenProps) => {
-  const { t, i18n } = useTranslation();
+export const LoginScreen = ({navigation}: LoginScreenProps) => {
+  const {t, i18n} = useTranslation();
   const [username, setUsername] = useState('oeramirezb@gmail.com');
   const [password, setPassword] = useState('T0rr3sd31nn0v0!');
   const [rememberMe, setRememberMe] = useState(false);
@@ -27,11 +28,14 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
     try {
       const authResult = await loginUser(username, password);
       setToken(authResult.IdToken);
-      console.log(authResult.IdToken);
+      // console.log(authResult.IdToken);
       navigation.navigate('HomeScreen');
     } catch (error) {
-      setToken("");
-      Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidCredentials'));
+      setToken('');
+      Alert.alert(
+        t('loginScreen.loginFailed'),
+        t('loginScreen.invalidCredentials'),
+      );
     }
   };
 
@@ -42,12 +46,12 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
   const handleremeberMe = () => {
     setRememberMe(!rememberMe);
-  }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.languageSwitch}>
-        <TouchableOpacity onPress={toggleLanguage} testID='languaje-button'>
+        <TouchableOpacity onPress={toggleLanguage} testID="languaje-button">
           <Icon name="web" size={25} />
         </TouchableOpacity>
       </View>
@@ -75,12 +79,16 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
       </View>
 
       <View style={styles.checkboxContainer}>
-        <TouchableOpacity onPress={handleremeberMe} testID='remember-button'>
+        <TouchableOpacity onPress={handleremeberMe} testID="remember-button">
           <Text style={styles.checkbox}>{rememberMe ? '☑' : '☐'}</Text>
         </TouchableOpacity>
         <Text style={styles.checkboxLabel}>{t('loginScreen.rememberMe')}</Text>
       </View>
-      <Button title={t('loginScreen.login')} onPress={handleLogin} testID='login-button'/>
+      <Button
+        title={t('loginScreen.login')}
+        onPress={handleLogin}
+        testID="login-button"
+      />
     </View>
   );
 };
