@@ -193,10 +193,8 @@ describe("IncidentDetailModal Component", () => {
   //   console.log("Después de verificar mockToast");
   // });
   test("maneja error al obtener los archivos adjuntos", async () => {
-    // Simular un rechazo en la llamada a la API
     mockedApiClient.get.mockRejectedValueOnce(new Error("Error"));
 
-    // Renderizar el componente sin mockear `useToast`
     renderWithProviders(
       <IncidentDetailModal
         isOpen={true}
@@ -205,7 +203,6 @@ describe("IncidentDetailModal Component", () => {
       />
     );
 
-    // Esperar a que el mensaje de error del toast aparezca en el DOM
     const toastTitle = await screen.findByText(
       "Error al obtener los archivos adjuntos"
     );
@@ -213,31 +210,40 @@ describe("IncidentDetailModal Component", () => {
       "No se pudieron cargar los archivos adjuntos."
     );
 
-    // Verificar que los mensajes están en el documento
     expect(toastTitle).toBeInTheDocument();
     expect(toastDescription).toBeInTheDocument();
 
-    // También puedes verificar el rol de alerta si es necesario
     const alert = await screen.findByRole("status");
     expect(alert).toBeInTheDocument();
   });
 
   test("renderiza correctamente los archivos adjuntos", async () => {
-    // Datos de prueba: incidente con archivos adjuntos
     const incidentWithAttachments = {
       ...mockIncident,
       attachments: [
-        { id: "file1", filename: "archivo1.pdf", url: "/path/to/archivo1.pdf", content_type: "application/pdf", file_name: "archivo1.pdf", file_uri: "/path/to/archivo1.pdf" },
-        { id: "file2", filename: "imagen1.jpg", url: "/path/to/imagen1.jpg", content_type: "image/jpeg", file_name: "imagen1.jpg", file_uri: "/path/to/imagen1.jpg" },
+        {
+          id: "file1",
+          filename: "archivo1.pdf",
+          url: "/path/to/archivo1.pdf",
+          content_type: "application/pdf",
+          file_name: "archivo1.pdf",
+          file_uri: "/path/to/archivo1.pdf",
+        },
+        {
+          id: "file2",
+          filename: "imagen1.jpg",
+          url: "/path/to/imagen1.jpg",
+          content_type: "image/jpeg",
+          file_name: "imagen1.jpg",
+          file_uri: "/path/to/imagen1.jpg",
+        },
       ],
     };
 
-    // Simular la respuesta de la API con los archivos adjuntos
     mockedApiClient.get.mockResolvedValueOnce({
       data: incidentWithAttachments.attachments,
     });
 
-    // Renderizar el componente con el incidente que tiene archivos adjuntos
     renderWithProviders(
       <IncidentDetailModal
         isOpen={true}
@@ -246,7 +252,6 @@ describe("IncidentDetailModal Component", () => {
       />
     );
 
-    // Esperar a que los archivos adjuntos aparezcan en el DOM
     for (const attachment of incidentWithAttachments.attachments) {
       const attachmentElement = await screen.findByText(attachment.filename);
       expect(attachmentElement).toBeInTheDocument();
