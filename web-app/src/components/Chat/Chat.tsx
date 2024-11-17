@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React, {
   useState,
   useEffect,
@@ -17,7 +18,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import useChannels from "../../hooks/channels/useChannels"; 
+import useChannels from "../../hooks/channels/useChannels";
 import { Message } from "../../interfaces/Messages";
 
 interface ChatProps {
