@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import Chat from '../../src/Presentation/Components/Chat/Chat';
-import useNotificationsGraphql from '../../src/hooks/user/useNotificationsGraphql';
+import useSuscribeGraphql from '../../src/hooks/user/useSuscribeGraphql';
 import useChannels from '../../src/hooks/channel/useChannels';
 import {I18nextProvider} from 'react-i18next';
 import {NavigationContainer} from '@react-navigation/native';
@@ -22,7 +22,7 @@ jest.mock('aws-amplify', () => ({
   graphqlOperation: jest.fn(),
 }));
 
-jest.mock('../../src/hooks/user/useNotificationsGraphql', () => {
+jest.mock('../../src/hooks/user/useSuscribeGraphql', () => {
   return jest.fn(() => ({
     notifications: [],
     data: null,
@@ -110,6 +110,16 @@ jest.mock('../../src/hooks/channel/useChannels', () => {
     }),
   }));
 });
+
+jest.mock('react-native-config', () => ({
+  API_URL: 'https://mock-api.example.com',
+  OTHER_CONFIG: 'mock-value',
+
+  AWS_APPSYNC_GRAPHQLENDPOINT: 'https://mock-api.example.com',
+  AWS_APPSYNC_REGION: 'pepe',
+  AWS_APPSYNC_AUTHENTICATIONTYPE: 'API_KEY',
+  AWS_APPSYNC_APIKEY: 'da2-key',
+}));
 
 const renderWithI18n = (component: React.ReactNode) => {
   return render(

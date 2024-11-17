@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import subscribeChannelFunc from '../../api/notifications';
+import { subscribeChannelFunc } from '../../api/notifications';
 
-const useNotificationsGraphql = (id: string) => {
+const useSuscribeGraphql = (id: string) => {
     const [notifications, setNotifications] = useState<string[]>([]);
     const [data, setData] = useState('');
     const [received, setReceived] = useState('');
@@ -32,4 +32,4 @@ const useNotificationsGraphql = (id: string) => {
     return { notifications, data, received };
 };
 
-export default useNotificationsGraphql;
+export default useSuscribeGraphql;

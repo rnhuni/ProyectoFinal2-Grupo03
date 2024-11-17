@@ -5,7 +5,8 @@ import useIncidents from '../../src/hooks/incidents/useIncidents';
 import {I18nextProvider} from 'react-i18next';
 import {NavigationContainer} from '@react-navigation/native';
 import i18n from '../../src/internalization/i18n';
-import subscribeChannelFunc from '../../src/api/notifications';
+import useSuscribeGraphql from '../../src/hooks/user/useSuscribeGraphql';
+// import subscribeChannelFunc from '../../src/api/notifications';
 
 jest.mock('aws-amplify', () => ({
   Amplify: {
@@ -84,6 +85,19 @@ jest.mock('../../src/hooks/incidents/useIncidents', () => ({
     reloadIncidents: jest.fn(),
   }),
 }));
+
+jest.mock('../../src/hooks/user/useSuscribeGraphql', () => {
+  return jest.fn(() => ({
+    notifications: [],
+    data: null,
+    received: JSON.stringify({
+      body: 'Nuevo mensaje del agente',
+      session_id: '123',
+      source_name: 'agent',
+      source_type: 'agent',
+    }),
+  }));
+});
 
 const renderWithI18n = (component: React.ReactNode) => {
   return render(
