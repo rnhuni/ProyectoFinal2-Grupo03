@@ -139,6 +139,7 @@ describe('Chat Component', () => {
       expect(screen.getByText('Hola')).toBeTruthy();
       expect(screen.getByText('¿Cómo estás?')).toBeTruthy();
     });
+  // }, 30000); // el timeout si necesita más tiempo  
   });
 
   it('OTRO should call loadIncidentSession and set incidentSession state', async () => {

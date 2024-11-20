@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,23 +8,23 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
-import {useTranslation} from 'react-i18next';
-import {RootStackParamList} from '../../Routes/StackNavigator';
-import {StackScreenProps} from '@react-navigation/stack';
+import { useTranslation } from 'react-i18next';
+import { RootStackParamList } from '../../Routes/StackNavigator';
+import { StackScreenProps } from '@react-navigation/stack';
 import useIncidents from '../../../hooks/incidents/useIncidents';
-import {Feedback} from '../../../interfaces/Feedback';
-import {useNavigation} from '@react-navigation/native';
+import { Feedback } from '../../../interfaces/Feedback';
+import { useNavigation } from '@react-navigation/native';
 
 export type SurveyScreenProps = StackScreenProps<
   RootStackParamList,
   'SurveyScreen'
 >;
 
-export const SurveyScreen = ({route}: SurveyScreenProps) => {
-  const {t} = useTranslation();
+export const SurveyScreen = ({ route }: SurveyScreenProps) => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   // Estado para los valores de la encuesta
   const [rating, setRating] = useState('');
@@ -32,8 +32,8 @@ export const SurveyScreen = ({route}: SurveyScreenProps) => {
   const [contactEase, setContactEase] = useState('');
   const [staffAttitude, setStaffAttitude] = useState('');
   const [additionalComments, setAdditionalComments] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const {createFeedback} = useIncidents();
+  const [validationsError, setValidationsError] = useState<string | null>(null);
+  const { error, createFeedback } = useIncidents();
 
   // ID del tiquete pasado por la navegación (por ejemplo, a través de react-navigation)
   const ticketId = route?.params?.ticketId;
@@ -57,7 +57,7 @@ export const SurveyScreen = ({route}: SurveyScreenProps) => {
       staffAttitudeNum < 1 ||
       isNaN(staffAttitudeNum)
     ) {
-      setError(t('surveyScreen.validations.number'));
+      setValidationsError(t('surveyScreen.validations.number'));
       return false;
     }
 
@@ -67,18 +67,18 @@ export const SurveyScreen = ({route}: SurveyScreenProps) => {
       typeof additionalComments !== 'string' ||
       additionalComments.trim() === ''
     ) {
-      setError(t('surveyScreen.validations.string'));
+      setValidationsError(t('surveyScreen.validations.string'));
       return false;
     }
 
-    setError(null); // Restablecer el error si todo es válido
+    setValidationsError(null); // Restablecer el error si todo es válido
     return true;
   };
 
   // Función para manejar el envío del formulario
   const handleSubmit = async () => {
     if (!validateFields()) {
-      Alert.alert('Error', error || t('surveyScreen.validations.error'));
+      Alert.alert('Error', validationsError || t('surveyScreen.validations.error'));
       return;
     }
     const feedbackData: Feedback = {
@@ -88,12 +88,19 @@ export const SurveyScreen = ({route}: SurveyScreenProps) => {
       support_staff_attitude: Number(staffAttitude),
       additional_comments: additionalComments,
     };
-    try {
-      // console.log('Ticket ID:', ticketId);
-      // console.log('Feedback Data:', feedbackData);
-      const result = await createFeedback(ticketId, feedbackData);
-      navigation.navigate('ResumeIncidentScreen');
-    } catch (error) {}
+
+    // console.log('Ticket ID:', ticketId);
+    // console.log('Feedback Data:', feedbackData);
+    const result = await createFeedback(ticketId, feedbackData);
+    console.log('Feedback Result:', result, '/ ', error);
+    if (result) {
+      Alert.alert(t('surveyScreen.title'), t('surveyScreen.successMessage'));
+      navigation.navigate('HomeScreen');
+    } else {
+      Alert.alert(t('surveyScreen.title'), t('surveyScreen.validations.errorMessage'));
+
+    }
+
   };
 
   return (

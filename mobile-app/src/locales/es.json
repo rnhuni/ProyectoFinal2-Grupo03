@@ -10,6 +10,7 @@
     "welcomeMessage": "¡Bienvenido a la aplicación!",
     "loginFailed": "Error de inicio de sesión",
     "invalidCredentials": "Nombre de usuario o contraseña inválidos",
+    "invalidRole": "Rol de usuario no válido",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "navigateToForgotPassword": "Navegar a la pantalla de contraseña olvidada",
     "register": "Regístrate",
@@ -82,9 +83,11 @@
       "label": "Tipo de incidente",
       "placeholder": "Seleccione un tipo",
       "incidents": {
-        "incident1": "Incidente 1",
-        "incident2": "Incidente 2",
-        "incident3": "Incidente 3"
+        "incident1": "Problemas Técnicos",
+        "incident2": "Incidencias de Facturación",
+        "incident3": "Consultas Generales",
+        "incident4": "Problemas de Seguridad",
+        "incident5": "Solicitudes de Mantenimiento"
       }
     },
     "phoneNumber": {
@@ -128,7 +131,7 @@
       "id_tiquet": "Id del tiquete",
       "description": "Descripción",
       "type": "Tipo",
-      "cretedAt": "Creado en",
+      "createdAt": "Creado en",
       "updatedAt": "Actualizado en",
       "user_name": "Nombre usuario",
       "contact_phone": "Teléfono contacto",
@@ -157,7 +160,8 @@
     "validations": {
       "number": "El campo debe ser un número entre 1 y 5",
       "string": "El campo debe ser una cadena de texto",
-      "error": "Por favor, diligencie todos los campos"
+      "error": "Por favor, diligencie todos los campos",
+      "errorMessage": "¡Gracias!, ya habiamos registrado tu encuesta"
     }
   }
 }

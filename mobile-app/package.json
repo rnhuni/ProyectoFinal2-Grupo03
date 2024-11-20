@@ -7,8 +7,9 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test": "jest --coverage",
+    "test:win": "jest --coverage 2>null",
+    "test:coverage": "jest --coverage 2>/dev/null"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.0.0",

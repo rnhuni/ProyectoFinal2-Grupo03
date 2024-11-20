@@ -1,5 +1,5 @@
 // DetailModal.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -11,6 +11,7 @@ import {
 import Chat from '../Chat/Chat';
 import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
+import useProfile from '../../../hooks/user/useProfile';
 
 interface DetailModalProps {
   visible: boolean;
@@ -34,10 +35,32 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
   const navigation = useNavigation<any>();
   const {t} = useTranslation();
 
+  const { reloadProfile } = useProfile();
+  const [roleUser, setRoleUser] = useState<string>('user');
+  const [nameUser, setNameUser] = useState<string>('');
+
   const surveyLaunch = () => {
     // console.log('Survey Launch', data.id);
     navigation.navigate('SurveyScreen', {ticketId: data.id});
   };
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const profile = await reloadProfile();
+      if (profile) {
+        const parts = (profile.user.role as string).split('-');
+        const rol = parts.length > 2 ? parts[1] : '';
+        const nam = profile.user.name as string;
+        setRoleUser(rol);
+        setNameUser(nam);
+      }
+    };
+    loadProfile();
+  }, []);
+
+
+ 
+
   return (
     <Modal
       visible={visible}
@@ -111,14 +134,16 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={surveyLaunch}
-            style={styles.closeButton}
-            testID="survey-button">
-            <Text style={styles.closeButtonText}>
-              {t('resumeIncidentScreen.detailModal.survey_button')}
-            </Text>
-          </TouchableOpacity>
+          {roleUser === 'user' && (
+            <TouchableOpacity
+              onPress={surveyLaunch}
+              style={styles.closeButton}
+              testID="survey-button">
+              <Text style={styles.closeButtonText}>
+                {t('resumeIncidentScreen.detailModal.survey_button')}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </Modal>

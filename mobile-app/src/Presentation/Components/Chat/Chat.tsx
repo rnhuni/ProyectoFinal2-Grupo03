@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,19 +7,21 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import useSuscribeGraphql from '../../../hooks/user/useSuscribeGraphql';
 import usePublishGraphql from '../../../hooks/user/usePublishGraphql';
-import {message} from 'aws-sdk/clients/sns';
+import { message } from 'aws-sdk/clients/sns';
 import useChannels from '../../../hooks/channel/useChannels';
-import {Message} from '../../../interfaces/Messages';
+import { Message } from '../../../interfaces/Messages';
+import useProfile from '../../../hooks/user/useProfile';
+
 
 interface ChatProps {
   id: string; // Nueva prop para el id
 }
 
-const Chat: React.FC<ChatProps> = ({id}) => {
-  const {t} = useTranslation();
+const Chat: React.FC<ChatProps> = ({ id }) => {
+  const { t } = useTranslation();
   const [messagesLocal, setMessagesLocal] = useState<Message[]>([]);
 
   const {
@@ -33,7 +35,10 @@ const Chat: React.FC<ChatProps> = ({id}) => {
   } = useChannels();
   const [input, setInput] = useState<string>('');
   const scrollViewRef = useRef<ScrollView>(null);
-  const {received}: {received: string} = useSuscribeGraphql(id);
+  const { received }: { received: string } = useSuscribeGraphql(id);
+  const { reloadProfile } = useProfile();
+  const [roleUser, setRoleUser] = useState<string>('');
+  const [nameUser, setNameUser] = useState<string>('');
 
   // leer los mensajes actuales
   useEffect(() => {
@@ -47,22 +52,20 @@ const Chat: React.FC<ChatProps> = ({id}) => {
     loadNotifications();
   }, []);
 
-  // crear la sesion de chat
-  // aqui se deberia consultar el ID de la sesion de chat
-  /*
-  useEffect(() => {
-    const createSession = async () => {
-      const data = await createChannelSession(id);
-    };
-    createSession();
-  }, []);
-  */
 
-  // useEffect(() => {
-  //   console.log("received: ", received);
-  //   console.log("notifications: ", notifications);
-  //   console.log("data: ", data);
-  // }, []);
+  useEffect(() => {
+    const loadProfile = async () => {
+      const profile = await reloadProfile();
+      if (profile) {
+        const parts = (profile.user.role as string).split('-');
+        const rol = parts.length > 2 ? parts[1] : '';
+        const nam = profile.user.name as string;
+        setRoleUser(rol);
+        setNameUser(nam);
+      }
+    };
+    loadProfile();
+  }, []);
 
   // leer los mensajes de chat que llegan
   useEffect(() => {
@@ -90,8 +93,8 @@ const Chat: React.FC<ChatProps> = ({id}) => {
         {
           body: input,
           session_id: incidentSession?.id,
-          source_name: 'Oscar',
-          source_type: 'user',
+          source_name: nameUser,
+          source_type: roleUser,
         },
       ]);
       setInput('');
@@ -99,10 +102,10 @@ const Chat: React.FC<ChatProps> = ({id}) => {
       // enviarlo a graphql
       const dataToSend = {
         body: input,
-        source_name: 'Oscar',
-        source_type: 'user',
+        source_name: nameUser,
+        source_type: roleUser,
       };
-      const jsonData = JSON.stringify({data: dataToSend});
+      const jsonData = JSON.stringify({ data: dataToSend });
 
       // console.log('dataToSend usePublishGraphql: ', jsonData);
       const resp = await usePublishGraphql(jsonData, id);
@@ -129,11 +132,11 @@ const Chat: React.FC<ChatProps> = ({id}) => {
   };
 
   useEffect(() => {
-    scrollViewRef.current?.scrollToEnd({animated: true});
+    scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [messagesLocal]);
 
   const handleContentSizeChange = () => {
-    scrollViewRef.current?.scrollToEnd({animated: true});
+    scrollViewRef.current?.scrollToEnd({ animated: true });
   };
 
   return (

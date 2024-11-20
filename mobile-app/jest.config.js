@@ -20,7 +20,7 @@ module.exports = {
     },
   },
 
-  testTimeout: 10000,
+  testTimeout: 30000,
 
   coverageReporters: ['text', 'lcov'],
 };

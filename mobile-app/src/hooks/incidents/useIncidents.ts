@@ -87,17 +87,18 @@ const useIncidents = () => {
     setError('');
     try {
       const res = await api.post(feedbackService, feedback);
-      return res.data;
+      return true;
     } catch (err) {
-      console.error('Create Incident feedback Error:', err); // Registrar el error en la consola
+      // sconsole.error('Create Incident feedback Error:', err); // Registrar el error en la consola
       if (err instanceof CanceledError) {
-        return;
+        return false;
       }
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
       setLoading(false);
     }
+    return false;
   };
 
   return {
