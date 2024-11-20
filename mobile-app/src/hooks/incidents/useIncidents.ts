@@ -101,6 +101,9 @@ const useIncidents = () => {
     return false;
   };
 
+  // cada que se crea lee los incidentes
+  // reloadIncidents();
+
   return {
     incidents,
     loading,

@@ -25,7 +25,7 @@ export const ResumeIncidentScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [modalLoading, setModalLoading] = useState(false);
-  const {incidents, loading, error, reloadIncidents} = useIncidents();
+  const {incidents, loading, reloadIncidents} = useIncidents();
 
   useFocusEffect(
     useCallback(() => {
