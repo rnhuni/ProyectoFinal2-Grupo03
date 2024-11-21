@@ -16,6 +16,7 @@ import useIncidents from '../../../hooks/incidents/useIncidents';
 import DetailModal from '../../Components/Incidents/DetailModal';
 import Loading from '../../Components/Loading';
 import {useFocusEffect} from '@react-navigation/native';
+import {Incident} from '../../../interfaces/Incidents';
 
 export const ResumeIncidentScreen = () => {
   const {t} = useTranslation();
@@ -26,13 +27,19 @@ export const ResumeIncidentScreen = () => {
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const {incidents, loading, reloadIncidents} = useIncidents();
+  const [allIncidents, setAllIncidents] = useState<Incident[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      // console.log('Incidents: reload');
-      reloadIncidents();
+      const fetchData = async () => {
+        // console.log('Incidents: ', incidents);
+        const res = await reloadIncidents();
+        setAllIncidents(res);
+      };
+      fetchData();
     }, []),
   );
+
   const handleRowPress = async (item: any) => {
     setModalLoading(true);
     // console.log('item: ', item);
@@ -56,6 +63,24 @@ export const ResumeIncidentScreen = () => {
   const handledetailModalClose = () => {
     reloadIncidents();
     setModalVisible(false);
+  };
+
+  const handleSearch = () => {
+    console.log('incidents: ', incidents.length);
+    setAllIncidents(incidents);
+    const res = incidents.filter(incident => {
+      return (
+        incident.description
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        (incident.id ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        incident.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (incident.user_issuer_name ?? '')
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+    });
+    setAllIncidents(res);
   };
 
   return (
@@ -83,7 +108,9 @@ export const ResumeIncidentScreen = () => {
             onChangeText={setSearchQuery}
             style={styles.inputSearch}
           />
-          <TouchableOpacity style={styles.searchIcon}>
+          <TouchableOpacity
+            style={styles.searchIcon}
+            onPress={() => handleSearch()}>
             <Icon name="magnify" size={20} style={styles.icon} />
           </TouchableOpacity>
         </View>
@@ -98,7 +125,9 @@ export const ResumeIncidentScreen = () => {
                 {t('resumeIncidentScreen.table.incidentType')}
               </Text>
             </View>
-            {incidents.map(renderRow)}
+            {searchQuery.length === 0
+              ? incidents.map(renderRow)
+              : allIncidents.map(renderRow)}
           </View>
         </ScrollView>
 
