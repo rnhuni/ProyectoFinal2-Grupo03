@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Footer from '../../Components/Footer';
@@ -17,17 +18,18 @@ import DetailModal from '../../Components/Incidents/DetailModal';
 import Loading from '../../Components/Loading';
 import {useFocusEffect} from '@react-navigation/native';
 import {Incident} from '../../../interfaces/Incidents';
+import RNFS from 'react-native-fs';
+import {PermissionsAndroid, Linking, Platform} from 'react-native';
 
 export const ResumeIncidentScreen = () => {
   const {t} = useTranslation();
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [ticketNumber, setTicketNumber] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const {incidents, loading, reloadIncidents} = useIncidents();
   const [allIncidents, setAllIncidents] = useState<Incident[]>([]);
+  const [status, setStatus] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -68,7 +70,7 @@ export const ResumeIncidentScreen = () => {
   const handleSearch = () => {
     console.log('incidents: ', incidents.length);
     setAllIncidents(incidents);
-    const res = incidents.filter(incident => {
+    const res = incidents.filter((incident: Incident) => {
       return (
         incident.description
           .toLowerCase()
@@ -83,6 +85,101 @@ export const ResumeIncidentScreen = () => {
     setAllIncidents(res);
   };
 
+  // Función para convertir los incidentes a formato CSV manualmente
+  const convertToCSV = (incidentsData: Incident[]) => {
+    const headers = ['Ticket', 'Type', 'Description', 'Issuer']; // Cabeceras del CSV
+    const rows = incidentsData.map((incident: any) => [
+      incident.id,
+      incident.type,
+      incident.description,
+      incident.user_issuer_name,
+    ]);
+    const csvContent = [
+      headers.join(','), // Cabeceras
+      ...rows.map(row => row.join(',')), // Filas
+    ].join('\n');
+    return csvContent;
+  };
+
+  async function hasAndroidPermission() {
+    if (Number(Platform.Version) >= 33) {
+      return true;
+    }
+
+    const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+
+    const hasPermission = await PermissionsAndroid.check(permission);
+    if (hasPermission) {
+      return true;
+    }
+
+    const status = await PermissionsAndroid.request(permission);
+    return status === 'granted';
+  }
+
+  // Función para descargar el archivo CSV
+  const downloadCSV = async () => {
+    const csvContent = convertToCSV(allIncidents);
+
+    try {
+      const hasPermission = await hasAndroidPermission();
+      console.log('hasPermission: ', hasPermission);
+
+      if (!hasPermission) {
+        // Si el permiso no ha sido concedido, solicitamos el permiso
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Permiso para acceder al almacenamiento',
+            message:
+              'La aplicación necesita acceder al almacenamiento para guardar archivos.',
+            buttonNeutral: 'Preguntar después',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'Aceptar',
+          },
+        );
+        console.log('granted: ', granted);
+        if (granted === PermissionsAndroid.RESULTS.DENIED) {
+          setStatus('Permiso denegado');
+          return;
+        }
+
+        if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+          // Si el permiso se ha denegado permanentemente, mostramos un mensaje al usuario
+          Alert.alert(
+            'Permiso necesario',
+            'Necesitamos permisos para guardar el archivo. Por favor, habilítalos en la configuración de la aplicación.',
+            [
+              {
+                text: 'Ir a configuración',
+                onPress: () => Linking.openSettings(),
+              },
+              {
+                text: 'Cancelar',
+                style: 'cancel',
+              },
+            ],
+          );
+          return;
+        }
+      }
+
+      // Define la ruta de descarga para Android e iOS
+      const downloadPath =
+        Platform.OS === 'android'
+          ? RNFS.DownloadDirectoryPath + '/incidents.csv' // Android
+          : RNFS.DocumentDirectoryPath + '/incidents.csv'; // iOS
+
+      console.log('downloadPath: ', downloadPath);
+
+      await RNFS.writeFile(downloadPath, csvContent, 'utf8');
+      Alert.alert('Download', `CSV file has been saved to ${downloadPath}`);
+    } catch (error) {
+      console.error('Error writing CSV file:', error);
+      Alert.alert('Error', 'Failed to save the CSV file');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Header />
@@ -90,7 +187,7 @@ export const ResumeIncidentScreen = () => {
       <View style={styles.content}>
         {loading && <Loading message={t('resumeIncidentScreen.loading')} />}
 
-        <View style={styles.inputContainer}>
+        {/* <View style={styles.inputContainer}>
           <Text style={styles.label}>
             {t('resumeIncidentScreen.ticketNumber')}
           </Text>
@@ -100,7 +197,7 @@ export const ResumeIncidentScreen = () => {
             onChangeText={setTicketNumber}
             style={styles.input}
           />
-        </View>
+        </View> */}
         <View style={styles.searchContainer}>
           <TextInput
             placeholder={t('resumeIncidentScreen.searchPlaceholder')}
@@ -131,7 +228,7 @@ export const ResumeIncidentScreen = () => {
           </View>
         </ScrollView>
 
-        <View style={styles.pagination}>
+        {/* <View style={styles.pagination}>
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={selectedOption}
@@ -145,9 +242,9 @@ export const ResumeIncidentScreen = () => {
           <Text style={styles.pageText}>
             {t('resumeIncidentScreen.pagination.label')}
           </Text>
-        </View>
+        </View> */}
 
-        <TouchableOpacity style={styles.downloadButton}>
+        <TouchableOpacity style={styles.downloadButton} onPress={downloadCSV}>
           <Text style={styles.downloadButtonText}>
             {t('resumeIncidentScreen.downloadButton')}
           </Text>
@@ -274,7 +371,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
-    marginTop: 20,
+    marginBottom: 5,
   },
   downloadButtonText: {
     color: '#fff',

@@ -9,6 +9,7 @@ module.exports = {
     'react-native-vector-icons/(.*)':
       '<rootDir>/__mocks__/react-native-vector-icons.js',
   },
+  setupFiles: ['<rootDir>/__mocks__/react-native-fs.js'],
   transform: {
     '^.+\\.(js|ts|tsx)$': 'babel-jest',
   },
