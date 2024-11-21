@@ -21,7 +21,9 @@ class TestGetIncident:
             description="Description of the issue",
             contact=None,
             user_issuer_id="user-1",
-            user_issuer_name="Test User"
+            user_issuer_name="Test User",
+            publication_channel_id="test channel",
+            sla=1440
         )
 
         # Configurar el retorno del mock para `first`

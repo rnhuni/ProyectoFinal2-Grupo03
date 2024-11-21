@@ -1,5 +1,6 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+from sqlalchemy.orm.query import Query
 from ServicioIncidente.models.model import session
 from ServicioIncidente.models.incident import Incident
 from ServicioIncidente.commands.incident_get_all import GetAllIncidents
@@ -7,64 +8,68 @@ from ServicioIncidente.commands.incident_get_all import GetAllIncidents
 class TestGetAllIncidents:
     @pytest.fixture(autouse=True)
     def setup_method(self, mocker):
-        # Mockear el método `query` de la sesión
         self.mock_query = mocker.patch.object(session, 'query')
-        # Configurar `self.mock_all` correctamente para que devuelva el resultado de `all`
-        self.mock_all = self.mock_query.return_value.all
+        self.mock_query_instance = self.mock_query.return_value
+        self.mock_query_instance.filter.return_value = self.mock_query_instance
+        self.mock_query_instance.order_by.return_value = self.mock_query_instance
+        self.mock_query_instance.all.return_value = []
 
-    def test_get_all_incidents_success(self):
-        # Crear incidentes simulados
-        incident_1 = Incident(
-            id="incident-1",
-            type="Network Issue",
-            description="Description of the first issue",
-            contact=None,
-            user_issuer_id="user-1",
-            user_issuer_name="Test User 1"
+    def test_get_all_incidents_with_all_filters(self):
+        mock_incidents = [MagicMock(spec=Incident), MagicMock(spec=Incident)]
+        self.mock_query_instance.all.return_value = mock_incidents
+
+        command = GetAllIncidents(
+            status="open",
+            assigned_to="123",
+            user_issuer="456",
+            order="asc",
+            start_date="2023-11-01T00:00:00",
+            end_date="2023-11-15T00:00:00"
         )
-        incident_2 = Incident(
-            id="incident-2",
-            type="Software Issue",
-            description="Description of the second issue",
-            contact=None,
-            user_issuer_id="user-2",
-            user_issuer_name="Test User 2"
+        incidents = command.execute()
+
+        assert incidents == mock_incidents
+        self.mock_query.assert_called_once_with(Incident)
+        self.mock_query_instance.filter.assert_called()
+        self.mock_query_instance.order_by.assert_called_once()
+
+    def test_get_all_incidents_with_partial_filters(self):
+        mock_incidents = [MagicMock(spec=Incident)]
+        self.mock_query_instance.all.return_value = mock_incidents
+
+        command = GetAllIncidents(
+            status="closed",
+            assigned_to=None,
+            user_issuer="789",
+            order="desc",
+            start_date=None,
+            end_date=None
         )
+        incidents = command.execute()
 
-        # Configurar el retorno del mock para `all` con los incidentes simulados
-        self.mock_all.return_value = [incident_1, incident_2]
-
-        # Ejecutar el comando
-        command = GetAllIncidents()
-        result = command.execute()
-
-        # Verificar que el resultado contiene los incidentes simulados
-        assert result == [incident_1, incident_2]
+        assert incidents == mock_incidents
         self.mock_query.assert_called_once_with(Incident)
-        self.mock_all.assert_called_once()
+        self.mock_query_instance.filter.assert_called()
+        self.mock_query_instance.order_by.assert_called_once()
 
-    def test_get_all_incidents_empty(self):
-        # Configurar el retorno del mock para `all` como lista vacía, simulando que no hay incidentes
-        self.mock_all.return_value = []
+    def test_get_all_incidents_no_filters(self):
+        mock_incidents = []
+        self.mock_query_instance.all.return_value = mock_incidents
 
-        # Ejecutar el comando
         command = GetAllIncidents()
-        result = command.execute()
+        incidents = command.execute()
 
-        # Verificar que el resultado es una lista vacía
-        assert result == []
+        assert incidents == mock_incidents
         self.mock_query.assert_called_once_with(Incident)
-        self.mock_all.assert_called_once()
+        self.mock_query_instance.filter.assert_not_called()
+        self.mock_query_instance.order_by.assert_called_once()
 
     def test_get_all_incidents_database_error(self):
-        # Configurar el mock para que `all` lance una excepción
-        self.mock_all.side_effect = Exception("Database error")
+        self.mock_query_instance.all.side_effect = Exception("Database error")
 
-        # Ejecutar el comando y verificar que lanza una excepción
         command = GetAllIncidents()
         with pytest.raises(Exception, match="Database error"):
             command.execute()
 
-        # Verificar que el método `query` fue llamado antes del error
         self.mock_query.assert_called_once_with(Incident)
-        self.mock_all.assert_called_once()
+        self.mock_query_instance.filter.assert_not_called()
