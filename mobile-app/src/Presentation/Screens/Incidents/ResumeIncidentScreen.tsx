@@ -130,7 +130,7 @@ export const ResumeIncidentScreen = () => {
           {
             title: 'Permiso para acceder al almacenamiento',
             message:
-              'La aplicación necesita acceder al almacenamiento para guardar archivos.',
+              'La aplicación necesita acceder al almacenamiento para guardar archivos. internacionalizar',
             buttonNeutral: 'Preguntar después',
             buttonNegative: 'Cancelar',
             buttonPositive: 'Aceptar',
