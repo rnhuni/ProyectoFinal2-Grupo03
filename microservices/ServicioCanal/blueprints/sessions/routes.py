@@ -1,8 +1,6 @@
 from flask import Blueprint, request, jsonify
 from ServicioCanal.utils import decode_user
-from ServicioCanal.utils.utils import build_channel_id
-import uuid
-
+from datetime import datetime
 from ServicioCanal.commands.message_create import CreateMessage
 from ServicioCanal.commands.message_get_all import GetAllMessages
 from ServicioCanal.commands.session_get import GetSession
@@ -10,6 +8,7 @@ from ServicioCanal.commands.session_exists import ExistsSession
 from ServicioCanal.commands.session_update import UpdateSession
 from ServicioCanal.services.notification_service import NotificationService
 from ServicioCanal.services.monitor_service import MonitorService
+from ServicioCanal.commands.session_get_all_with_filters import GetAllSessionsByFilters
 
 sessions_bp = Blueprint('sessions_bp', __name__)
 
@@ -135,3 +134,54 @@ def close_session(session_id):
 
     except Exception as e:
         return jsonify({'error': f'Error closing session. Details: {str(e)}'}), 500
+    
+@sessions_bp.route('/sessions', methods=['GET'])
+def get_all_sessions():
+    auth_header = request.headers.get('Authorization')
+
+    try:
+        status = request.args.get('status')
+        assigned_to = request.args.get('assigned_to')
+        channel = request.args.get('channel')
+        opened_by = request.args.get('opened_by')
+        topic = request.args.get('topic')
+        topic_refid = request.args.get('topic_refid')
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+        order = request.args.get('order', 'desc')
+
+        start_date = None
+        end_date = None
+        if start_date_str:
+            start_date = datetime.fromisoformat(start_date_str)
+        if end_date_str:
+            end_date = datetime.fromisoformat(end_date_str)
+
+        sessions = GetAllSessionsByFilters(channel, assigned_to, opened_by, status, topic, \
+                                           topic_refid, order, start_date, end_date).execute()
+
+        if not sessions:
+            return jsonify([]), 200
+
+        sessions_list = [
+            {
+                "id": session.id,
+                "channel_id": session.channel_id,
+                "status": session.status,
+                "topic": session.topic,
+                "topic_refid": session.topic_refid,
+                "opened_by_id": session.opened_by_id,
+                "opened_by_name": session.opened_by_name,
+                "assigned_to_type": session.assigned_to_type,
+                "assigned_to_id": session.assigned_to_id,
+                "assigned_to_name": session.assigned_to_name,
+                "created_at": session.createdAt.isoformat(),
+                "updated_at": session.updatedAt.isoformat(),
+            }
+            for session in sessions
+        ]
+
+        return jsonify(sessions_list), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Error retrieving sessions. Details: {str(e)}'}), 500
