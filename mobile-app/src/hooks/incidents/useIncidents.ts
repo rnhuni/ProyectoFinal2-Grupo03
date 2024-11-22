@@ -11,10 +11,13 @@ const useIncidents = () => {
   const service = '/incident/incidents';
 
 
-  const reloadIncidents = async (): Promise<Incident[]> => {
+  const reloadIncidents = async (filters?: string): Promise<Incident[]> => {
     setLoading(true);
     setError('');
-    const res = await api.get<Incident[]>(service)
+    if (filters) {
+      filters = "?" + filters;
+    }
+    const res = await api.get<Incident[]>(service + filters)
 
 
     const sortedIncidents = res.data.sort((a: Incident, b: Incident) => {

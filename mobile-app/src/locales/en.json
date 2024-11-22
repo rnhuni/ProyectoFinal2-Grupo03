@@ -7,17 +7,17 @@
     "rememberMe": "Remember me",
     "login": "Log in",
     "loginSuccess": "Login successful",
-    "welcomeMessage": "Welcome to the app!",
+    "welcomeMessage": "Welcome to the application!",
     "loginFailed": "Login failed",
     "invalidCredentials": "Invalid username or password",
     "invalidRole": "Invalid user role",
     "forgotPassword": "Forgot your password?",
-    "navigateToForgotPassword": "Go to forgot password screen",
+    "navigateToForgotPassword": "Go to the forgot password screen",
     "register": "Register",
     "changeLanguage": "Change language"
   },
   "registerScreen": {
-    "title": "Let’s get started",
+    "title": "Let's get started",
     "firstName": "First Name",
     "firstNamePlaceholder": "Enter your first name",
     "lastName": "Last Name",
@@ -31,10 +31,10 @@
     "ciudadPlaceholder": "Enter your city",
     "phone": "Phone Number",
     "telefonoPlaceholder": "Phone number",
-    "telefonoInvalid": "It should be at least 7 characters",
+    "telefonoInvalid": "Must be at least 7 characters",
     "password": "Password",
     "contrasenaPlaceholder": "Enter your password",
-    "submitButton": "Start",
+    "submitButton": "Get Started",
     "registrationMessage": "You have successfully registered!",
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
@@ -48,7 +48,7 @@
     "registerFailed": "Registration failed"
   },
   "footerScreen": {
-    "registerIncident": "Register incident",
+    "registerIncident": "Register Incident",
     "summary": "Summary",
     "settings": "Settings"
   },
@@ -72,7 +72,7 @@
       "show": "Show 10",
       "page": "of 10"
     },
-    "alert": "Functionality under construction"
+    "alert": "Feature under construction"
   },
   "incidentReportScreen": {
     "tabs": {
@@ -83,7 +83,7 @@
       "label": "Incident Type",
       "placeholder": "Select a type",
       "incidents": {
-        "incident1": "Technical Issues",
+        "incident1": "Technical Problems",
         "incident2": "Billing Issues",
         "incident3": "General Inquiries",
         "incident4": "Security Issues",
@@ -96,11 +96,11 @@
     },
     "description": {
       "label": "Description",
-      "placeholder": "Write a description"
+      "placeholder": "Enter a description"
     },
     "fileUpload": {
-      "buttonText": "Browse file to upload",
-      "addFileButton": "Add file"
+      "buttonText": "Search file to upload",
+      "addFileButton": "Add File"
     },
     "registerButton": "Register Incident"
   },
@@ -137,31 +137,49 @@
       "contact_phone": "Contact Phone",
       "close_button": "Close",
       "survey_button": "Satisfaction Survey"
+    },
+    "androidPermissions": {
+      "title": "Permission to access storage",
+      "message": "The app needs access to storage to save files.",
+      "buttonNeutral": "Ask later",
+      "buttonNegative": "Cancel",
+      "buttonPositive": "Accept",
+      "status": "Permission denied",
+      "alert": {
+        "title": "Permission required",
+        "description": "We need permissions to save the file. Please enable them in the app settings.",
+        "text": "Go to settings",
+        "label": "Cancel",
+        "titleDownload": "Download",
+        "descriptionDownload": "CSV file was downloaded to ",
+        "titleError": "Error",
+        "descriptionError": "Error saving the file"
+      }
     }
   },
   "settingsIncidentScreen": {
-    "enableNotifications": "Enable notifications",
-    "stateChanges": "State changes",
-    "taskReminder": "Task reminder",
-    "supportMessages": "Support messages"
+    "enableNotifications": "Enable Notifications",
+    "stateChanges": "State Changes",
+    "taskReminder": "Task Reminder",
+    "supportMessages": "Support Messages"
   },
   "surveyScreen": {
     "title": "Satisfaction Survey",
     "description": "Help us improve by answering this short survey.",
-    "escale": "Scale from 1 to 5",
+    "scale": "Scale of 1 to 5",
     "question1": "How would you rate the overall support received?",
     "question2": "How satisfied are you with the resolution time?",
     "question3": "Was it easy to contact the support team?",
-    "question4": "How would you describe the support team's attitude?",
+    "question4": "How would you describe the support staff's attitude?",
     "question5": "Would you like to add any additional comments?",
     "placeholder": "Write your comments here",
     "submitButton": "Submit Survey",
     "successMessage": "Thank you for helping us improve!",
     "validations": {
-      "number": "Field must be a number between 1 and 5",
-      "string": "Field must be a string",
+      "number": "The field must be a number between 1 and 5",
+      "string": "The field must be a text string",
       "error": "Please fill in all fields",
-      "errorMessage": "Thank!, We had already registered your survey."
+      "errorMessage": "Thank you! We have already recorded your survey."
     }
   }
 }

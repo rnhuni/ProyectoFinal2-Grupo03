@@ -1,69 +1,69 @@
 {
   "loginScreen": {
-    "welcome": "Bienvenido a ABCALL",
-    "optimizeOperations": "Optimice sus operaciones y reduzca costos inesperados.",
+    "welcome": "¡Bienvenido a ABCALL!",
+    "optimizeOperations": "Optimiza tus operaciones y reduce costos imprevistos.",
     "username": "Usuario",
     "password": "Contraseña",
-    "rememberMe": "Recordarme",
+    "rememberMe": "Recuérdame",
     "login": "Iniciar sesión",
     "loginSuccess": "Inicio de sesión exitoso",
-    "welcomeMessage": "¡Bienvenido a la aplicación!",
-    "loginFailed": "Error de inicio de sesión",
-    "invalidCredentials": "Nombre de usuario o contraseña inválidos",
-    "invalidRole": "Rol de usuario no válido",
+    "welcomeMessage": "¡Nos alegra verte!",
+    "loginFailed": "No se pudo iniciar sesión",
+    "invalidCredentials": "Usuario o contraseña incorrectos",
+    "invalidRole": "El rol asignado no es válido",
     "forgotPassword": "¿Olvidaste tu contraseña?",
-    "navigateToForgotPassword": "Navegar a la pantalla de contraseña olvidada",
-    "register": "Regístrate",
-    "changeLanguage": "Cambiar idioma"
+    "navigateToForgotPassword": "Ir a recuperación de contraseña",
+    "register": "Crear cuenta",
+    "changeLanguage": "Seleccionar idioma"
   },
   "registerScreen": {
-    "title": "Vamos a empezar",
+    "title": "Crea tu cuenta",
     "firstName": "Nombre",
-    "firstNamePlaceholder": "Escribe tu nombre",
+    "firstNamePlaceholder": "Ingresa tu nombre",
     "lastName": "Apellido",
-    "lastNamePlaceholder": "Escribe tu apellido",
+    "lastNamePlaceholder": "Ingresa tu apellido",
     "email": "Correo electrónico",
-    "emailPlaceholder": "tucorreo@dominio.com",
-    "emailInvalid": "Correo electrónico no es válido",
+    "emailPlaceholder": "ejemplo@correo.com",
+    "emailInvalid": "Correo electrónico no válido",
     "country": "País",
     "paisPlaceholder": "Selecciona un país",
     "city": "Ciudad",
-    "ciudadPlaceholder": "Escribe tu ciudad",
-    "phone": "Número de teléfono",
+    "ciudadPlaceholder": "Ingresa tu ciudad",
+    "phone": "Teléfono",
     "telefonoPlaceholder": "Número de teléfono",
-    "telefonoInvalid": "Debe tener al menos 7 caracteres",
+    "telefonoInvalid": "El número debe tener al menos 7 caracteres",
     "password": "Contraseña",
-    "contrasenaPlaceholder": "Escribe tu contraseña",
-    "submitButton": "Empezar",
-    "registrationMessage": "¡Te has registrado correctamente!",
+    "contrasenaPlaceholder": "Crea una contraseña",
+    "submitButton": "Registrarse",
+    "registrationMessage": "¡Registro completado con éxito!",
     "firstNameRequired": "El nombre es obligatorio",
     "lastNameRequired": "El apellido es obligatorio",
     "emailRequired": "El correo electrónico es obligatorio",
     "countryRequired": "El país es obligatorio",
     "cityRequired": "La ciudad es obligatoria",
-    "phoneRequired": "El número de teléfono es obligatorio",
+    "phoneRequired": "El teléfono es obligatorio",
     "passwordRequired": "La contraseña es obligatoria",
     "passwordInvalid": "La contraseña debe tener al menos 6 caracteres",
-    "registrationSuccess": "Registro exitoso",
-    "registerFailed": "Error de registro"
+    "registrationSuccess": "¡Te registraste exitosamente!",
+    "registerFailed": "Error al registrarse"
   },
   "footerScreen": {
-    "registerIncident": "Registrar incidente",
+    "registerIncident": "Registrar un incidente",
     "summary": "Resumen",
     "settings": "Configuración"
   },
   "homeScreen": {
     "sectionTitle": "Mensajes predefinidos",
     "tableHeaders": {
-      "id": "Id",
+      "id": "ID",
       "template": "Plantilla",
       "status": "Estado"
     },
     "rows": {
       "welcome": "Bienvenida",
       "additionalInfo": "Información adicional",
-      "satisfactionSurvey": "Encuesta satisfacción",
-      "chatEnd": "Finalización chat"
+      "satisfactionSurvey": "Encuesta de satisfacción",
+      "chatEnd": "Cierre del chat"
     },
     "status": {
       "active": "Activo"
@@ -72,7 +72,7 @@
       "show": "Mostrar 10",
       "page": "de 10"
     },
-    "alert": "Funcionalidad en construcción"
+    "alert": "Esta funcionalidad está en desarrollo"
   },
   "incidentReportScreen": {
     "tabs": {
@@ -81,44 +81,44 @@
     },
     "incidentType": {
       "label": "Tipo de incidente",
-      "placeholder": "Seleccione un tipo",
+      "placeholder": "Selecciona un tipo",
       "incidents": {
-        "incident1": "Problemas Técnicos",
-        "incident2": "Incidencias de Facturación",
-        "incident3": "Consultas Generales",
-        "incident4": "Problemas de Seguridad",
-        "incident5": "Solicitudes de Mantenimiento"
+        "incident1": "Problemas técnicos",
+        "incident2": "Errores de facturación",
+        "incident3": "Consultas generales",
+        "incident4": "Problemas de seguridad",
+        "incident5": "Solicitudes de mantenimiento"
       }
     },
     "phoneNumber": {
-      "label": "Número de teléfono",
+      "label": "Teléfono de contacto",
       "placeholder": "+57"
     },
     "description": {
       "label": "Descripción",
-      "placeholder": "Escriba una descripción"
+      "placeholder": "Describe el incidente"
     },
     "fileUpload": {
-      "buttonText": "Buscar archivo para cargar",
+      "buttonText": "Seleccionar archivo",
       "addFileButton": "Añadir archivo"
     },
     "registerButton": "Registrar incidente"
   },
   "resumeIncidentScreen": {
-    "ticketNumber": "Número ticket",
+    "ticketNumber": "Número de ticket",
     "searchPlaceholder": "Buscar",
     "loading": "Cargando...",
     "table": {
-      "ticket": "# Ticket",
-      "incidentType": "Tipo incidente",
+      "ticket": "Número de ticket",
+      "incidentType": "Tipo de incidente",
       "data": {
-        "row1": "Text cell tables",
-        "row2": "Text cell tables",
-        "row3": "Text cell tables"
+        "row1": "Texto fila 1",
+        "row2": "Texto fila 2",
+        "row3": "Texto fila 3"
       }
     },
     "pagination": {
-      "label": "1 de 10"
+      "label": "Página 1 de 10"
     },
     "downloadButton": "Descargar informe",
     "help": {
@@ -126,42 +126,60 @@
       "button": "Abrir un nuevo ticket"
     },
     "detailModal": {
-      "title": "Detalle del incidente",
-      "id": "Id",
-      "id_tiquet": "Id del tiquete",
+      "title": "Detalles del incidente",
+      "id": "ID",
+      "id_tiquet": "ID del ticket",
       "description": "Descripción",
       "type": "Tipo",
-      "createdAt": "Creado en",
-      "updatedAt": "Actualizado en",
-      "user_name": "Nombre usuario",
-      "contact_phone": "Teléfono contacto",
+      "createdAt": "Creado el",
+      "updatedAt": "Actualizado el",
+      "user_name": "Usuario",
+      "contact_phone": "Teléfono de contacto",
       "close_button": "Cerrar",
-      "survey_button": "Encuesta de satisfacción"
+      "survey_button": "Realizar encuesta"
+    },
+    "androidPermissions": {
+      "title": "Permiso de almacenamiento",
+      "message": "La app necesita acceder a tu almacenamiento para guardar archivos.",
+      "buttonNeutral": "Preguntar luego",
+      "buttonNegative": "Cancelar",
+      "buttonPositive": "Aceptar",
+      "status": "Permiso denegado",
+      "alert": {
+        "title": "Permiso requerido",
+        "description": "Por favor, habilita los permisos necesarios en la configuración de la app.",
+        "text": "Abrir configuración",
+        "label": "Cancelar",
+        "titleDownload": "Descarga completada",
+        "descriptionDownload": "Archivo CSV descargado en ",
+        "titleError": "Error",
+        "descriptionError": "No se pudo guardar el archivo"
+      }
     }
   },
   "settingsIncidentScreen": {
-    "enableNotifications": "Habilitar notificaciones",
+    "enableNotifications": "Activar notificaciones",
     "stateChanges": "Cambios de estado",
-    "taskReminder": "Recordatorio tarea",
+    "taskReminder": "Recordatorio de tareas",
     "supportMessages": "Mensajes de soporte"
   },
   "surveyScreen": {
-    "title": "Encuesta de Satisfacción",
-    "description": "Ayúdenos a mejorar respondiendo esta breve encuesta.",
-    "escale": "Escala de 1 a 5",
-    "question1": "¿Cómo calificaría el soporte recibido en general?",
-    "question2": "¿Qué tan satisfecho está con el tiempo de resolución?",
-    "question3": "¿Fue fácil contactar con el equipo de soporte?",
-    "question4": "¿Cómo describiría la actitud del personal de soporte?",
-    "question5": "¿Desea agregar algún comentario adicional?",
-    "placeholder": "Escriba aquí sus comentarios",
-    "submitButton": "Enviar Encuesta",
-    "successMessage": "¡Gracias por ayudarnos a mejorar!",
+    "title": "Encuesta de satisfacción",
+    "description": "Ayúdanos a mejorar respondiendo esta breve encuesta.",
+    "escale": "Calificación del 1 al 5",
+    "question1": "¿Cómo calificarías el soporte recibido en general?",
+    "question2": "¿Qué tan satisfecho estás con el tiempo de resolución?",
+    "question3": "¿Fue fácil contactar al equipo de soporte?",
+    "question4": "¿Cómo describirías la actitud del personal de soporte?",
+    "question5": "¿Tienes algún comentario adicional?",
+    "placeholder": "Escribe aquí tus comentarios",
+    "submitButton": "Enviar encuesta",
+    "successMessage": "¡Gracias por tu ayuda!",
     "validations": {
-      "number": "El campo debe ser un número entre 1 y 5",
-      "string": "El campo debe ser una cadena de texto",
-      "error": "Por favor, diligencie todos los campos",
-      "errorMessage": "¡Gracias!, ya habiamos registrado tu encuesta"
+      "number": "El valor debe ser un número entre 1 y 5",
+      "string": "El campo debe ser texto",
+      "error": "Completa todos los campos antes de enviar",
+      "errorMessage": "Gracias, ya registraste tu encuesta previamente"
     }
   }
 }

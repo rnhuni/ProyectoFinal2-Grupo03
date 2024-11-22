@@ -183,19 +183,31 @@ export const IncidentReportScreen = () => {
                 label={t(
                   'incidentReportScreen.incidentType.incidents.incident1',
                 )}
-                value="Incidente 1"
+                value="technical"
               />
               <Picker.Item
                 label={t(
                   'incidentReportScreen.incidentType.incidents.incident2',
                 )}
-                value="Incidente 2"
+                value="billing"
               />
               <Picker.Item
                 label={t(
                   'incidentReportScreen.incidentType.incidents.incident3',
                 )}
-                value="Incidente 3"
+                value="general"
+              />
+              <Picker.Item
+                label={t(
+                  'incidentReportScreen.incidentType.incidents.incident4',
+                )}
+                value="security"
+              />
+              <Picker.Item
+                label={t(
+                  'incidentReportScreen.incidentType.incidents.incident5',
+                )}
+                value="maintenance"
               />
             </Picker>
           </View>

@@ -1,6 +1,6 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   View,
   Text,
@@ -11,17 +11,16 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { RootStackParamList } from '../../Routes/StackNavigator';
-import { loginUser } from '../../../services/authService';
-import { setToken } from '../../../api/api';
+import {RootStackParamList} from '../../Routes/StackNavigator';
+import {loginUser} from '../../../services/authService';
+import {setToken} from '../../../api/api';
 import useProfile from '../../../hooks/user/useProfile';
 
-
 interface LoginScreenProps
-  extends StackScreenProps<RootStackParamList, 'LoginScreen'> { }
+  extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
 
-export const LoginScreen = ({ navigation }: LoginScreenProps) => {
-  const { t, i18n } = useTranslation();
+export const LoginScreen = ({navigation}: LoginScreenProps) => {
+  const {t, i18n} = useTranslation();
   const [username, setUsername] = useState('user@abcall.com');
   const [password, setPassword] = useState('User$123');
   const [rememberMe, setRememberMe] = useState(false);
@@ -31,13 +30,13 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
     //let startTime=0, endTime=0
     try {
       // console.log("inicio login |", username, "|", password, "|");
-      // startTime = Date.now(); 
+      // startTime = Date.now();
       // console.log(`loginUser start Time: ${startTime} ms`);
       const authResult = await loginUser(username, password);
       // endTime = Date.now();
       // console.log(`loginUser end   Time: ${endTime - startTime} ms`);
       setToken(authResult.IdToken);
-      // startTime = Date.now(); 
+      // startTime = Date.now();
       // console.log(`reloadProfile start Time: ${startTime} ms`);
       const res = await reloadProfile();
       // endTime = Date.now();
@@ -52,12 +51,13 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
       }
     } catch (error) {
       //console.log(`loginUser Error Time: ${endTime - startTime} ms`);
-      console.log("error login |", error, "|");
+      // console.log("error login |", error, "|");
       setToken('');
       Alert.alert(
         t('loginScreen.loginFailed'),
         t('loginScreen.invalidCredentials'),
       );
+      return;
     }
   };
 

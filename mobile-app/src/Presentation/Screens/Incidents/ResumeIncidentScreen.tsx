@@ -20,6 +20,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {Incident} from '../../../interfaces/Incidents';
 import RNFS from 'react-native-fs';
 import {PermissionsAndroid, Linking, Platform} from 'react-native';
+import useProfile from '../../../hooks/user/useProfile';
 
 export const ResumeIncidentScreen = () => {
   const {t} = useTranslation();
@@ -30,12 +31,28 @@ export const ResumeIncidentScreen = () => {
   const {incidents, loading, reloadIncidents} = useIncidents();
   const [allIncidents, setAllIncidents] = useState<Incident[]>([]);
   const [status, setStatus] = useState('');
+  const {reloadProfile} = useProfile();
 
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
+        const profile = await reloadProfile();
+        let rol = '';
+        let id = '';
+        if (profile) {
+          const parts = (profile.user.role as string).split('-');
+          rol = parts.length > 2 ? parts[1] : '';
+          id = profile.user.id;
+        }
+        let filters = '';
+        if (rol === 'agent') {
+          filters = 'assigned_to=' + id;
+        } else if (rol === 'user') {
+          filters = 'user_issuer=' + id;
+        }
+
         // console.log('Incidents: ', incidents);
-        const res = await reloadIncidents();
+        const res = await reloadIncidents(filters);
         setAllIncidents(res);
       };
       fetchData();
@@ -128,32 +145,41 @@ export const ResumeIncidentScreen = () => {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
           {
-            title: 'Permiso para acceder al almacenamiento',
-            message:
-              'La aplicación necesita acceder al almacenamiento para guardar archivos. internacionalizar',
-            buttonNeutral: 'Preguntar después',
-            buttonNegative: 'Cancelar',
-            buttonPositive: 'Aceptar',
+            title: `${t('resumeIncidentScreen.androidPermissions.title')}`,
+            message: `${t('resumeIncidentScreen.androidPermissions.message')}`,
+            buttonNeutral: `${t(
+              'resumeIncidentScreen.androidPermissions.buttonNeutral',
+            )}`,
+            buttonNegative: `${t(
+              'resumeIncidentScreen.androidPermissions.buttonNegative',
+            )}`,
+            buttonPositive: `${t(
+              'resumeIncidentScreen.androidPermissions.buttonPositive',
+            )}`,
           },
         );
         // console.log('granted: ', granted);
         if (granted === PermissionsAndroid.RESULTS.DENIED) {
-          setStatus('Permiso denegado');
+          setStatus(`${t('resumeIncidentScreen.androidPermissions.status')}`);
           return;
         }
 
         if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
           // Si el permiso se ha denegado permanentemente, mostramos un mensaje al usuario
           Alert.alert(
-            'Permiso necesario',
-            'Necesitamos permisos para guardar el archivo. Por favor, habilítalos en la configuración de la aplicación.',
+            `${t('resumeIncidentScreen.androidPermissions.alert.title')}`,
+            `${t('resumeIncidentScreen.androidPermissions.alert.description')}`,
             [
               {
-                text: 'Ir a configuración',
+                text: `${t(
+                  'resumeIncidentScreen.androidPermissions.alert.text',
+                )}`,
                 onPress: () => Linking.openSettings(),
               },
               {
-                text: 'Cancelar',
+                text: `${t(
+                  'resumeIncidentScreen.androidPermissions.alert.label',
+                )}`,
                 style: 'cancel',
               },
             ],
@@ -171,10 +197,20 @@ export const ResumeIncidentScreen = () => {
       // console.log('downloadPath: ', downloadPath);
 
       await RNFS.writeFile(downloadPath, csvContent, 'utf8');
-      Alert.alert('Download', `CSV file has been saved to ${downloadPath}`);
+      Alert.alert(
+        `${t('resumeIncidentScreen.androidPermissions.alert.titleDownload')}`,
+        `${t(
+          'resumeIncidentScreen.androidPermissions.alert.descriptionDownload',
+        )} \n ${downloadPath}`,
+      );
     } catch (error) {
       // console.error('Error writing CSV file:', error);
-      Alert.alert('Error', 'Failed to save the CSV file');
+      Alert.alert(
+        `${t('resumeIncidentScreen.androidPermissions.alert.titleError')}`,
+        `${t(
+          'resumeIncidentScreen.androidPermissions.alert.descriptionError',
+        )}`,
+      );
     }
   };
 
