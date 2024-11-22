@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import api from '../../api/api';
-import { Profile } from '../../interfaces/Profile';	
+import { Profile } from '../../interfaces/Profile';
 
 
 const useProfile = () => {

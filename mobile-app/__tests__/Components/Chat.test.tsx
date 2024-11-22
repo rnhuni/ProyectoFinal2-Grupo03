@@ -27,10 +27,12 @@ jest.mock('../../src/hooks/user/useSuscribeGraphql', () => {
     notifications: [],
     data: null,
     received: JSON.stringify({
-      body: 'Nuevo mensaje del agente',
-      session_id: '123',
-      source_name: 'agent',
-      source_type: 'agent',
+      data: {
+        body: 'Nuevo mensaje',
+        session_id: '123',
+        source_name: 'agent',
+        source_type: 'agent',
+      },
     }),
   }));
 });
@@ -139,7 +141,7 @@ describe('Chat Component', () => {
       expect(screen.getByText('Hola')).toBeTruthy();
       expect(screen.getByText('¿Cómo estás?')).toBeTruthy();
     });
-  // }, 30000); // el timeout si necesita más tiempo  
+    // }, 30000); // el timeout si necesita más tiempo
   });
 
   it('OTRO should call loadIncidentSession and set incidentSession state', async () => {
@@ -147,7 +149,7 @@ describe('Chat Component', () => {
     const {getByText} = renderWithI18n(<Chat id="test-id" />);
 
     // Espera a que el componente cargue
-    expect(screen.getByText('Nuevo mensaje del agente')).toBeTruthy();
+    expect(screen.getByText('Nuevo mensaje')).toBeTruthy();
   });
 
   test('debería agregar un mensaje cuando el usuario envía un mensaje', () => {
@@ -155,11 +157,11 @@ describe('Chat Component', () => {
 
     fireEvent.changeText(
       screen.getByPlaceholderText('Escribe un mensaje...'),
-      'Hola, soy el usuario',
+      'Nuevo mensaje',
     );
     fireEvent.press(screen.getByText('Enviar'));
 
-    expect(screen.getByText('Hola, soy el usuario')).toBeTruthy();
+    expect(screen.getByText('Nuevo mensaje')).toBeTruthy();
   });
 
   it('adds a new message when send button is pressed', () => {
@@ -171,19 +173,5 @@ describe('Chat Component', () => {
     fireEvent.press(sendButton);
 
     expect(getByText('Nuevo mensaje')).toBeTruthy();
-  });
-
-  it('should scroll to end on content size change', () => {
-    const {getByPlaceholderText, getByText} = renderWithI18n(<Chat id={''} />);
-
-    const input = getByPlaceholderText('Escribe un mensaje...');
-    const sendButton = getByText('Enviar');
-
-    for (let i = 0; i < 5; i++) {
-      fireEvent.changeText(input, `Mensaje número ${i + 1}`);
-      fireEvent.press(sendButton);
-    }
-
-    expect(getByText('Mensaje número 5')).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 // DetailModal.tsx
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   View,
@@ -35,7 +35,7 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
   const navigation = useNavigation<any>();
   const {t} = useTranslation();
 
-  const { reloadProfile } = useProfile();
+  const {reloadProfile} = useProfile();
   const [roleUser, setRoleUser] = useState<string>('user');
   const [nameUser, setNameUser] = useState<string>('');
 
@@ -57,9 +57,6 @@ const DetailModal: React.FC<DetailModalProps> = ({visible, onClose, data}) => {
     };
     loadProfile();
   }, []);
-
-
- 
 
   return (
     <Modal

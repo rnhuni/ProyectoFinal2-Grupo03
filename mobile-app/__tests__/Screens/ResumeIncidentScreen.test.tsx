@@ -8,6 +8,8 @@ import i18n from '../../src/internalization/i18n';
 import useSuscribeGraphql from '../../src/hooks/user/useSuscribeGraphql';
 import {Incident} from '../../src/interfaces/Incidents';
 
+import useProfile from '../../src/hooks/user/useProfile';
+
 const mockedIncidents: Incident[] = [
   {
     id: 'TKT-241026-130439408',
@@ -121,10 +123,12 @@ jest.mock('../../src/hooks/user/useSuscribeGraphql', () => {
     notifications: [],
     data: null,
     received: JSON.stringify({
-      body: 'Nuevo mensaje del agente',
-      session_id: '123',
-      source_name: 'agent',
-      source_type: 'agent',
+      data: {
+        body: 'Nuevo mensaje del agente',
+        session_id: '123',
+        source_name: 'agent',
+        source_type: 'agent',
+      },
     }),
   }));
 });
@@ -132,6 +136,33 @@ jest.mock('../../src/hooks/user/useSuscribeGraphql', () => {
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useState: jest.fn(),
+}));
+
+jest.mock('../../src/hooks/user/useProfile', () => ({
+  __esModule: true,
+  default: () => ({
+    profile: {
+      features: ['frt-characteristics-soporte-técnico-24/7'],
+      user: {
+        client: 'cli-test',
+        email: 'agent@abcall.com',
+        id: '3428e418-80e1-709e-0012-d47ed10a3012',
+        name: 'Agent Testing',
+        role: 'role-agent-premium-plan',
+        status: 'CONFIRMED',
+      },
+      views: [
+        {
+          actions: ['write', 'read'],
+          id: 'incident',
+          menu: 'incidents',
+        },
+      ],
+    },
+    loading: false,
+    error: null,
+    reloadProfile: jest.fn(),
+  }),
 }));
 
 const renderWithI18n = (component: React.ReactNode) => {
@@ -151,6 +182,27 @@ describe('ResumeIncidentScreen', () => {
   });
 
   it('renders the incident list correctly', async () => {
+    const mockProfile = {
+      features: ['frt-characteristics-soporte-técnico-24/7'],
+      user: {
+        client: 'cli-test',
+        email: 'agent@abcall.com',
+        id: '3428e418-80e1-709e-0012-d47ed10a3012',
+        name: 'Agent Testing',
+        role: 'role-agent-premium-plan',
+        status: 'CONFIRMED',
+      },
+      views: [
+        {
+          actions: ['write', 'read'],
+          id: 'incident',
+          menu: 'incidents',
+        },
+      ],
+    };
+
+    // Hacemos que reloadProfile devuelva el perfil simulado
+    useProfile().reloadProfile = jest.fn().mockResolvedValue(mockProfile);
     const {getByText} = renderWithI18n(<ResumeIncidentScreen />);
     expect(getByText('TKT-241026-130439408')).toBeTruthy();
     expect(getByText('TKT-241106-142912365')).toBeTruthy();
@@ -167,7 +219,7 @@ describe('ResumeIncidentScreen', () => {
     fireEvent.press(getByTestId('close-button'));
   });
 
-  it('should open modal when an incident row is pressed and survey fired', async () => {
+  it('should open modal an incident pressed and survey fired', async () => {
     const {getByText, getByTestId} = renderWithI18n(<ResumeIncidentScreen />);
     fireEvent.press(getByText('TKT-241026-130439408'));
 
@@ -178,14 +230,13 @@ describe('ResumeIncidentScreen', () => {
     fireEvent.press(getByTestId('survey-button'));
   });
 
-  // it('should handle search input change', () => {
-  //   const {getByPlaceholderText} = renderWithI18n(<ResumeIncidentScreen />);
-
-  //   const searchInput = getByPlaceholderText(
-  //     i18n.t('resumeIncidentScreen.ticketNumber'),
-  //   );
-  //   fireEvent.changeText(searchInput, 'Incident');
-
-  //   expect(searchInput.props.value).toBe('Incident');
-  // });
+  it('should download data', async () => {
+    const {getByText, getByTestId} = renderWithI18n(<ResumeIncidentScreen />);
+    fireEvent.press(getByTestId('download-button'));
+  });
 });
+
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useState: jest.fn(),
+}));

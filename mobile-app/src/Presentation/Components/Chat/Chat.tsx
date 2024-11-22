@@ -74,6 +74,7 @@ const Chat: React.FC<ChatProps> = ({id}) => {
       // console.log('received: ', received);
       const message: Message = JSON.parse(received).data;
       // console.log('message received: ', message);
+
       setMessagesLocal(prevMessages => [
         ...prevMessages,
         {

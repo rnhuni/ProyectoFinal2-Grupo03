@@ -69,7 +69,6 @@ export const ResumeIncidentScreen = () => {
 
   const handleSearch = () => {
     // console.log('incidents: ', incidents.length);
-    setAllIncidents(incidents);
     const res = incidents.filter((incident: Incident) => {
       return (
         incident.description
@@ -120,7 +119,6 @@ export const ResumeIncidentScreen = () => {
   // Función para descargar el archivo CSV
   const downloadCSV = async () => {
     const csvContent = convertToCSV(allIncidents);
-
     try {
       const hasPermission = await hasAndroidPermission();
       // console.log('hasPermission: ', hasPermission);
@@ -204,10 +202,12 @@ export const ResumeIncidentScreen = () => {
             value={searchQuery}
             onChangeText={setSearchQuery}
             style={styles.inputSearch}
+            testID="search-input"
           />
           <TouchableOpacity
             style={styles.searchIcon}
-            onPress={() => handleSearch()}>
+            onPress={() => handleSearch()}
+            testID="search-input-button">
             <Icon name="magnify" size={20} style={styles.icon} />
           </TouchableOpacity>
         </View>
@@ -244,7 +244,10 @@ export const ResumeIncidentScreen = () => {
           </Text>
         </View> */}
 
-        <TouchableOpacity style={styles.downloadButton} onPress={downloadCSV}>
+        <TouchableOpacity
+          style={styles.downloadButton}
+          onPress={downloadCSV}
+          testID="download-button">
           <Text style={styles.downloadButtonText}>
             {t('resumeIncidentScreen.downloadButton')}
           </Text>
