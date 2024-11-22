@@ -6,6 +6,7 @@ from ServicioCanal.commands.message_get_all import GetAllMessages
 from ServicioCanal.commands.session_get import GetSession
 from ServicioCanal.commands.session_exists import ExistsSession
 from ServicioCanal.commands.session_update import UpdateSession
+from ServicioCanal.commands.session_claim import ClaimSession
 from ServicioCanal.services.notification_service import NotificationService
 from ServicioCanal.services.monitor_service import MonitorService
 from ServicioCanal.commands.session_get_all_with_filters import GetAllSessionsByFilters
@@ -185,3 +186,34 @@ def get_all_sessions():
 
     except Exception as e:
         return jsonify({'error': f'Error retrieving sessions. Details: {str(e)}'}), 500
+    
+
+@sessions_bp.route('/sessions/<session_id>/claim', methods=['PUT'])
+def claim_session(session_id):
+    auth_header = request.headers.get('Authorization')
+
+    try:
+        user = decode_user(auth_header)
+        
+        user_id = user["id"]
+        
+        data = ClaimSession(session_id, user_id, user["name"], user["role_type"]).execute()
+        MonitorService().enqueue_event(user, "CLAIM-SESSION", f"SESSION_ID={str(data.id)}")
+
+        return jsonify({
+            "id": data.id,
+            "channel_id": data.channel_id,
+            "status": data.status,
+            "topic": data.topic,
+            "topic_refid": data.topic_refid,
+            "opened_by_id": data.opened_by_id,
+            "opened_by_name": data.opened_by_name,
+            "assigned_to_type": data.assigned_to_type,
+            "assigned_to_id": data.assigned_to_id,
+            "assigned_to_name": data.assigned_to_name,
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat(),
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Claim session failed. Details: {str(e)}'}), 500
