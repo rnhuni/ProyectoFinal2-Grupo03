@@ -5,27 +5,27 @@ on:
     branches:
       - main
     paths:
-      - "web-app/**"
-      - "mobile-app/**"
-      - "microservices/ServicioSistema/**"
-      - "microservices/ServicioUsuario/**"
-      - "microservices/ServicioIncidente/**"
-      - "microservices/ServicioFacturacion/**"
-      - "microservices/ServicioCanal/**"
-      - "microservices/ServicioMonitoreoNegocio/**"
+      - 'web-app/**'
+      - 'mobile-app/**'
+      - 'microservices/ServicioSistema/**'
+      - 'microservices/ServicioUsuario/**'
+      - 'microservices/ServicioIncidente/**'
+      - 'microservices/ServicioFacturacion/**'
+      - 'microservices/ServicioCanal/**'
+      - 'microservices/ServicioMonitoreoNegocio/**'
   push:
     branches:
       - main
     paths:
-      - "web-app/**"
-      - "mobile-app/**"
-      - "microservices/ServicioSistema/**"
-      - "microservices/ServicioUsuario/**"
-      - "microservices/ServicioIncidente/**"
-      - "microservices/ServicioFacturacion/**"
-      - "microservices/ServicioCanal/**"
-      - "microservices/ServicioMonitoreoNegocio/**"
-
+      - 'web-app/**'
+      - 'mobile-app/**'
+      - 'microservices/ServicioSistema/**'
+      - 'microservices/ServicioUsuario/**'
+      - 'microservices/ServicioIncidente/**'
+      - 'microservices/ServicioFacturacion/**'
+      - 'microservices/ServicioCanal/**'
+      - 'microservices/ServicioMonitoreoNegocio/**'
+      
 jobs:
   determine-changes:
     runs-on: ubuntu-latest
@@ -38,7 +38,7 @@ jobs:
       servicio_facturacion_changed: ${{ steps.filter.outputs.servicio_facturacion }}
       servicio_canal_changed: ${{ steps.filter.outputs.servicio_canal }}
       servicio_monitoreo_negocio_changed: ${{ steps.filter.outputs.servicio_monitoreo_negocio }}
-
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -64,7 +64,7 @@ jobs:
               - 'microservices/ServicioCanal/**'
             servicio_monitoreo_negocio:
               - 'microservices/ServicioMonitoreoNegocio/**'
-
+            
   test-web-app:
     if: needs.determine-changes.outputs.web_app_changed == 'true'
     runs-on: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: '18'
 
       - name: Install dependencies
         working-directory: ./web-app
@@ -110,7 +110,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: '18'
 
       - name: Install dependencies
         working-directory: ./mobile-app
@@ -118,7 +118,7 @@ jobs:
 
       - name: Run Unit Tests for mobile-app
         working-directory: ./mobile-app
-        run: npm run test -- --coverage 2>/dev/null
+        run: npm run test -- --coverage
 
       - name: Run SonarCloud Scan for mobile-app
         uses: SonarSource/sonarcloud-github-action@v2
@@ -143,7 +143,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: '3.9'
 
       # Testing for Servi cioSistema
       - name: Install dependencies for ServicioSistema
@@ -153,7 +153,7 @@ jobs:
       - name: Run tests for ServicioSistema
         working-directory: ./microservices/ServicioSistema
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
 
       - name: Run SonarCloud Scan for ServicioSistema
         uses: SonarSource/sonarcloud-github-action@v2
@@ -172,7 +172,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
+          aws-region: 'us-east-1'
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -221,7 +221,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: '3.9'
 
       # Testing for Servi cioUsuario
       - name: Install dependencies for ServicioUsuario
@@ -231,7 +231,7 @@ jobs:
       - name: Run tests for ServicioUsuario
         working-directory: ./microservices/ServicioUsuario
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
 
       - name: Run SonarCloud Scan for ServicioUsuario
         uses: SonarSource/sonarcloud-github-action@v2
@@ -250,7 +250,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
+          aws-region: 'us-east-1'
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -299,7 +299,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: '3.9'
 
       # Testing for Servi cioIncidente
       - name: Install dependencies for ServicioIncidente
@@ -309,7 +309,7 @@ jobs:
       - name: Run tests for ServicioIncidente
         working-directory: ./microservices/ServicioIncidente
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
 
       - name: Run SonarCloud Scan for ServicioIncidente
         uses: SonarSource/sonarcloud-github-action@v2
@@ -328,7 +328,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
+          aws-region: 'us-east-1'
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -377,7 +377,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: '3.9'
 
       # Testing for Servi cioIncidente
       - name: Install dependencies for ServicioFacturacion
@@ -387,7 +387,7 @@ jobs:
       - name: Run tests for ServicioFacturacion
         working-directory: ./microservices/ServicioFacturacion
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
 
       - name: Run SonarCloud Scan for ServicioFacturacion
         uses: SonarSource/sonarcloud-github-action@v2
@@ -406,7 +406,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
+          aws-region: 'us-east-1'
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -442,7 +442,7 @@ jobs:
           service: ServicioFacturacion
           cluster: ClusterABCall
           wait-for-service-stability: false
-
+          
   test-and-deploy-servicio-canal:
     if: needs.determine-changes.outputs.servicio_canal_changed == 'true'
     runs-on: ubuntu-latest
@@ -455,7 +455,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: '3.9'
 
       # Testing for ServicioCanal
       - name: Install dependencies for ServicioCanal
@@ -468,7 +468,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
+          aws-region: 'us-east-1'
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -503,7 +503,7 @@ jobs:
           task-definition: ${{ steps.render-servicio-canal.outputs.task-definition }}
           service: ServicioCanal
           cluster: ClusterABCall
-          wait-for-service-stability: false
+          wait-for-service-stability: false 
 
   test-and-deploy-servicio-monitoreo-negocio:
     if: needs.determine-changes.outputs.servicio_monitoreo_negocio_changed == 'true'
@@ -517,7 +517,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: '3.9'
 
       # Testing for ServicioMonitoreoNegocio
       - name: Install dependencies for ServicioMonitoreoNegocio
@@ -530,7 +530,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
+          aws-region: 'us-east-1'
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -565,4 +565,4 @@ jobs:
           task-definition: ${{ steps.render-servicio-monitoreo-negocio.outputs.task-definition }}
           service: ServicioMonitoreoNegocio
           cluster: ClusterABCall
-          wait-for-service-stability: false
+          wait-for-service-stability: false 
