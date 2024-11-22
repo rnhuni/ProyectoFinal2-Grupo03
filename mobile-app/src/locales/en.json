@@ -10,31 +10,32 @@
     "welcomeMessage": "Welcome to the app!",
     "loginFailed": "Login failed",
     "invalidCredentials": "Invalid username or password",
+    "invalidRole": "Invalid user role",
     "forgotPassword": "Forgot your password?",
-    "navigateToForgotPassword": "Navigate to forgot password screen",
-    "register": "Sign up",
+    "navigateToForgotPassword": "Go to forgot password screen",
+    "register": "Register",
     "changeLanguage": "Change language"
   },
   "registerScreen": {
-    "title": "Let's get started",
+    "title": "Let’s get started",
     "firstName": "First Name",
     "firstNamePlaceholder": "Enter your first name",
     "lastName": "Last Name",
     "lastNamePlaceholder": "Enter your last name",
     "email": "Email",
-    "emailPlaceholder": "yourname@domain.com",
+    "emailPlaceholder": "youremail@domain.com",
     "emailInvalid": "Invalid email address",
     "country": "Country",
     "paisPlaceholder": "Select a country",
     "city": "City",
     "ciudadPlaceholder": "Enter your city",
-    "phone": "Phone number",
+    "phone": "Phone Number",
     "telefonoPlaceholder": "Phone number",
-    "telefonoInvalid": "Must be at least 7 characters",
+    "telefonoInvalid": "It should be at least 7 characters",
     "password": "Password",
     "contrasenaPlaceholder": "Enter your password",
-    "submitButton": "Get Started",
-    "registrationMessage": "You have registered successfully!",
+    "submitButton": "Start",
+    "registrationMessage": "You have successfully registered!",
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
     "emailRequired": "Email is required",
@@ -47,22 +48,22 @@
     "registerFailed": "Registration failed"
   },
   "footerScreen": {
-    "registerIncident": "Report incident",
+    "registerIncident": "Register incident",
     "summary": "Summary",
     "settings": "Settings"
   },
   "homeScreen": {
-    "sectionTitle": "Predefined messages",
+    "sectionTitle": "Predefined Messages",
     "tableHeaders": {
-      "id": "ID",
+      "id": "Id",
       "template": "Template",
       "status": "Status"
     },
     "rows": {
       "welcome": "Welcome",
-      "additionalInfo": "Additional information",
-      "satisfactionSurvey": "Satisfaction survey",
-      "chatEnd": "End chat"
+      "additionalInfo": "Additional Information",
+      "satisfactionSurvey": "Satisfaction Survey",
+      "chatEnd": "Chat End"
     },
     "status": {
       "active": "Active"
@@ -76,38 +77,40 @@
   "incidentReportScreen": {
     "tabs": {
       "summary": "Summary",
-      "register": "Report incident"
+      "register": "Register Incident"
     },
     "incidentType": {
-      "label": "Incident type",
+      "label": "Incident Type",
       "placeholder": "Select a type",
       "incidents": {
-        "incident1": "Incident 1",
-        "incident2": "Incident 2",
-        "incident3": "Incident 3"
+        "incident1": "Technical Issues",
+        "incident2": "Billing Issues",
+        "incident3": "General Inquiries",
+        "incident4": "Security Issues",
+        "incident5": "Maintenance Requests"
       }
     },
     "phoneNumber": {
-      "label": "Phone number",
+      "label": "Phone Number",
       "placeholder": "+57"
     },
     "description": {
       "label": "Description",
-      "placeholder": "Enter a description"
+      "placeholder": "Write a description"
     },
     "fileUpload": {
       "buttonText": "Browse file to upload",
       "addFileButton": "Add file"
     },
-    "registerButton": "Report incident"
+    "registerButton": "Register Incident"
   },
   "resumeIncidentScreen": {
-    "ticketNumber": "Ticket number",
+    "ticketNumber": "Ticket Number",
     "searchPlaceholder": "Search",
     "loading": "Loading...",
     "table": {
       "ticket": "# Ticket",
-      "incidentType": "Incident type",
+      "incidentType": "Incident Type",
       "data": {
         "row1": "Text cell tables",
         "row2": "Text cell tables",
@@ -117,23 +120,23 @@
     "pagination": {
       "label": "1 of 10"
     },
-    "downloadButton": "Download report",
+    "downloadButton": "Download Report",
     "help": {
       "title": "Need help?",
       "button": "Open a new ticket"
     },
     "detailModal": {
-      "title": "Incident details",
-      "id": "ID",
-      "id_tiquet": "Id ticket",
+      "title": "Incident Details",
+      "id": "Id",
+      "id_tiquet": "Ticket Id",
       "description": "Description",
       "type": "Type",
-      "cretedAt": "Created at",
-      "updatedAt": "Updated at",
-      "user_name": "User name",
-      "contact_phone": "Contact phone",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "user_name": "User Name",
+      "contact_phone": "Contact Phone",
       "close_button": "Close",
-      "survey_button": "Satisfaction survey"
+      "survey_button": "Satisfaction Survey"
     }
   },
   "settingsIncidentScreen": {
@@ -144,20 +147,21 @@
   },
   "surveyScreen": {
     "title": "Satisfaction Survey",
-    "description": "Help us improve by answering this brief survey.",
+    "description": "Help us improve by answering this short survey.",
     "escale": "Scale from 1 to 5",
-    "question1": "How would you rate the support received overall?",
+    "question1": "How would you rate the overall support received?",
     "question2": "How satisfied are you with the resolution time?",
-    "question3": "How easy was it to contact the support team?",
-    "question4": "How would you describe the attitude of the support staff?",
+    "question3": "Was it easy to contact the support team?",
+    "question4": "How would you describe the support team's attitude?",
     "question5": "Would you like to add any additional comments?",
-    "placeholder": "Enter your comments here",
+    "placeholder": "Write your comments here",
     "submitButton": "Submit Survey",
     "successMessage": "Thank you for helping us improve!",
     "validations": {
-      "number": "Numbers between 1 y 5",
-      "string": "A text string",
-      "error": "Please, fill all fields"
+      "number": "Field must be a number between 1 and 5",
+      "string": "Field must be a string",
+      "error": "Please fill in all fields",
+      "errorMessage": "Thank!, We had already registered your survey."
     }
   }
 }

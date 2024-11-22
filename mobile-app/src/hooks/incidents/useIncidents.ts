@@ -9,37 +9,30 @@ const useIncidents = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const service = '/incident/incidents';
-  
 
-  const reloadIncidents = () => {
+
+  const reloadIncidents = async (): Promise<Incident[]> => {
     setLoading(true);
     setError('');
-    api
-      .get<Incident[]>(service)
-      .then(res => {
-        // console.log("Incidents", res.data);
+    const res = await api.get<Incident[]>(service)
 
-        const sortedIncidents = res.data.sort((a: Incident, b: Incident) => {
-          // console.log("Incident A", a.created_at);
-          // console.log("Incident B", b.created_at);
-          const dateA = new Date(a.created_at || '').getTime();
-          const dateB = new Date(b.created_at || '').getTime();
-          // console.log("Date A", dateA);
-          // console.log("Date B", dateB);
 
-          return dateA - dateB; // Orden ascendente
-          // Para orden descendente usa `dateB - dateA`
-        });
-        // console.log("Sorted Incidents", sortedIncidents);
-        setIncidents(sortedIncidents);
-      })
-      .catch(err => {
-        if (err instanceof CanceledError) {
-          return;
-        }
-        setError(err.message);
-      })
-      .finally(() => setLoading(false));
+    const sortedIncidents = res.data.sort((a: Incident, b: Incident) => {
+      // console.log("Incident A", a.created_at);
+      // console.log("Incident B", b.created_at);
+      const dateA = new Date(a.created_at || '').getTime();
+      const dateB = new Date(b.created_at || '').getTime();
+      // console.log("Date A", dateA);
+      // console.log("Date B", dateB);
+
+      return dateA - dateB; // Orden ascendente
+      // Para orden descendente usa `dateB - dateA`
+    });
+    // console.log("Sorted Incidents", sortedIncidents);
+    setIncidents(sortedIncidents);
+
+    setLoading(false);
+    return sortedIncidents;
   };
 
   const createIncident = async (newIncident: Incident) => {
@@ -87,18 +80,22 @@ const useIncidents = () => {
     setError('');
     try {
       const res = await api.post(feedbackService, feedback);
-      return res.data;
+      return true;
     } catch (err) {
-      console.error('Create Incident feedback Error:', err); // Registrar el error en la consola
+      // sconsole.error('Create Incident feedback Error:', err); // Registrar el error en la consola
       if (err instanceof CanceledError) {
-        return;
+        return false;
       }
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
       setLoading(false);
     }
+    return false;
   };
+
+  // cada que se crea lee los incidentes
+  // reloadIncidents();
 
   return {
     incidents,
