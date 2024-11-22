@@ -68,7 +68,7 @@ export const ResumeIncidentScreen = () => {
   };
 
   const handleSearch = () => {
-    console.log('incidents: ', incidents.length);
+    // console.log('incidents: ', incidents.length);
     setAllIncidents(incidents);
     const res = incidents.filter((incident: Incident) => {
       return (
@@ -123,7 +123,7 @@ export const ResumeIncidentScreen = () => {
 
     try {
       const hasPermission = await hasAndroidPermission();
-      console.log('hasPermission: ', hasPermission);
+      // console.log('hasPermission: ', hasPermission);
 
       if (!hasPermission) {
         // Si el permiso no ha sido concedido, solicitamos el permiso
@@ -138,7 +138,7 @@ export const ResumeIncidentScreen = () => {
             buttonPositive: 'Aceptar',
           },
         );
-        console.log('granted: ', granted);
+        // console.log('granted: ', granted);
         if (granted === PermissionsAndroid.RESULTS.DENIED) {
           setStatus('Permiso denegado');
           return;
@@ -170,12 +170,12 @@ export const ResumeIncidentScreen = () => {
           ? RNFS.DownloadDirectoryPath + '/incidents.csv' // Android
           : RNFS.DocumentDirectoryPath + '/incidents.csv'; // iOS
 
-      console.log('downloadPath: ', downloadPath);
+      // console.log('downloadPath: ', downloadPath);
 
       await RNFS.writeFile(downloadPath, csvContent, 'utf8');
       Alert.alert('Download', `CSV file has been saved to ${downloadPath}`);
     } catch (error) {
-      console.error('Error writing CSV file:', error);
+      // console.error('Error writing CSV file:', error);
       Alert.alert('Error', 'Failed to save the CSV file');
     }
   };
