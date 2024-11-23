@@ -186,6 +186,8 @@ const Incidents = () => {
               <Th>{t("incidents.edit", "Editar")}</Th>
               <Th>{t("incidents.delete", "Eliminar")}</Th>
               <Th>{t("incidents.chat", "Chat")}</Th>
+              <Th>{t("incidents.assign", "Asignar")}</Th>
+              <Th>{t("incidents.close", "Cerrar")}</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -230,6 +232,22 @@ const Incidents = () => {
                     icon={<ChatIcon />}
                     variant="ghost"
                     onClick={() => handleOpenChat(incident.id)}
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    aria-label="Assign"
+                    icon={<ChatIcon />}
+                    variant="ghost"
+                    onClick={() => {}}
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    aria-label="Close"
+                    icon={<ChatIcon />}
+                    variant="ghost"
+                    onClick={() => {}}
                   />
                 </Td>
               </Tr>

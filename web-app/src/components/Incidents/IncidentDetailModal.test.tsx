@@ -28,6 +28,7 @@ const mockIncident: IncidentTableData = {
   createdAt: "2024-11-08T21:02:00.000Z",
   updatedAt: "2024-11-08T21:02:00.000Z",
   user_issuer_name: "Juan Pérez",
+  user_issuer_id: "",
 };
 
 const renderWithProviders = (ui: React.ReactNode) => {

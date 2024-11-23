@@ -21,6 +21,7 @@ const mockIncidents: IncidentTableData[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     user_issuer_name: "John Doe",
+    user_issuer_id: "",
   },
   {
     id: "2",
@@ -31,6 +32,7 @@ const mockIncidents: IncidentTableData[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     user_issuer_name: "Jane Doe",
+    user_issuer_id: "",
   },
 ];
 

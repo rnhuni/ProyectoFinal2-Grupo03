@@ -29,6 +29,18 @@ export interface IncidentTableData {
   createdAt: string;
   updatedAt: string;
   user_issuer_name: string;
+  user_issuer_id: string;
   contact: Contact;
   attachments: Attachment[];
+  assigned_to_id?: string;
+  assigned_to_name?: string;
+  assigned_to_type?: string;
+  closed_by_id?: string;
+  closed_by_name?: string;
+  closed_by_type?: string;
+  date_resolution?: string;
+  publication_channel_id?: string;
+  resolution_time?: string;
+  sla?: number;
+  status?:string;
 }
