@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { subscribeChannelFunc } from "../../services/useChannels";
 
 const useSuscribeGraphql = (id: string) => {
-  const [notifications, setNotifications] = useState<string[]>([]);
-  const [data, setData] = useState("");
+  const [notifications] = useState<string[]>([]);
+  const [data] = useState("");
   const [received, setReceived] = useState("");
   console.log("1 useNotifications: ", id);
 

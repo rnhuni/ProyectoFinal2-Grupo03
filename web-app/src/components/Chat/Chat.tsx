@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import useChannels from "../../hooks/channels/useChannels";
 import useSuscribeGraphql from "../../hooks/user/useSuscribeGraphql";
 import { Message } from "../../interfaces/Messages";
-import publishToChannel from "/src/hooks/user/usePublishGraphql";
+import publishToChannel from "../../hooks/user/usePublishGraphql";
 
 interface ChatProps {
   incidentId: string;
