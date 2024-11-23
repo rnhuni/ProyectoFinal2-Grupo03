@@ -40,7 +40,8 @@ def get_profile():
 
         MonitorService().enqueue_event(user, "LOGIN-WEB-APP", "Login to web app")
 
-        dashboard_url = build_dashboard_url(user["id"], user["role_type"], user["client"])
+        dashboard_url = build_dashboard_url(user["id"], user["role_type"], user["client"], 'en')
+        dashboard_url_es = build_dashboard_url(user["id"], user["role_type"], user["client"], 'es')
             
         return {
             "user":
@@ -53,6 +54,7 @@ def get_profile():
                 "role": user["role"]             
             },
             "dashboard_url": dashboard_url,
+            "dashboard_url_es": dashboard_url_es,
             "views": views,
             "features": user["features"].split(';')
         }, 200
