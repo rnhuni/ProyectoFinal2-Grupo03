@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
-import Summary from "./pages/Summary";
 import Users from "./pages/Users";
 import Incidents from "./pages/Incidents";
 import Plans from "./pages/Plans";
@@ -15,6 +14,8 @@ import SuscriptionSummary from "./pages/SuscriptionSummary";
 import SubscriptionPage from "./pages/SuscriptionPage";
 import LoginCognito from "./pages/LoginCognito";
 import SubscriptionsBase from "./pages/SubscriptionsBase";
+import ReportIframe from "./components/Reports/ReportIframe";
+import { ProfileProvider } from "./contexts/ProfileContext";
 
 function App() {
   return (
@@ -32,11 +33,13 @@ function App() {
           path="/dashboard"
           element={
             <PrivateRoute>
-              <Dashboard />
+              <ProfileProvider>
+                <Dashboard />
+              </ProfileProvider>
             </PrivateRoute>
           }
         >
-          <Route path="summary" element={<Summary />} />
+          <Route path="summary" element={<ReportIframe />} />
           <Route path="users" element={<Users />} />
           <Route path="incidents" element={<Incidents />} />
           <Route path="plans" element={<Plans />} />
@@ -48,6 +51,7 @@ function App() {
           <Route path="user-plan" element={<SubscriptionPage />} />
           <Route path="manage-plan" element={<SuscriptionSummary />} />
           <Route path="suscriptions" element={<SubscriptionsBase />} />
+          <Route path="reports" element={<ReportIframe />} />
         </Route>
       </Routes>
     </Router>

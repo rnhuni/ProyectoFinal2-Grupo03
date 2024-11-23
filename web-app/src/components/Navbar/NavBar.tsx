@@ -21,7 +21,11 @@ import {
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 
-const NavBar = () => {
+interface NavBarProps {
+  name: string;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ name }) => {
   const { i18n } = useTranslation();
   const [language, setLanguage] = useState("es");
   const color = useColorModeValue("black", "white");
@@ -47,9 +51,8 @@ const NavBar = () => {
       top="0"
       zIndex="1000"
     >
-      {/* Logo */}
       <Heading
-        size="md" // Tamaño reducido para el logo
+        size="md"
         fontSize="1.3rem"
         fontWeight="bold"
         fontFamily="sans-serif"
@@ -57,8 +60,6 @@ const NavBar = () => {
       >
         ABCall
       </Heading>
-
-      {/* Right side - Icons and User */}
       <Stack direction="row" spacing={3} alignItems="center">
         <IconButton
           aria-label="Search"
@@ -85,7 +86,6 @@ const NavBar = () => {
           variant="ghost"
           size="sm"
         />
-        {/* Language Switcher */}
         <Menu>
           <MenuButton
             as={Button}
@@ -100,7 +100,6 @@ const NavBar = () => {
             <MenuItem onClick={() => changeLanguage("en")}>🇺🇸 English</MenuItem>
           </MenuList>
         </Menu>
-        {/* User Information */}
         <Box
           display="flex"
           border="1px"
@@ -114,10 +113,10 @@ const NavBar = () => {
             color: "white",
           }}
           px={2}
-          py={1} // Reducir el padding vertical para ajustarse a la nueva altura
+          py={1}
         >
           <Stack flexDirection="row" gap={2} alignItems="center">
-            <Text fontSize="sm">Jhon Doe</Text> {/* Tamaño reducido */}
+            <Text fontSize="sm">{name}</Text> {/* Tamaño reducido */}
             <Image p="3px" boxSize="32px" borderRadius="full" src={userImg} />
           </Stack>
         </Box>

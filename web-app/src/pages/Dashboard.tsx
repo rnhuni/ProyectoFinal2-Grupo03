@@ -3,12 +3,17 @@ import { Box, Grid, GridItem, useColorModeValue } from "@chakra-ui/react";
 import NavBar from "../components/Navbar/NavBar";
 import Sidebar from "../components/Aside/Aside";
 import { Outlet } from "react-router-dom";
+import { useProfileContext } from "../contexts/ProfileContext";
 
 const Dashboard: React.FC = () => {
   const bg = useColorModeValue("white", "gray.800");
   const color = useColorModeValue("black", "white");
   const sidebg = useColorModeValue("#0056f0", "gray.800");
   const mainbg = useColorModeValue("white", "gray.700");
+  const { profile } = useProfileContext();
+
+  const role = profile?.user?.role?.split("-")[1] || "";
+  const name = profile?.user?.name || "";
 
   return (
     <Grid
@@ -21,7 +26,7 @@ const Dashboard: React.FC = () => {
       h="100vh"
     >
       <GridItem area="nav" bg={bg} color={color} w="100%" h="auto">
-        <NavBar />
+        <NavBar name={name} />
       </GridItem>
 
       <GridItem
@@ -33,7 +38,7 @@ const Dashboard: React.FC = () => {
         alignItems="center"
         justifyContent="center"
       >
-        <Sidebar />
+        <Sidebar userRole={role} />
       </GridItem>
 
       <GridItem
