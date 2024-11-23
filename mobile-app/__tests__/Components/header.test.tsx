@@ -5,7 +5,6 @@ import {I18nextProvider} from 'react-i18next';
 import {NavigationContainer} from '@react-navigation/native';
 import i18n from '../../src/internalization/i18n';
 
-
 jest.mock('aws-amplify', () => ({
   Amplify: {
     configure: jest.fn(),
@@ -15,7 +14,6 @@ jest.mock('aws-amplify', () => ({
   },
   graphqlOperation: jest.fn(),
 }));
-
 
 const renderWithI18n = (component: React.ReactNode) => {
   return render(
@@ -35,7 +33,7 @@ describe('Header Component', () => {
 
     const {getByText, getByTestId} = renderWithI18n(<Header />);
 
-    expect(getByText('ABCcall')).toBeTruthy();
+    expect(getByText('ABCall')).toBeTruthy();
 
     fireEvent.press(getByTestId('go-back'));
 

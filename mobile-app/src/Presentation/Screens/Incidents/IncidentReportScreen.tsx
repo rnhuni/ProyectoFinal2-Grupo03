@@ -156,13 +156,9 @@ export const IncidentReportScreen = () => {
       {/* Contenido */}
       <View style={styles.content}>
         {/* Pestañas */}
-        <View style={styles.tabs}>
-          <TouchableOpacity>
-            <Text testID="register-text" style={styles.tab}>
-              {t('incidentReportScreen.tabs.register')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Text testID="register-text" style={styles.title}>
+          {t('incidentReportScreen.tabs.register')}
+        </Text>
 
         {/* Tipo de incidente usando Picker */}
         <View style={styles.inputContainer}>
@@ -392,5 +388,12 @@ const styles = StyleSheet.create({
   attach_button: {
     width: '65%',
     alignSelf: 'center',
+  },
+  title: {
+    width: '100%',
+    textAlign: 'center',
+    fontSize: 20,
+    paddingTop: 20,
+    fontWeight: 'bold',
   },
 });

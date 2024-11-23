@@ -1,16 +1,21 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { StyleSheet, View, Text, Switch, FlatList } from 'react-native';
+import React, {useState, useCallback, useEffect} from 'react';
+import {StyleSheet, View, Text, Switch, FlatList} from 'react-native';
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import useNotificationConfig from '../../../hooks/user/useNotificationsConfig';
-import { useFocusEffect } from '@react-navigation/native';
-import { NotificationConfig } from '../../../interfaces/NotificationConfig';
-
+import {useFocusEffect} from '@react-navigation/native';
+import {NotificationConfig} from '../../../interfaces/NotificationConfig';
 
 export const SettingsIncidentScreen = () => {
-  const { t } = useTranslation(); // Usamos el hook para acceder a las traducciones
-  const { notificationsConfig, loading, error, reloadNotificationConfig, updateNotificationConfig } = useNotificationConfig();
+  const {t} = useTranslation(); // Usamos el hook para acceder a las traducciones
+  const {
+    notificationsConfig,
+    loading,
+    error,
+    reloadNotificationConfig,
+    updateNotificationConfig,
+  } = useNotificationConfig();
 
   const [notifications, setNotifications] = useState<NotificationConfig[]>([]);
 
@@ -23,7 +28,7 @@ export const SettingsIncidentScreen = () => {
       // console.log('Notifications:', notifications);
     };
     loadNotifications();
-  }, []);  
+  }, []);
 
   // useFocusEffect(
   //     useCallback(() => {
@@ -36,31 +41,37 @@ export const SettingsIncidentScreen = () => {
   //   );
 
   const toggleNotifications = async (id: string) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) =>
+    setNotifications(prevNotifications =>
+      prevNotifications.map(notification =>
         notification.id === id
-          ? { ...notification, show_by_default: !notification.show_by_default }
-          : notification
-      )
+          ? {...notification, show_by_default: !notification.show_by_default}
+          : notification,
+      ),
     );
-    const notification = notificationsConfig.find((notification) => notification.id === id);
+    const notification = notificationsConfig.find(
+      notification => notification.id === id,
+    );
     if (notification) {
-      await updateNotificationConfig({ ...notification, show_by_default: !notification.show_by_default });
-      
+      await updateNotificationConfig({
+        ...notification,
+        show_by_default: !notification.show_by_default,
+      });
     }
   };
   return (
     <View style={styles.container}>
       <Header />
+      <Text style={styles.title}>{t('settingsIncidentScreen.title')}</Text>
       <View style={styles.content}>
         <View style={styles.container}>
           <FlatList
             data={notifications}
             keyExtractor={(item: NotificationConfig) => item.id}
-            renderItem={({ item }: { item: NotificationConfig }) => (
+            renderItem={({item}: {item: NotificationConfig}) => (
               <View style={styles.settingItem}>
                 <Text style={styles.settingText}>{item.name}</Text>
-                <Switch testID={`switch-${item.id}`}
+                <Switch
+                  testID={`switch-${item.id}`}
                   value={item.show_by_default}
                   onValueChange={() => toggleNotifications(item.id)}
                 />
@@ -91,6 +102,13 @@ const styles = StyleSheet.create({
   },
   settingText: {
     fontSize: 16,
+    // fontWeight: 'bold',
+  },
+  title: {
+    width: '100%',
+    textAlign: 'center',
+    fontSize: 20,
+    paddingTop: 20,
     fontWeight: 'bold',
   },
 });
