@@ -45,22 +45,24 @@ export const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Header />
-      <Text style={styles.title}>{t('homeScreen.title')}</Text>
-      <Text style={styles.subtitle}>{t('homeScreen.subtitle')}</Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>{t('homeScreen.title')}</Text>
+        <Text style={styles.subtitle}>{t('homeScreen.subtitle')}</Text>
 
-      <FlatList
-        data={features}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <TouchableOpacity
-            style={styles.featureCard}
-            onPress={item.action}
-            testID={item.testID}>
-            <Text style={styles.featureText}>{item.title}</Text>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.featureList}
-      />
+        <FlatList
+          data={features}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => (
+            <TouchableOpacity
+              style={styles.featureCard}
+              onPress={item.action}
+              testID={item.testID}>
+              <Text style={styles.featureText}>{item.title}</Text>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.featureList}
+        />
+      </View>
       <Footer />
     </View>
   );
@@ -69,8 +71,11 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   title: {
     fontSize: 24,

@@ -148,10 +148,7 @@
     }
   },
   "settingsIncidentScreen": {
-    "enableNotifications": "Enable Notifications",
-    "stateChanges": "State Changes",
-    "taskReminder": "Task Reminder",
-    "supportMessages": "Support Messages"
+    "title": "Notification Settings"
   },
   "surveyScreen": {
     "title": "Satisfaction Survey",

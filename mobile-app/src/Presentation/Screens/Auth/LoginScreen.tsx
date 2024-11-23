@@ -15,6 +15,7 @@ import {RootStackParamList} from '../../Routes/StackNavigator';
 import {loginUser} from '../../../services/authService';
 import {setToken} from '../../../api/api';
 import useProfile from '../../../hooks/user/useProfile';
+import Loading from '../../Components/Loading';
 
 interface LoginScreenProps
   extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
@@ -25,8 +26,10 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
   const [password, setPassword] = useState('User$123');
   const [rememberMe, setRememberMe] = useState(false);
   const {reloadProfile} = useProfile();
+  const [modalLoading, setModalLoading] = useState(false);
 
   const handleLogin = async () => {
+    setModalLoading(true);
     //let startTime=0, endTime=0
     try {
       // console.log("inicio login |", username, "|", password, "|");
@@ -46,14 +49,17 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
       const {role} = res.user;
       if (!(role.startsWith('role-agent') || role.startsWith('role-user'))) {
         setToken('');
+        setModalLoading(false);
         Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidRole'));
       } else {
         navigation.navigate('HomeScreen');
+        setModalLoading(false);
       }
     } catch (error) {
       //console.log(`loginUser Error Time: ${endTime - startTime} ms`);
       // console.log("error login |", error, "|");
       setToken('');
+      setModalLoading(false);
       Alert.alert(
         t('loginScreen.loginFailed'),
         t('loginScreen.invalidCredentials'),
@@ -112,6 +118,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
         onPress={handleLogin}
         testID="login-button"
       />
+      {modalLoading && <Loading message={t('resumeIncidentScreen.loading')} />}
     </View>
   );
 };

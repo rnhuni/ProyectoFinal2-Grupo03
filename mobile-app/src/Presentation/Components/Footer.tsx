@@ -7,6 +7,7 @@ import {
   Modal,
   Animated,
   Easing,
+  Keyboard,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,6 +21,28 @@ const Footer = () => {
   const [modalText, setModalText] = useState(
     'Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento.',
   );
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleIncidentReportScreen = () => {
     navigation.navigate('IncidentReportScreen');
@@ -33,12 +56,10 @@ const Footer = () => {
     navigation.navigate('SettingsIncidentScreen');
   };
 
-  // useEffect(() => {
-  //   // Cierra el modal automáticamente después de 2 segundos
-  //   setTimeout(() => {
-  //     setModalVisible(true);
-  //   }, 1000);
-  // }, []);
+  if (isKeyboardVisible) {
+    // Oculta el footer si el teclado está visible
+    return null;
+  }
 
   return (
     <View style={styles.container}>
