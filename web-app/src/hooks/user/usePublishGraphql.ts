@@ -1,4 +1,4 @@
-import { publishChannelFunc } from "/src/services/useChannels";
+import { publishChannelFunc } from "../../services/useChannels";
 
 
 const publishToChannel = async (data: string, id: string) => {
