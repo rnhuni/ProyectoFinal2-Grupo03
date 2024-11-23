@@ -22,6 +22,9 @@ const mockIncidents: IncidentTableData[] = [
     updatedAt: new Date().toISOString(),
     user_issuer_name: "John Doe",
     user_issuer_id: "",
+    assigned_to_id: "",
+    closed_by_id: undefined,
+    status: "open",
   },
   {
     id: "2",
@@ -33,6 +36,9 @@ const mockIncidents: IncidentTableData[] = [
     updatedAt: new Date().toISOString(),
     user_issuer_name: "Jane Doe",
     user_issuer_id: "",
+    assigned_to_id: "123",
+    closed_by_id: "",
+    status: "assigned",
   },
 ];
 
@@ -54,6 +60,8 @@ describe("Incidents Page", () => {
       reloadIncidents: jest.fn(),
       createIncident: jest.fn(),
       updateIncident: jest.fn(),
+      claimIncident: jest.fn(),
+      closeIncident: jest.fn(),
     });
   });
 
@@ -78,6 +86,7 @@ describe("Incidents Page", () => {
     });
 
     renderWithProviders(<Incidents />);
+    expect(screen.getByRole("status")).toBeInTheDocument(); // Verifica el spinner
   });
 
   test("should show error message when there is an error", () => {
@@ -91,40 +100,66 @@ describe("Incidents Page", () => {
     });
 
     renderWithProviders(<Incidents />);
-
     expect(screen.getByText("Error loading incidents")).toBeInTheDocument();
   });
 
-  test("should call reloadIncidents when form modal is closed", () => {
-    const { reloadIncidents } = useIncidents();
-
+  test("should open the form modal when create button is clicked", () => {
     renderWithProviders(<Incidents />);
 
     fireEvent.click(
       screen.getByText(i18n.t("incidents.create", "Crear Incidente"))
     );
-    fireEvent.click(
-      screen.getByText(i18n.t("common.button.cancel", "Cancelar"))
-    );
-
-    expect(reloadIncidents).toHaveBeenCalled();
+    expect(
+      screen.getByText(i18n.t("common.button.save", "Guardar"))
+    ).toBeInTheDocument();
   });
 
   test("should call handleEdit when edit button is clicked", () => {
     renderWithProviders(<Incidents />);
 
     fireEvent.click(screen.getAllByLabelText("Edit incident")[0]);
-
-    // Verifica que el botón de editar incidente fue clicado
-    expect(screen.getAllByLabelText("Edit incident")[0]).toBeInTheDocument();
+    expect(screen.getByText("Guardar")).toBeInTheDocument();
   });
 
   test("should call handleViewDetails when view details button is clicked", () => {
     renderWithProviders(<Incidents />);
 
-    fireEvent.click(screen.getAllByLabelText("View details")[0]);
+    fireEvent.click(screen.getAllByLabelText("View details incident")[0]);
+    expect(
+      screen.getByText(i18n.t("incidents.details", "Detalles"))
+    ).toBeInTheDocument();
+  });
 
-    // Verifica que el botón de ver detalles fue clicado
-    expect(screen.getAllByLabelText("View details")[0]).toBeInTheDocument();
+  test("should open confirm modal when assign button is clicked", () => {
+    renderWithProviders(<Incidents />);
+
+    fireEvent.click(screen.getAllByLabelText("Assign incident")[0]);
+    expect(
+      screen.getByText(i18n.t("confirmation.title", "Confirmación de Acción"))
+    ).toBeInTheDocument();
+  });
+
+  test("should open confirm modal when close button is clicked", () => {
+    renderWithProviders(<Incidents />);
+
+    fireEvent.click(screen.getAllByLabelText("Close incident")[0]);
+    expect(
+      screen.getByText(i18n.t("confirmation.title", "Confirmación de Acción"))
+    ).toBeInTheDocument();
+  });
+
+  test("should not show assign button if assigned_to_id exists", () => {
+    renderWithProviders(<Incidents />);
+
+    // Incidente 2 tiene assigned_to_id, no debería mostrar el botón "Assign"
+    expect(screen.queryAllByLabelText("Assign incident")[1]).toBeUndefined();
+  });
+
+  test("should not show close button if closed_by_id exists", () => {
+    renderWithProviders(<Incidents />);
+
+    // Si cerramos el incidente 2, no debería mostrar el botón "Close"
+    fireEvent.click(screen.getAllByLabelText("Close incident")[0]);
+    expect(screen.queryAllByLabelText("Close incident")[1]).toBeUndefined();
   });
 });

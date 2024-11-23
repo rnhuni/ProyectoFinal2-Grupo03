@@ -27,14 +27,13 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ name }) => {
   const { i18n } = useTranslation();
-  const { language, setLanguage } = useProfileContext();
+  const { language, setLanguage } = useProfileContext(); // Usa el contexto
   const color = useColorModeValue("black", "white");
   const { toggleColorMode } = useColorMode();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
-    setLanguage(lng);
-    console.log("language", lng);
+    setLanguage(lng); // Actualiza el idioma en el contexto
   };
 
   return (
@@ -117,7 +116,7 @@ const NavBar: React.FC<NavBarProps> = ({ name }) => {
           py={1}
         >
           <Stack flexDirection="row" gap={2} alignItems="center">
-            <Text fontSize="sm">{name}</Text>
+            <Text fontSize="sm">{name}</Text> {/* Tamaño reducido */}
             <Image p="3px" boxSize="32px" borderRadius="full" src={userImg} />
           </Stack>
         </Box>

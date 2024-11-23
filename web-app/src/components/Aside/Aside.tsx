@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Image,
@@ -9,95 +9,24 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import logo from "../../assets/logo.webp";
-import {
-  BarChartLine,
-  CalendarEvent,
-  CashStack,
-  People,
-  Gear,
-  Person,
-  ListCheck,
-  TicketDetailed,
-  Receipt,
-  PersonBadge,
-} from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
+import { routesConfig } from "../../routesConfig";
 
-const Sidebar = ({ userRole }: { userRole: string }) => {
-  const [active, setActive] = useState("Usuario");
+interface SidebarProps {
+  userRole: string;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
+  const [active, setActive] = useState<string>("Usuario");
   const navigate = useNavigate();
 
-  const menuItems = [
-    {
-      name: "Resumen",
-      icon: <BarChartLine />,
-      path: "/dashboard/summary",
-      roles: ["admin"],
-    },
-    {
-      name: "Usuario",
-      icon: <Person />,
-      path: "/dashboard/users",
-      roles: ["admin", "agent"],
-    },
-    {
-      name: "Incidentes",
-      icon: <CalendarEvent />,
-      path: "/dashboard/incidents",
-      roles: ["admin", "agent", "user"],
-    },
-    {
-      name: "Planes",
-      icon: <CashStack />,
-      path: "/dashboard/plans",
-      roles: ["admin"],
-    },
-    {
-      name: "Roles",
-      icon: <People />,
-      path: "/dashboard/roles",
-      roles: ["admin"],
-    },
-    {
-      name: "Permisos",
-      icon: <ListCheck />,
-      path: "/dashboard/permissions",
-      roles: ["admin"],
-    },
-    {
-      name: "Mi suscripción",
-      icon: <Receipt />,
-      path: "/dashboard/user-plan",
-      roles: ["admin", "agent", "user"],
-    },
-    {
-      name: "Suscripciones",
-      icon: <TicketDetailed />,
-      path: "/dashboard/suscriptions",
-      roles: ["admin", "user"],
-    },
-    {
-      name: "Manejar planes",
-      icon: <PersonBadge />,
-      path: "/dashboard/manage-plan",
-      roles: ["admin", "agent"],
-    },
-  ];
-
-  const adminItem = {
-    name: "admin",
-    icon: <Gear />,
-    path: "/dashboard/admin",
-    roles: ["admin"],
-  };
-
-  const filteredMenuItems = menuItems.filter((item) =>
-    item.roles.includes(userRole)
+  const filteredMenuItems = routesConfig.filter((route) =>
+    route.roles.includes(userRole)
   );
 
-  const handleMenuClick = (item: { name: string; path: string }) => {
-    setActive(item.name);
-    navigate(item.path);
+  const handleMenuClick = (path: string, name: string) => {
+    setActive(name);
+    navigate(path);
   };
 
   return (
@@ -113,9 +42,12 @@ const Sidebar = ({ userRole }: { userRole: string }) => {
       overflow="hidden"
     >
       <Flex direction="column" align="center" h="100%">
+        {/* Logo */}
         <Flex justifyContent="center" alignItems="center" pt={4}>
           <Image src={logo} alt="Logo" boxSize="80px" />
         </Flex>
+
+        {/* Menú dinámico */}
         <List
           spacing={2}
           m={0}
@@ -133,7 +65,7 @@ const Sidebar = ({ userRole }: { userRole: string }) => {
               alignItems="center"
               justifyContent="center"
               cursor="pointer"
-              onClick={() => handleMenuClick(item)}
+              onClick={() => handleMenuClick(item.path, item.name)}
               m={0}
               p={0}
             >
@@ -150,6 +82,7 @@ const Sidebar = ({ userRole }: { userRole: string }) => {
                 borderRadius="xl"
                 mb={1}
               >
+                {/* Usamos el ícono directamente */}
                 {item.icon}
               </Box>
               <Text fontSize="12px" color="white" textAlign="center">
@@ -157,41 +90,9 @@ const Sidebar = ({ userRole }: { userRole: string }) => {
               </Text>
             </ListItem>
           ))}
+
+          {/* Divider */}
           <Divider my={2} borderColor="white" borderWidth="1px" width="80%" />
-          {adminItem.roles.includes(userRole) && (
-            <ListItem
-              key={adminItem.name}
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              cursor="pointer"
-              onClick={() => handleMenuClick(adminItem)}
-              m={0}
-              p={0}
-              width="100%"
-              mb={4}
-            >
-              <Box
-                as="span"
-                fontSize="24px"
-                bg={active === adminItem.name ? "white" : "transparent"}
-                color={active === adminItem.name ? "#0056f0" : "white"}
-                h={8}
-                w={12}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="xl"
-                mb={1}
-              >
-                {adminItem.icon}
-              </Box>
-              <Text fontSize="12px" color="white" textAlign="center">
-                {adminItem.name}
-              </Text>
-            </ListItem>
-          )}
         </List>
       </Flex>
     </Box>
