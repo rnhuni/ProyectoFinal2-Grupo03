@@ -1,12 +1,25 @@
-import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Animated,
+  Easing,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useTranslation} from 'react-i18next'; // Importar hook de traducción
+import {useTranslation} from 'react-i18next';
+import SlideUpModal from './notifications/SlideUpModal';
 
 const Footer = () => {
   const navigation = useNavigation<any>();
-  const {t} = useTranslation(); // Usar el hook de traducción
+  const {t} = useTranslation();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState(
+    'Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento.',
+  );
 
   const handleIncidentReportScreen = () => {
     navigation.navigate('IncidentReportScreen');
@@ -19,6 +32,13 @@ const Footer = () => {
   const handleSettingsIncidentScreen = () => {
     navigation.navigate('SettingsIncidentScreen');
   };
+
+  // useEffect(() => {
+  //   // Cierra el modal automáticamente después de 2 segundos
+  //   setTimeout(() => {
+  //     setModalVisible(true);
+  //   }, 1000);
+  // }, []);
 
   return (
     <View style={styles.container}>
@@ -60,6 +80,11 @@ const Footer = () => {
         </TouchableOpacity>
         <Text style={styles.label}>{t('footerScreen.settings')}</Text>
       </View>
+      <SlideUpModal
+        isVisible={isModalVisible}
+        text={modalText}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 };
@@ -68,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 10,
+    paddingVertical: 7,
     backgroundColor: '#3366FF',
   },
   buttonContainer: {
@@ -76,7 +101,7 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     width: 50,
-    height: 50,
+    height: 27,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
@@ -85,7 +110,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   icon: {
-    fontSize: 40,
+    fontSize: 25,
     color: '#fff',
   },
   label: {

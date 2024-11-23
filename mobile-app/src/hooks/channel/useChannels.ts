@@ -8,7 +8,7 @@ import { CreateSession } from '../../interfaces/CreateSession';
 
 const useChannels = () => {
 
-  const channel_id = 'chan-support-channel';
+  const channel_id = 'chan-mobile-app';
   const [messages, setMessages] = useState<Message[]>([]);
   const [incidentSession, setIncidentSession] = useState<LoadSession | CreateSession | null>(null);
   const [error, setError] = useState('');
