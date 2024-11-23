@@ -177,5 +177,18 @@
     "openChatTooltip": "Abrir Tooltip del Chat",
     "chat": "Chat",
     "close": "Cerrar"
+  },
+  "subscription": {
+    "title": "Suscripción y Detalles de Pago",
+    "current_plan": "Plan Actual",
+    "subscription_date": "Fecha de Suscripción",
+    "amount_paid": "Monto Pagado",
+    "last_update": "Última Actualización",
+    "payment_history": "Historial de Pagos",
+    "automatic_notifications": "Notificaciones Automáticas",
+    "download_csv": "Descargar historial de pagos",
+    "loading": "Cargando datos de suscripción y pagos...",
+    "error_loading": "Hubo un error al cargar los datos. Por favor, inténtalo de nuevo más tarde.",
+    "no_data": "Fecha no disponible"
   }
 }

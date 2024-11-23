@@ -21,10 +21,13 @@ import {
 } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import { FaCrown } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import useActiveSubscription from "../hooks/invoices/useActiveSubscription";
 import usePayments from "../hooks/invoices/usePayments";
 
 const SubscriptionPage: React.FC = () => {
+  const { t } = useTranslation();
+
   const {
     activeSubscription,
     loading: activeLoading,
@@ -37,10 +40,14 @@ const SubscriptionPage: React.FC = () => {
     error: paymentsError,
   } = usePayments();
 
-  // Función para descargar el historial de pagos como archivo CSV
   const downloadPaymentsCSV = () => {
     const csvContent = [
-      ["Fecha de Pago", "Monto", "Descripción", "Estado"], // Cabeceras
+      [
+        t("subscription.payment_date"),
+        t("subscription.amount_paid"),
+        t("subscription.description"),
+        t("subscription.status"),
+      ],
       ...payments.map((payment) => [
         payment.date,
         payment.amount,
@@ -62,7 +69,7 @@ const SubscriptionPage: React.FC = () => {
   if (activeLoading || paymentsLoading) {
     return (
       <Flex justify="center" align="center" height="100vh">
-        <Spinner size="xl" label="Cargando datos de suscripción y pagos..." />
+        <Spinner size="xl" label={t("subscription.loading")} />
       </Flex>
     );
   }
@@ -72,8 +79,7 @@ const SubscriptionPage: React.FC = () => {
       <Box mx="auto" p="6">
         <Alert status="error" borderRadius="md">
           <AlertIcon />
-          Hubo un error al cargar los datos. Por favor, inténtalo de nuevo más
-          tarde.
+          {t("subscription.error_loading")}
         </Alert>
       </Box>
     );
@@ -84,13 +90,13 @@ const SubscriptionPage: React.FC = () => {
       <Flex direction="column" gap={6}>
         <Flex justify="space-between" align="center">
           <Heading as="h1" size="lg">
-            Suscripción y Detalles de Pago
+            {t("subscription.title")}
           </Heading>
         </Flex>
 
         <Box>
           <Heading as="h2" size="md" mb="2">
-            {activeSubscription?.baseName || "Plan Actual"}
+            {activeSubscription?.baseName || t("subscription.current_plan")}
           </Heading>
           <Flex align="center" mb="4">
             <Icon as={FaCrown} color="black" boxSize={10} />
@@ -102,26 +108,28 @@ const SubscriptionPage: React.FC = () => {
         </Box>
 
         <Box>
-          <Text fontWeight="bold">Fecha de Suscripción</Text>
+          <Text fontWeight="bold">{t("subscription.subscription_date")}</Text>
           <Text mb="4">
             {activeSubscription?.createdAt
               ? new Date(activeSubscription.createdAt).toLocaleDateString()
-              : "Fecha no disponible"}
+              : t("subscription.no_data")}
           </Text>
 
-          <Text fontWeight="bold">Monto Pagado</Text>
+          <Text fontWeight="bold">{t("subscription.amount_paid")}</Text>
           <Text mb="4">${activeSubscription?.price.toLocaleString()}</Text>
 
-          <Text fontWeight="bold">Última Actualización</Text>
-          {activeSubscription?.updatedAt
-            ? new Date(activeSubscription?.updatedAt).toLocaleDateString()
-            : "Fecha no disponible"}
+          <Text fontWeight="bold">{t("subscription.last_update")}</Text>
+          <Text mb="4">
+            {activeSubscription?.updatedAt
+              ? new Date(activeSubscription.updatedAt).toLocaleDateString()
+              : t("subscription.no_data")}
+          </Text>
         </Box>
 
         <Flex wrap="wrap" gap={6} flexDirection={"column"}>
           <Box flex="1" maxW="900px" mb="6">
             <Heading as="h2" size="md" mb="4">
-              Historial de Pagos
+              {t("subscription.payment_history")}
             </Heading>
             <TableContainer
               borderRadius="lg"
@@ -132,28 +140,22 @@ const SubscriptionPage: React.FC = () => {
               <Table variant="simple" size="sm">
                 <Thead bg={"#F2F7FF"} h={10}>
                   <Tr>
-                    <Th w="5%" {...tableHeaderStyles}>
+                    <Th>
                       <Checkbox colorScheme="blue" />
                     </Th>
-                    <Th w="30%" isNumeric {...tableHeaderStyles}>
-                      Fecha de pago
-                    </Th>
-                    <Th w="30%" isNumeric {...tableHeaderStyles}>
-                      Monto
-                    </Th>
-                    <Th w="35%" fontWeight="bold" color="gray.600">
-                      Descripción
-                    </Th>
+                    <Th>{t("subscription.payment_date")}</Th>
+                    <Th>{t("subscription.amount_paid")}</Th>
+                    <Th>{t("subscription.description")}</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {payments?.map((payment) => (
-                    <Tr key={payment.id} {...tableRowStyles}>
+                    <Tr key={payment.id}>
                       <Td>
                         <Checkbox colorScheme="blue" />
                       </Td>
-                      <Td isNumeric>{payment.date}</Td>
-                      <Td isNumeric>${payment.amount.toLocaleString()}</Td>
+                      <Td>{payment.date}</Td>
+                      <Td>${payment.amount.toLocaleString()}</Td>
                       <Td>{payment.description}</Td>
                     </Tr>
                   ))}
@@ -165,7 +167,7 @@ const SubscriptionPage: React.FC = () => {
           <Box flex="1" minW="300px" mb="6">
             <Flex align="center">
               <Text fontWeight="bold" mr="4">
-                Notificaciones Automáticas
+                {t("subscription.automatic_notifications")}
               </Text>
               <Switch size="lg" colorScheme="blue" />
             </Flex>
@@ -173,40 +175,13 @@ const SubscriptionPage: React.FC = () => {
         </Flex>
 
         <Box>
-          <Button
-            leftIcon={<FiDownload />}
-            onClick={downloadPaymentsCSV}
-            {...buttonStyles}
-          >
-            Descargar historial de pagos
+          <Button leftIcon={<FiDownload />} onClick={downloadPaymentsCSV}>
+            {t("subscription.download_csv")}
           </Button>
         </Box>
       </Flex>
     </Box>
   );
-};
-
-const buttonStyles = {
-  bg: "#6C728F",
-  color: "#ffffff",
-  variant: "solid",
-  borderRadius: "xl",
-  minH: 12,
-  w: 600,
-  _hover: { bg: "#2A55EE" },
-};
-
-const tableHeaderStyles = {
-  fontWeight: "bold",
-  color: "gray.600",
-  borderRight: "1px solid",
-  borderColor: "gray.200",
-};
-
-const tableRowStyles = {
-  _hover: { bg: "gray.100" },
-  borderRight: "1px solid",
-  borderColor: "gray.200",
 };
 
 export default SubscriptionPage;

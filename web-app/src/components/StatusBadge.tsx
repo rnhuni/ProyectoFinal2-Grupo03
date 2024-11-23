@@ -2,7 +2,14 @@ import { Badge, Text, Box } from "@chakra-ui/react";
 import { FC } from "react";
 
 interface StatusBadgeProps {
-  status: "active" | "suspended" | "inactive" | "unknown"; 
+  status:
+    | "active"
+    | "suspended"
+    | "inactive"
+    | "unknown"
+    | "open"
+    | "closed"
+    | "assigned";
 }
 
 const StatusBadge: FC<StatusBadgeProps> = ({ status }) => {
@@ -18,6 +25,16 @@ const StatusBadge: FC<StatusBadgeProps> = ({ status }) => {
         };
       case "inactive":
         return { color: "red.500", bgColor: "red.100", text: "Inactive" };
+      case "open":
+        return { color: "blue.500", bgColor: "blue.100", text: "Open" };
+      case "closed":
+        return { color: "purple.500", bgColor: "purple.100", text: "Closed" };
+      case "assigned":
+        return {
+          color: "teal.500",
+          bgColor: "teal.100",
+          text: "Assigned",
+        };
       case "unknown":
       default:
         return { color: "gray.500", bgColor: "gray.100", text: "Unknown" };

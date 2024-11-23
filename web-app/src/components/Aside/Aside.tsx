@@ -32,19 +32,19 @@ const Sidebar = ({ userRole }: { userRole: string }) => {
       name: "Resumen",
       icon: <BarChartLine />,
       path: "/dashboard/summary",
-      roles: ["admin", "user", "agent"],
+      roles: ["admin"],
     },
     {
       name: "Usuario",
       icon: <Person />,
       path: "/dashboard/users",
-      roles: ["admin", "user"],
+      roles: ["admin", "agent"],
     },
     {
       name: "Incidentes",
       icon: <CalendarEvent />,
       path: "/dashboard/incidents",
-      roles: ["admin", "agent"],
+      roles: ["admin", "agent", "user"],
     },
     {
       name: "Planes",
@@ -68,7 +68,7 @@ const Sidebar = ({ userRole }: { userRole: string }) => {
       name: "Mi suscripción",
       icon: <Receipt />,
       path: "/dashboard/user-plan",
-      roles: ["user"],
+      roles: ["admin", "agent", "user"],
     },
     {
       name: "Suscripciones",
@@ -80,7 +80,7 @@ const Sidebar = ({ userRole }: { userRole: string }) => {
       name: "Manejar planes",
       icon: <PersonBadge />,
       path: "/dashboard/manage-plan",
-      roles: ["admin"],
+      roles: ["admin", "agent"],
     },
   ];
 

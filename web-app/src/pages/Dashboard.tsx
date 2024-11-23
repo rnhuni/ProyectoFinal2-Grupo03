@@ -14,6 +14,7 @@ const Dashboard: React.FC = () => {
 
   const role = profile?.user?.role?.split("-")[1] || "";
   const name = profile?.user?.name || "";
+  console.log("role", role);
 
   return (
     <Grid
