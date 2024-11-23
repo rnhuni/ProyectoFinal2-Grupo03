@@ -178,5 +178,18 @@
     "openChatTooltip": "Open Chat Tooltip",
     "chat": "Chat",
     "close": "Close"
+  },
+  "subscription": {
+    "title": "Subscription and Payment Details",
+    "current_plan": "Current Plan",
+    "subscription_date": "Subscription Date",
+    "amount_paid": "Amount Paid",
+    "last_update": "Last Update",
+    "payment_history": "Payment History",
+    "automatic_notifications": "Automatic Notifications",
+    "download_csv": "Download payment history",
+    "loading": "Loading subscription and payment data...",
+    "error_loading": "An error occurred while loading the data. Please try again later.",
+    "no_data": "No data available"
   }
 }

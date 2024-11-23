@@ -12,6 +12,8 @@ interface ProfileContextProps {
   profile: FeaturesObject | undefined;
   error: string | null;
   isLoading: boolean;
+  language: string;
+  setLanguage: (language: string) => void;
 }
 
 const ProfileContext = createContext<ProfileContextProps | undefined>(
@@ -23,16 +25,25 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const { profile, error, getProfile } = useProfile();
   const [isLoading, setIsLoading] = useState(true);
+  const [language, setLanguage] = useState("es");
 
   useEffect(() => {
     (async () => {
       await getProfile();
       setIsLoading(false);
     })();
-  }, [getProfile]);
+  }, []);
 
   return (
-    <ProfileContext.Provider value={{ profile, error, isLoading }}>
+    <ProfileContext.Provider
+      value={{
+        profile: profile ? { ...profile, language } : undefined,
+        error,
+        isLoading,
+        language,
+        setLanguage,
+      }}
+    >
       {children}
     </ProfileContext.Provider>
   );

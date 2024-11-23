@@ -19,7 +19,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useProfileContext } from "../../contexts/ProfileContext";
 
 interface NavBarProps {
   name: string;
@@ -27,13 +27,14 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ name }) => {
   const { i18n } = useTranslation();
-  const [language, setLanguage] = useState("es");
+  const { language, setLanguage } = useProfileContext();
   const color = useColorModeValue("black", "white");
   const { toggleColorMode } = useColorMode();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
     setLanguage(lng);
+    console.log("language", lng);
   };
 
   return (
@@ -116,7 +117,7 @@ const NavBar: React.FC<NavBarProps> = ({ name }) => {
           py={1}
         >
           <Stack flexDirection="row" gap={2} alignItems="center">
-            <Text fontSize="sm">{name}</Text> {/* Tamaño reducido */}
+            <Text fontSize="sm">{name}</Text>
             <Image p="3px" boxSize="32px" borderRadius="full" src={userImg} />
           </Stack>
         </Box>

@@ -17,4 +17,5 @@ export interface FeaturesObject {
     features: string[];
     user: User;
     views: View[];
+    language: string;
 }

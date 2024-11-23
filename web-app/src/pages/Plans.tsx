@@ -24,12 +24,10 @@ import PlanFormModal from "../components/Plans/PlanFormModal";
 import { Plan } from "../interfaces/Plan";
 import PlanDetailsModal from "../components/Plans/PlanDetailsModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
-import usePlans from "../hooks/plans/usePlans"; // Importamos el hook usePlans
+import usePlans from "../hooks/plans/usePlans";
 
 const Plans = () => {
   const { t } = useTranslation();
-
-  // Usamos el hook usePlans para interactuar con la API
   const {
     plans,
     loading,
@@ -47,12 +45,10 @@ const Plans = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
 
-  // Cargamos los planes cuando el componente se monta
   useEffect(() => {
     reloadPlans();
   }, []);
 
-  // Sincronizamos filteredPlans con plans cuando cambia el estado
   useEffect(() => {
     setFilteredPlans(plans);
   }, [plans]);
