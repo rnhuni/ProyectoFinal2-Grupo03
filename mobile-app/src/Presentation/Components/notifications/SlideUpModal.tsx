@@ -42,15 +42,16 @@ const SlideUpModal: React.FC<SlideUpModalProps> = ({
   }, [isVisible]);
 
   const handleClose = () => {
-    // Animar el modal hacia abajo
+    if (onClose) {
+      onClose(); // Llama directamente a `onClose` antes de la animación.
+    }
+
     Animated.timing(slideAnim, {
       toValue: 500, // Posición inicial (fuera de la pantalla)
       duration: 300,
       easing: Easing.in(Easing.ease),
       useNativeDriver: true,
-    }).start(() => {
-      if (onClose) onClose();
-    });
+    }).start();
   };
 
   if (!isVisible) return null;
