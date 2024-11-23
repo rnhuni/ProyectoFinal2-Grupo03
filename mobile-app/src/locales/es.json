@@ -53,26 +53,16 @@
     "settings": "Configuración"
   },
   "homeScreen": {
-    "sectionTitle": "Mensajes predefinidos",
-    "tableHeaders": {
-      "id": "ID",
-      "template": "Plantilla",
-      "status": "Estado"
+    "title": "Bienvenido a ABCall",
+    "subtitle": "Simplifica la gestión de tus incidentes con nuestra plataforma fácil de usar.",
+    "features": {
+      "viewTickets": "Ver Mis Tickets",
+      "createTicket": "Crear un Nuevo Ticket",
+      "chatSupport": "Chatear con Soporte",
+      "downloadReport": "Descargar Informe de Incidentes",
+      "configureNotifications": "Configurar Notificaciones"
     },
-    "rows": {
-      "welcome": "Bienvenida",
-      "additionalInfo": "Información adicional",
-      "satisfactionSurvey": "Encuesta de satisfacción",
-      "chatEnd": "Cierre del chat"
-    },
-    "status": {
-      "active": "Activo"
-    },
-    "pagination": {
-      "show": "Mostrar 10",
-      "page": "de 10"
-    },
-    "alert": "Esta funcionalidad está en desarrollo"
+    "createButton": "Crear Ticket"
   },
   "incidentReportScreen": {
     "tabs": {

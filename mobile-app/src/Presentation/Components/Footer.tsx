@@ -2,11 +2,12 @@ import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useTranslation} from 'react-i18next'; // Importar hook de traducción
+import {useTranslation} from 'react-i18next';
 
 const Footer = () => {
   const navigation = useNavigation<any>();
-  const {t} = useTranslation(); // Usar el hook de traducción
+  const {t} = useTranslation();
+  const [showNotification, setShowNotification] = React.useState(false);
 
   const handleIncidentReportScreen = () => {
     navigation.navigate('IncidentReportScreen');

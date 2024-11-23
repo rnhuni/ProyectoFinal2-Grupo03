@@ -33,28 +33,29 @@ export const ResumeIncidentScreen = () => {
   const [status, setStatus] = useState('');
   const {reloadProfile} = useProfile();
 
+  const fetchData = async () => {
+    const profile = await reloadProfile();
+    let rol = '';
+    let id = '';
+    if (profile) {
+      const parts = (profile.user.role as string).split('-');
+      rol = parts.length > 2 ? parts[1] : '';
+      id = profile.user.id;
+    }
+    let filters = '';
+    if (rol === 'agent') {
+      filters = 'assigned_to=' + id;
+    } else if (rol === 'user') {
+      filters = 'user_issuer=' + id;
+    }
+
+    // console.log('Incidents: ', incidents);
+    const res = await reloadIncidents(filters);
+    setAllIncidents(res);
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const profile = await reloadProfile();
-        let rol = '';
-        let id = '';
-        if (profile) {
-          const parts = (profile.user.role as string).split('-');
-          rol = parts.length > 2 ? parts[1] : '';
-          id = profile.user.id;
-        }
-        let filters = '';
-        if (rol === 'agent') {
-          filters = 'assigned_to=' + id;
-        } else if (rol === 'user') {
-          filters = 'user_issuer=' + id;
-        }
-
-        // console.log('Incidents: ', incidents);
-        const res = await reloadIncidents(filters);
-        setAllIncidents(res);
-      };
       fetchData();
     }, []),
   );
@@ -79,9 +80,9 @@ export const ResumeIncidentScreen = () => {
     </TouchableOpacity>
   );
 
-  const handledetailModalClose = () => {
-    reloadIncidents();
+  const handledetailModalClose = async () => {
     setModalVisible(false);
+    await fetchData();
   };
 
   const handleSearch = () => {

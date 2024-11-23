@@ -53,26 +53,16 @@
     "settings": "Settings"
   },
   "homeScreen": {
-    "sectionTitle": "Predefined Messages",
-    "tableHeaders": {
-      "id": "Id",
-      "template": "Template",
-      "status": "Status"
+    "title": "Welcome to ABCall",
+    "subtitle": "Simplify your incident management with our user-friendly platform.",
+    "features": {
+      "viewTickets": "View My Tickets",
+      "createTicket": "Create a New Ticket",
+      "chatSupport": "Chat with Support",
+      "downloadReport": "Download Incident Report",
+      "configureNotifications": "Configure Notifications"
     },
-    "rows": {
-      "welcome": "Welcome",
-      "additionalInfo": "Additional Information",
-      "satisfactionSurvey": "Satisfaction Survey",
-      "chatEnd": "Chat End"
-    },
-    "status": {
-      "active": "Active"
-    },
-    "pagination": {
-      "show": "Show 10",
-      "page": "of 10"
-    },
-    "alert": "Feature under construction"
+    "createButton": "Create Ticket"
   },
   "incidentReportScreen": {
     "tabs": {
