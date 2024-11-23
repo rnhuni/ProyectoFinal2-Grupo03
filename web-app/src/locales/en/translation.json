@@ -115,7 +115,7 @@
       "client": "The client is required."
     }
   },
-  "incidentScreen": {
+  "incidents": {
     "tittle": "Create Incident Record",
     "tittleEdit": "Edit Incident Record",
     "subTittle": "Please complete the following form with the required information.",
@@ -138,6 +138,23 @@
     "attachment": "Attach files",
     "createIncident": "Create incident",
     "editIncident": "Edit incident",
+    "title": "Create Incident Record",
+    "create": "Create Incident",
+    "id": "Incident ID",
+    "status": "Status",
+    "description": "Description",
+    "type": "Type",
+    "user": "User",
+    "createdAt": "Created At",
+    "actions": "Actions",
+    "chat": "Chat",
+    "close_chat": "Close Chat",
+    "confirmation": {
+      "title": "Confirmation of Action",
+      "message": "Are you sure you want to perform this action?",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
     "modalAttachment": {
       "tittle": "Attach your files",
       "selectFiles": "What file types are allowed? ",
@@ -183,6 +200,7 @@
     "title": "Subscription and Payment Details",
     "current_plan": "Current Plan",
     "subscription_date": "Subscription Date",
+    "update_plan": "Update Plan",
     "amount_paid": "Amount Paid",
     "last_update": "Last Update",
     "payment_history": "Payment History",
@@ -191,5 +209,44 @@
     "loading": "Loading subscription and payment data...",
     "error_loading": "An error occurred while loading the data. Please try again later.",
     "no_data": "No data available"
+  },
+  "plan_assignment": {
+    "title": "Plan Assignment",
+    "description": "Complete the following form for the client {{client}}.",
+    "client_label": "Client:",
+    "select_placeholder": "Select a plan",
+    "select_button": "Select",
+    "selected_plan_label": "Selected plan: {{plan}}",
+    "no_description": "No description available",
+    "features": "Features:",
+    "assignment_history": "Assignment History",
+    "plan_column": "Plan",
+    "date_column": "Date",
+    "status_column": "Status",
+    "assign_button": "Assign Plan",
+    "close_button": "Close",
+    "success_title": "Plan assigned successfully.",
+    "error_title": "Error assigning the plan.",
+    "error_description": "Please try again later."
+  },
+  "incidentDetails": {
+    "title": "Incident Details",
+    "id": "ID:",
+    "description": "Description:",
+    "type": "Type:",
+    "user": "User:",
+    "phone": "Phone:",
+    "createdAt": "Created At:",
+    "attachments": "Attachments:",
+    "loadingAttachments": "Loading attachments...",
+    "noAttachments": "No attachments available",
+    "errorTitle": "Error fetching attachments",
+    "errorDescription": "Could not load attachments.",
+    "close": "Close"
+  },
+  "errorPage": {
+    "title": "Page not found",
+    "message": "Sorry, we couldn't find the page you were looking for.",
+    "back": "Go back"
   }
 }

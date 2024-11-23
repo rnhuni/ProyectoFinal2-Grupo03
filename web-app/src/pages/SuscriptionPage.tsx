@@ -66,6 +66,13 @@ const SubscriptionPage: React.FC = () => {
     link.click();
   };
 
+  const formatDate = (date: string) => {
+    const parsedDate = new Date(date);
+    return isNaN(parsedDate.getTime())
+      ? t("subscription.no_data")
+      : parsedDate.toLocaleDateString();
+  };
+
   if (activeLoading || paymentsLoading) {
     return (
       <Flex justify="center" align="center" height="100vh">
@@ -110,8 +117,8 @@ const SubscriptionPage: React.FC = () => {
         <Box>
           <Text fontWeight="bold">{t("subscription.subscription_date")}</Text>
           <Text mb="4">
-            {activeSubscription?.createdAt
-              ? new Date(activeSubscription.createdAt).toLocaleDateString()
+            {activeSubscription?.created_at
+              ? formatDate(activeSubscription.created_at)
               : t("subscription.no_data")}
           </Text>
 
@@ -120,8 +127,8 @@ const SubscriptionPage: React.FC = () => {
 
           <Text fontWeight="bold">{t("subscription.last_update")}</Text>
           <Text mb="4">
-            {activeSubscription?.updatedAt
-              ? new Date(activeSubscription.updatedAt).toLocaleDateString()
+            {activeSubscription?.updated_at
+              ? formatDate(activeSubscription.updated_at)
               : t("subscription.no_data")}
           </Text>
         </Box>

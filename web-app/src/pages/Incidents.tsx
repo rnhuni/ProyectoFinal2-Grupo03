@@ -318,12 +318,12 @@ const Incidents = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {t("confirmation.title", "Confirmación de Acción")}
+            {t("incidents.confirmation.title", "Confirmación de Acción")}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {t(
-              "confirmation.message",
+              "incidents.confirmation.message",
               "¿Estás seguro de que deseas realizar esta acción?"
             )}
           </ModalBody>
@@ -333,10 +333,10 @@ const Incidents = () => {
               mr={3}
               onClick={() => setIsConfirmModalOpen(false)}
             >
-              {t("confirmation.cancel", "Cancelar")}
+              {t("incidents.confirmation.cancel", "Cancelar")}
             </Button>
             <Button colorScheme="blue" onClick={handleConfirmAction}>
-              {t("confirmation.confirm", "Confirmar")}
+              {t("incidents.confirmation.confirm", "Confirmar")}
             </Button>
           </ModalFooter>
         </ModalContent>

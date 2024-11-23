@@ -18,4 +18,6 @@ export interface FeaturesObject {
     user: User;
     views: View[];
     language: string;
+    dashboard_url: string;
+    dashboard_url_es: string;
 }

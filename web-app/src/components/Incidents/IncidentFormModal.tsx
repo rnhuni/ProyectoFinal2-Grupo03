@@ -220,8 +220,8 @@ const IncidentFormModal = ({
         <ModalContent maxW="600px">
           <ModalHeader>
             {mode === "edit"
-              ? t("incidentScreen.tittleEdit")
-              : t("incidentScreen.tittle")}
+              ? t("incidents.tittleEdit")
+              : t("incidents.tittle")}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
@@ -233,48 +233,46 @@ const IncidentFormModal = ({
             )}
             <form onSubmit={handleSubmit(onSubmit)}>
               <FormControl isInvalid={!!errors.type} mb={4}>
-                <FormLabel>{t("incidentScreen.incidentType")}</FormLabel>
+                <FormLabel>{t("incidents.incidentType")}</FormLabel>
                 <Select
-                  placeholder={t("incidentScreen.incidentTypePlaceholder")}
+                  placeholder={t("incidents.incidentTypePlaceholder")}
                   {...register("type")}
                   defaultValue={initialData?.type || ""}
                 >
                   <option value="technical">
-                    {t("incidentScreen.incidentTypeSelectOne")}
+                    {t("incidents.incidentTypeSelectOne")}
                   </option>
                   <option value="billing">
-                    {t("incidentScreen.incidentTypeSelectTwo")}
+                    {t("incidents.incidentTypeSelectTwo")}
                   </option>
                   <option value="general">
-                    {t("incidentScreen.incidentTypeSelectThree")}
+                    {t("incidents.incidentTypeSelectThree")}
                   </option>
                   <option value="security">
-                    {t("incidentScreen.incidentTypeSelectFour")}
+                    {t("incidents.incidentTypeSelectFour")}
                   </option>
                   <option value="maintenance">
-                    {t("incidentScreen.incidentTypeSelectFive")}
+                    {t("incidents.incidentTypeSelectFive")}
                   </option>
                 </Select>
                 {errors.type && (
                   <FormErrorMessage>
-                    {t(`incidentScreen.errors.typeRequired`)}
+                    {t(`incidents.errors.typeRequired`)}
                   </FormErrorMessage>
                 )}
               </FormControl>
 
               <FormControl isInvalid={!!errors.description} mb={4}>
-                <FormLabel>{t("incidentScreen.incidentDescription")}</FormLabel>
+                <FormLabel>{t("incidents.incidentDescription")}</FormLabel>
                 <Textarea
                   h={60}
-                  placeholder={t(
-                    "incidentScreen.incidentDescriptionPlaceholder"
-                  )}
+                  placeholder={t("incidents.incidentDescriptionPlaceholder")}
                   maxLength={200}
                   {...register("description")}
                 />
                 {errors.description && (
                   <FormErrorMessage>
-                    {t(`incidentScreen.errors.descriptionRequired`)}
+                    {t(`incidents.errors.descriptionRequired`)}
                   </FormErrorMessage>
                 )}
               </FormControl>
@@ -297,7 +295,7 @@ const IncidentFormModal = ({
               )}
 
               <FormControl mb={4}>
-                <FormLabel>{t("incidentScreen.attachment")}</FormLabel>
+                <FormLabel>{t("incidents.attachment")}</FormLabel>
                 <Button
                   onClick={() => document.getElementById("fileInput")?.click()}
                   rightIcon={<Icon as={FaUpload} />}
@@ -305,7 +303,7 @@ const IncidentFormModal = ({
                   bg={"#6C728F"}
                   colorScheme="blue"
                 >
-                  {t("incidentScreen.attachment")}
+                  {t("incidents.attachment")}
                 </Button>
                 <Input
                   data-testid="file-input"
@@ -342,7 +340,7 @@ const IncidentFormModal = ({
 
           <ModalFooter>
             <Button onClick={handleCloseModal} mr={3}>
-              {t("incidentScreen.modalAttachment.cancelButton")}
+              {t("incidents.modalAttachment.cancelButton")}
             </Button>
             <Button
               colorScheme="blue"
@@ -350,8 +348,8 @@ const IncidentFormModal = ({
               isLoading={fileLoading || incidentLoading}
             >
               {mode === "edit"
-                ? t("incidentScreen.editIncident")
-                : t("incidentScreen.createIncident")}
+                ? t("incidents.editIncident")
+                : t("incidents.createIncident")}
             </Button>
           </ModalFooter>
         </ModalContent>

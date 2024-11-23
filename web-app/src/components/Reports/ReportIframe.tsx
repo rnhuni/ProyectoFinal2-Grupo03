@@ -1,12 +1,11 @@
 import { useProfileContext } from "../../contexts/ProfileContext";
 
 const ReportIframe = () => {
-  const { language } = useProfileContext();
-  //https://lookerstudio.google.com/embed/reporting/242040ec-2c30-4fd7-9f17-7ea2ed3a93f3/page/FGYTE
+  const { language, profile } = useProfileContext();
+  console.log(profile);
+
   const reportUrl =
-    language === "en"
-      ? "https://lookerstudio.google.com/embed/reporting/dashboard_url_en"
-      : "https://lookerstudio.google.com/embed/reporting/dashboard_url_es";
+    language === "en" ? profile?.dashboard_url : profile?.dashboard_url_es;
 
   return (
     <iframe
