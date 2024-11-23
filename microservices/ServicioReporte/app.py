@@ -17,7 +17,7 @@ SecretService(secret_name, region).load_secret_to_env()
 
 from .blueprints import register_blueprints
 from .models.model import initdb, session
-from microservices.ServicioReporte.services.report_service import ReportService
+from ServicioReporte.services.report_service import ReportService
 from ServicioReporte.services.task_service import TaskService
 
 register_blueprints(app)

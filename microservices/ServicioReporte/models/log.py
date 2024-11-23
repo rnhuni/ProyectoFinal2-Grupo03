@@ -3,7 +3,7 @@ from .model  import  Model
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 
-class LogReport(Model):
+class Log(Model):
     __tablename__ = 'log_report'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     source_id = Column(String, nullable=False)

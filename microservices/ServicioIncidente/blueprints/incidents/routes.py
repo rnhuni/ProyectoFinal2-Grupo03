@@ -16,6 +16,7 @@ from ServicioIncidente.commands.feedback_exists import ExistsFeedback
 from ServicioIncidente.commands.feedback_create import CreateFeedback
 from ServicioIncidente.utils import decode_user, build_incident_id
 from ServicioIncidente.services.monitor_service import MonitorService
+from ServicioIncidente.services.report_service import ReportService
 
 incidents_bp = Blueprint('incident_bp', __name__)
 
@@ -47,6 +48,7 @@ def create_incident():
         data = CreateIncident(incident_id, incident_type, description, contact, user["id"], user["name"], \
                               channel_id, sla).execute()
         MonitorService().enqueue_event(user, "CREATE-INCIDENT", f"INCIDENT_ID={str(data.id)}")
+        ReportService().enqueue_create_incident(user, data)
 
         for attachment in attachments:
             aid = attachment["id"]
@@ -268,6 +270,7 @@ def close_incident(incident_id):
         
         data = CloseIncident(incident_id, user["id"], user["name"], user["role_type"]).execute()
         MonitorService().enqueue_event(user, "CLOSE-INCIDENT", f"INCIDENT_ID={str(data.id)}")
+        ReportService().enqueue_close_incident(user, data)
 
         return jsonify({
             "id": data.id,
@@ -303,6 +306,7 @@ def claim_incident(incident_id):
         
         data = ClaimIncident(incident_id, user_id, user["name"], user["role_type"]).execute()
         MonitorService().enqueue_event(user, "CLAIM-INCIDENT", f"INCIDENT_ID={str(data.id)}")
+        ReportService().enqueue_claim_incident(user, data)
 
         return jsonify({
             "id": data.id,
@@ -443,6 +447,7 @@ def create_feedback(incident_id):
                                           resolution_time, support_staff_attitude, additional_comments).execute()
         
         MonitorService().enqueue_event(user, "CREATE-FEEDBACK", f"FEEDBACK_ID={str(feedback.id)}")
+        ReportService().enqueue_create_feedback(user, feedback)
 
         return jsonify(
             {

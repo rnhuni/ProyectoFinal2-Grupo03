@@ -5,6 +5,7 @@ import json
 import threading
 
 from ServicioMonitoreoNegocio.commands.log_create import CreateLog
+from ServicioMonitoreoNegocio.services.report_service import ReportService
 
 class MonitorService:
     def __init__(self):
@@ -24,6 +25,7 @@ class MonitorService:
             event_content = body["event_content"]
 
             CreateLog(source_id, source_name, source_type, event_type, event_content).execute()
+            ReportService().enqueue_create_log(source_id, source_name, source_type, event_type, event_content)
         except Exception as e:
             print(f"Error processing message: {e}")
 

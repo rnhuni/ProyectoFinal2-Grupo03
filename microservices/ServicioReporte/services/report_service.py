@@ -7,6 +7,7 @@ import threading
 from ServicioReporte.commands.log_create import CreateLog
 from ServicioReporte.commands.incident_create import CreateIncident
 from ServicioReporte.commands.incident_update import UpdateIncident
+from ServicioReporte.models.model import session
 
 class ReportService:
     def __init__(self):
@@ -15,29 +16,27 @@ class ReportService:
         if os.getenv('ENV') != 'test':
             self.client = boto3.client('sqs', region_name=os.getenv('AWS_REGION', ''))
 
-    def create_log(self, source_id, source_name, source_type, payload_str):
-            payload = json.loads(payload_str)
+    def create_log(self, source_id, source_name, source_type, payload):
             event_type = payload["event_type"]
             event_content = payload["event_content"]
             CreateLog(source_id, source_name, source_type, event_type, event_content).execute()
 
-    def create_incident(self, source_id, source_name, payload_str):
-            payload = json.loads(payload_str)
-            client_id = payload["client_id"]
+    def create_incident(self, source_id, source_name, source_client, payload):
             incident_id = payload["incident_id"]
             channel_id = payload["channel_id"]
             channel_name = payload["channel_name"]
+            created_at = payload["created_at"]
             sla = int(payload["sla"])
             CreateIncident(incident_id, 
-                           client_id,
+                           source_client,
                            source_id, 
                            source_name, 
                            channel_id, 
                            channel_name, 
+                           created_at,
                            sla).execute()
 
-    def to_claim_incident(self, source_id, source_name, payload_str):
-            payload = json.loads(payload_str)
+    def to_claim_incident(self, source_id, source_name, payload):
             incident_id = payload["incident_id"]
             
             UpdateIncident(incident_id=incident_id, 
@@ -45,8 +44,7 @@ class ReportService:
                            incident_assigned_to_name=source_name,
                            status='ASSIGNED').execute()
 
-    def to_close_incident(self, source_id, source_name, payload_str):
-            payload = json.loads(payload_str)
+    def to_close_incident(self, source_id, source_name, payload):
             incident_id = payload["incident_id"]
             sla_ok = bool(payload["sla_ok"])
             resolution_time = payload["resolution_time"]
@@ -58,8 +56,7 @@ class ReportService:
                            resolution_time=resolution_time,
                            status='CLOSED').execute()
             
-    def create_feedback(self, payload_str):
-            payload = json.loads(payload_str)
+    def create_feedback(self, payload):
             incident_id = payload["incident_id"]
             feedback_id = payload["feedback_id"]
             feedback_support_rating = int(payload["feedback_support_rating"])
@@ -81,12 +78,14 @@ class ReportService:
             source_id = body["source_id"]
             source_name = body["source_name"]
             source_type = body["source_type"]
+            source_client = body["source_client"]
+
             payload = body["payload"]
 
             if action == "CREATE_LOG":
                 self.create_log(source_id, source_name, source_type, payload)
             elif action == "CREATE_INCIDENT":
-                self.create_incident(source_id, source_name, payload)
+                self.create_incident(source_id, source_name, source_client, payload)
             elif action == "CLAIM_INCIDENT":
                 self.to_claim_incident(source_id, source_name, payload)
             elif action == "CLOSE_INCIDENT":
@@ -96,8 +95,10 @@ class ReportService:
             else:
                 print(f"ACTION={action} is not support")
         except Exception as e:
-            print(f"Error processing message: {e}")
-
+            print(f"Error processing message: {e}")            
+            session.rollback()
+            session.remove()
+            raise e
     def poll_queue(self):
         while not self.stop_event.is_set():
             try:

@@ -10,10 +10,12 @@ from datetime import datetime
 
 from ServicioReporte.commands.task_update import UpdateTask
 from ServicioReporte.commands.task_get import GetTask
+from ServicioReporte.models.model import session
+from ServicioReporte.commands.log_get_by_filters import GetLogs
 
 class TaskService:
     def __init__(self):
-        self.queue_url = os.getenv('TASK_QUEUE_URL', '')
+        self.queue_url = os.getenv('REPORT_TASK_QUEUE_URL', '')
         self.bucket_name = os.getenv('TASK_BUCKET_NAME')
         self.stop_event = threading.Event()
         if os.getenv('ENV') != 'test':
@@ -102,6 +104,8 @@ class TaskService:
             UpdateTask(task=task, key=s3_key, status="COMPLETED").execute()
         except Exception as e:
             print(f"Error processing message: {e}")
+            session.rollback()
+            session.remove()
 
     def poll_queue(self):
         while not self.stop_event.is_set():

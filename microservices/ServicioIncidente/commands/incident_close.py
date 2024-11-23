@@ -1,6 +1,7 @@
 from ..models.model import session
 from ..models.incident import Incident
 from .base_command import BaseCommannd
+from datetime import datetime
 
 class CloseIncident(BaseCommannd):
     def __init__(self, incident_id, user_id, user_name, user_type):
@@ -21,6 +22,7 @@ class CloseIncident(BaseCommannd):
             incident.closed_by_id = self.user_id
             incident.closed_by_name = self.user_name
             incident.closed_by_type = self.user_type
+            incident.resolution_time = (datetime.now() - incident.createdAt).total_seconds() / 60
             incident.status = "CLOSED"
 
             session.commit()

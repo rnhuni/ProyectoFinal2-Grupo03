@@ -34,7 +34,7 @@ class UpdateIncident(BaseCommannd):
         if not self.incident_id:
             raise ValueError("Invalid data provided")
         
-        incident = session.query(Incident).filter_by(id=self.incident_id).first()
+        incident = session.query(Incident).filter_by(incident_id=self.incident_id).first()
         if not self.incident_id:
             raise ValueError("Incident not found")
         
@@ -44,7 +44,7 @@ class UpdateIncident(BaseCommannd):
             if self.incident_assigned_to_name:
                 incident.incident_assigned_to_name = self.incident_assigned_to_name
             if self.status:
-                incident.status = self.status
+                incident.incident_status = self.status
             if self.incident_closed_by_id:
                 incident.incident_closed_by_id = self.incident_closed_by_id
             if self.incident_closed_by_name:

@@ -31,6 +31,7 @@ def test_create_incident_success(client, mocker):
     mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
     mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
     mocker.patch('ServicioIncidente.services.monitor_service.MonitorService.enqueue_event', return_value="")
+    mocker.patch('ServicioIncidente.services.report_service.ReportService.enqueue_create_incident', return_value="")
     mock_incident = MagicMock(
         id="TKT-230101-123456789", type="incident_type", description="Incident description",
         contact='""', user_issuer_id="user123", user_issuer_name="Test User",
@@ -487,6 +488,7 @@ def test_create_incident_with_attachments(client, mocker):
     mock_user = {"id": "user123", "name": "Test User", "email": "testuser@example.com"}
     mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
     mocker.patch('ServicioIncidente.services.monitor_service.MonitorService.enqueue_event', return_value="")
+    mocker.patch('ServicioIncidente.services.report_service.ReportService.enqueue_create_incident', return_value="")
 
     mocker.patch('ServicioIncidente.commands.attachment_exists.ExistsAttachment.execute', return_value=False)
     
@@ -602,6 +604,7 @@ def test_create_feedback_success(client, mocker):
     mocker.patch('ServicioIncidente.blueprints.incidents.routes.decode_user', return_value=mock_user)
     mocker.patch('ServicioIncidente.services.monitor_service.MonitorService.enqueue_event', return_value="")
     mocker.patch('ServicioIncidente.commands.feedback_exists.ExistsFeedback.execute', return_value=False)
+    mocker.patch('ServicioIncidente.services.report_service.ReportService.enqueue_create_feedback', return_value="")
 
     mock_feedback = MagicMock(
         id="feedback123",

@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from .model import Model
 import uuid
 
-class IncidentReport(Model):
+class Incident(Model):
     __tablename__ = 'incident_reports'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -41,6 +41,7 @@ class IncidentReport(Model):
         incident_closed_by_name="", 
         channel_id="", 
         channel_name="", 
+        incident_created_at = None,
         sla=0, 
         sla_ok=False, 
         resolution_time=0, 
@@ -62,6 +63,7 @@ class IncidentReport(Model):
         self.incident_closed_by_name = incident_closed_by_name
         self.channel_id = channel_id
         self.channel_name = channel_name
+        self.incident_created_at = incident_created_at
         self.sla = sla
         self.sla_ok = sla_ok
         self.resolution_time = resolution_time
