@@ -36,6 +36,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
       // endTime = Date.now();
       // console.log(`loginUser end   Time: ${endTime - startTime} ms`);
       setToken(authResult.IdToken);
+      // console.log('IdToken |', authResult.IdToken, '|');
       // startTime = Date.now();
       // console.log(`reloadProfile start Time: ${startTime} ms`);
       const res = await reloadProfile();
