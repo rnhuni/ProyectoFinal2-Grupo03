@@ -45,6 +45,8 @@ describe('SlideUpModal', () => {
 
     const closeButton = getByTestId('close-modal');
     fireEvent.press(closeButton);
+
+    expect(mockOnClose).toHaveBeenCalled();
   });
 
   it('animates correctly on open', () => {
