@@ -97,8 +97,8 @@ const Permissions = () => {
                 <Td>{permission.name}</Td>
                 <Td>{permission.resource}</Td>
                 <Td>{permission.description}</Td>
-                <Td>{permission.createdAt || "None"}</Td>
-                <Td>{permission.updatedAt || "None"}</Td>
+                <Td>{permission.created_at || "None"}</Td>
+                <Td>{permission.updated_at || "None"}</Td>
                 <Td>
                   <Menu>
                     <MenuButton as={IconButton} icon={<HamburgerIcon />} />

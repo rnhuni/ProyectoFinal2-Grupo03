@@ -45,8 +45,8 @@ describe("PermissionsModal Component", () => {
           name: "",
           resource: "",
           description: "",
-          createdAt: "",
-          updatedAt: "",
+          created_at: "",
+          updated_at: "",
         }}
         mode="create"
         setReloadData={jest.fn()}
@@ -97,8 +97,8 @@ describe("PermissionsModal Component", () => {
       name: "Permission 1",
       resource: "Resource 1",
       description: "Description 1",
-      createdAt: "2021-01-01",
-      updatedAt: "2021-01-02",
+      created_at: "2021-01-01",
+      updated_at: "2021-01-02",
     };
 
     renderWithProviders(

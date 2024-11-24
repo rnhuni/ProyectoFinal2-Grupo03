@@ -21,8 +21,8 @@ describe("usePermissions", () => {
 
     it("debe cargar permisos al inicializar", async () => {
         const mockPermissions: Permission[] = [
-            { id: "1", name: "Permission 1", resource: "documents", description: "Allows creating documents", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-            { id: "2", name: "Permission 2", resource: "users", description: "Allows managing users", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+            { id: "1", name: "Permission 1", resource: "documents", description: "Allows creating documents", created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: "2", name: "Permission 2", resource: "users", description: "Allows managing users", created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
         ];
 
         (httpClient.get as jest.Mock).mockResolvedValueOnce({ data: mockPermissions });
@@ -80,8 +80,8 @@ describe("useCreatePermission", () => {
             name: "New Permission",
             resource: "documents",
             description: "Allows creating new documents",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
         };
 
         (httpClient.post as jest.Mock).mockResolvedValueOnce({ data: mockPermission });
@@ -153,8 +153,8 @@ describe("useUpdatePermission", () => {
             name: "New Permission",
             resource: "documents",
             description: "Allows creating new documents",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
         };
 
         (httpClient.put as jest.Mock).mockResolvedValueOnce({ data: mockPermission });
@@ -243,8 +243,8 @@ describe("cancelations", () => {
                 name: "Permission 1",
                 resource: "documents",
                 description: "Allows creating new documents",
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
             });
         });
 
@@ -265,8 +265,8 @@ describe("cancelations", () => {
                 name: "Permission 1",
                 resource: "documents",
                 description: "Allows creating new documents",
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
             });
         });
 

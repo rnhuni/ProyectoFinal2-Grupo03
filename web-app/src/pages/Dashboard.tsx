@@ -1,20 +1,66 @@
-import React from "react";
-import { Box, Grid, GridItem, useColorModeValue } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { subscribeNotificationsFunc } from "../appsync";
 import NavBar from "../components/Navbar/NavBar";
 import Sidebar from "../components/Aside/Aside";
+import { Box, Grid, GridItem, useColorModeValue } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import { useProfileContext } from "../contexts/ProfileContext";
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  created_at: string;
+}
+
 const Dashboard: React.FC = () => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { profile } = useProfileContext();
+  const userId = profile?.user?.id || "";
+  const role = profile?.user?.role?.split("-")[1] || "";
+
   const bg = useColorModeValue("white", "gray.800");
   const color = useColorModeValue("black", "white");
   const sidebg = useColorModeValue("#0056f0", "gray.800");
   const mainbg = useColorModeValue("white", "gray.700");
-  const { profile } = useProfileContext();
 
-  const role = profile?.user?.role?.split("-")[1] || "";
-  const name = profile?.user?.name || "";
-  console.log("role", role);
+  useEffect(() => {
+    let subscription: ZenObservable.Subscription | null = null;
+
+    const subscribe = async () => {
+      try {
+        const observable = await subscribeNotificationsFunc(userId);
+        if (observable) {
+          subscription = observable.subscribe({
+            next: ({ value }: any) => {
+              console.log("Notificación recibida:", value);
+              const notification = JSON.parse(value.data.subscribe.data);
+              setNotifications((prev) => [...prev, notification]);
+            },
+            error: (error) => {
+              console.error(
+                "Error en la suscripción de notificaciones:",
+                error
+              );
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error al suscribirse:", error);
+      }
+    };
+
+    if (userId) {
+      subscribe();
+    }
+
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+        console.log("Suscripción limpiada");
+      }
+    };
+  }, [userId]);
 
   return (
     <Grid
@@ -27,7 +73,10 @@ const Dashboard: React.FC = () => {
       h="100vh"
     >
       <GridItem area="nav" bg={bg} color={color} w="100%" h="auto">
-        <NavBar name={name} />
+        <NavBar
+          name={profile?.user?.name || ""}
+          notifications={notifications}
+        />
       </GridItem>
 
       <GridItem

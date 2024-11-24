@@ -171,8 +171,8 @@ describe("IncidentFormModal Component", () => {
       description: "Test description",
       attachments: [],
       contact: { phone: "1234567890" },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     renderWithProviders(

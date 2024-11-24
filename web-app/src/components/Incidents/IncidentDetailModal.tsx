@@ -111,9 +111,9 @@ const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
           </Box>
           <Box mb={4}>
             <Text fontWeight="bold">
-              {t("incidentDetails.createdAt", "Fecha de Creación:")}
+              {t("incidentDetails.created_at", "Fecha de Creación:")}
             </Text>
-            <Text>{new Date(incident.createdAt).toLocaleString()}</Text>
+            <Text>{new Date(incident.created_at).toLocaleString()}</Text>
           </Box>
           <Box mb={4}>
             <Text fontWeight="bold">
