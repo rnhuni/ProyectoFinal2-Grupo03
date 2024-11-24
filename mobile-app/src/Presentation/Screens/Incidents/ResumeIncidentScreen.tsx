@@ -153,7 +153,7 @@ export const ResumeIncidentScreen = () => {
     const csvContent = convertToCSV(allIncidents);
     try {
       const hasPermission = await hasAndroidPermission();
-      console.log('hasPermission: ', hasPermission);
+      // console.log('hasPermission: ', hasPermission);
 
       if (!hasPermission) {
         // Si el permiso no ha sido concedido, solicitamos el permiso
@@ -209,7 +209,7 @@ export const ResumeIncidentScreen = () => {
           ? RNFS.DownloadDirectoryPath + `/incidents_${getFormattedDate()}.csv` // Android
           : RNFS.DocumentDirectoryPath + `/incidents_${getFormattedDate()}.csv`; // iOS
 
-      console.log('downloadPath: ', downloadPath);
+      // console.log('downloadPath: ', downloadPath);
 
       await RNFS.writeFile(downloadPath, csvContent, 'utf8');
       Alert.alert(
