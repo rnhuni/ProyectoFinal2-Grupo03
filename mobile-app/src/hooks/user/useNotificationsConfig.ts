@@ -22,10 +22,7 @@ const useNotificationConfig = () => {
         // console.log('Notifications Config response:', res.data);
       })
       .catch(err => {
-        if (err instanceof CanceledError) {
-          return;
-        }
-        setError(err.message);
+
       })
       .finally(() => setLoading(false));
     return sortedData;

@@ -6,6 +6,7 @@ import {useTranslation} from 'react-i18next';
 import useNotificationConfig from '../../../hooks/user/useNotificationsConfig';
 import {useFocusEffect} from '@react-navigation/native';
 import {NotificationConfig} from '../../../interfaces/NotificationConfig';
+import eventEmitter from '../../../events/eventEmitter';
 
 export const SettingsIncidentScreen = () => {
   const {t} = useTranslation(); // Usamos el hook para acceder a las traducciones
@@ -41,13 +42,16 @@ export const SettingsIncidentScreen = () => {
   //   );
 
   const toggleNotifications = async (id: string) => {
-    setNotifications(prevNotifications =>
-      prevNotifications.map(notification =>
+    const allNotifications = (
+      prevNotifications: NotificationConfig[],
+    ): NotificationConfig[] =>
+      prevNotifications.map((notification: NotificationConfig) =>
         notification.id === id
           ? {...notification, show_by_default: !notification.show_by_default}
           : notification,
-      ),
-    );
+      );
+    // console.log('allNotifications:', allNotifications);
+    setNotifications(allNotifications);
     const notification = notificationsConfig.find(
       notification => notification.id === id,
     );
@@ -56,6 +60,7 @@ export const SettingsIncidentScreen = () => {
         ...notification,
         show_by_default: !notification.show_by_default,
       });
+      eventEmitter.emit('notificationsUpdated', allNotifications);
     }
   };
   return (

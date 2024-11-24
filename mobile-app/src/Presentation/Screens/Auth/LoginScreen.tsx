@@ -41,7 +41,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
       // endTime = Date.now();
       // console.log(`loginUser end   Time: ${endTime - startTime} ms`);
       setToken(authResult.IdToken);
-      // console.log('IdToken |', authResult.IdToken, '|');
+      console.log('IdToken |', authResult.IdToken, '|');
       // startTime = Date.now();
       // console.log(`reloadProfile start Time: ${startTime} ms`);
       const res = await reloadProfile();
@@ -55,7 +55,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
         setModalLoading(false);
         Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidRole'));
       } else {
-        // console.log('Creando sesion: ', id);
+        console.log('Creando sesion: ', id);
         await createIncidentSession(id);
         navigation.navigate('HomeScreen');
         setModalLoading(false);
