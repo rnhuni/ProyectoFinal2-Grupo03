@@ -150,7 +150,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      # Testing for Servi cioSistema
+      # Testing for ServicioSistema
       - name: Install dependencies for ServicioSistema
         working-directory: ./microservices/ServicioSistema
         run: pip install -r requirements.txt
@@ -228,7 +228,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      # Testing for Servi cioUsuario
+      # Testing for ServicioUsuario
       - name: Install dependencies for ServicioUsuario
         working-directory: ./microservices/ServicioUsuario
         run: pip install -r requirements.txt
@@ -306,7 +306,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      # Testing for Servi cioIncidente
+      # Testing for ServicioIncidente
       - name: Install dependencies for ServicioIncidente
         working-directory: ./microservices/ServicioIncidente
         run: pip install -r requirements.txt
@@ -384,7 +384,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      # Testing for Servi cioIncidente
+      # Testing for ServicioFacturacion
       - name: Install dependencies for ServicioFacturacion
         working-directory: ./microservices/ServicioFacturacion
         run: pip install -r requirements.txt
@@ -467,6 +467,22 @@ jobs:
         working-directory: ./microservices/ServicioCanal
         run: pip install -r requirements.txt
 
+      - name: Run tests for ServicioCanal
+        working-directory: ./microservices/ServicioCanal
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
+
+      - name: Run SonarCloud Scan for ServicioCanal
+        uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
+        with:
+          args: >
+            -Dsonar.organization=rnhuni
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03-ServicioCanal
+            -Dsonar.projectBaseDir=microservices/ServicioCanal
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       # Configure AWS deploy
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -529,6 +545,22 @@ jobs:
         working-directory: ./microservices/ServicioMonitoreoNegocio
         run: pip install -r requirements.txt
 
+      - name: Run tests for ServicioMonitoreoNegocio
+        working-directory: ./microservices/ServicioMonitoreoNegocio
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
+
+      - name: Run SonarCloud Scan for ServicioMonitoreoNegocio
+        uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
+        with:
+          args: >
+            -Dsonar.organization=rnhuni
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03-ServicioMonitoreoNegocio
+            -Dsonar.projectBaseDir=microservices/ServicioMonitoreoNegocio
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       # Configure AWS deploy
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -590,6 +622,22 @@ jobs:
       - name: Install dependencies for ServicioReporte
         working-directory: ./microservices/ServicioReporte
         run: pip install -r requirements.txt
+
+      - name: Run tests for ServicioReporte
+        working-directory: ./microservices/ServicioReporte
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term -v -s --cov-fail-under=90          
+
+      - name: Run SonarCloud Scan for ServicioReporte
+        uses: SonarSource/sonarcloud-github-action@v2
+        continue-on-error: true
+        with:
+          args: >
+            -Dsonar.organization=rnhuni
+            -Dsonar.projectKey=rnhuni_ProyectoFinal2-Grupo03-ServicioReporte
+            -Dsonar.projectBaseDir=microservices/ServicioReporte
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # Configure AWS deploy
       - name: Configure AWS credentials

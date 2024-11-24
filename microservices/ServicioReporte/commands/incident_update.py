@@ -35,7 +35,7 @@ class UpdateIncident(BaseCommannd):
             raise ValueError("Invalid data provided")
         
         incident = session.query(Incident).filter_by(incident_id=self.incident_id).first()
-        if not self.incident_id:
+        if not incident:
             raise ValueError("Incident not found")
         
         try:
