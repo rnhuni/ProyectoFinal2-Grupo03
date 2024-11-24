@@ -17,15 +17,15 @@ const useIncidents = () => {
   const reloadIncidents = () => {
     setLoading(true);
     setError("");
-  
+
     const role = profile?.user?.role?.split("-")[1] || "";
     const userId = profile?.user?.id || "";
     let endpoint = service;
-  
-    if (role !== "admin" && userId) {
+
+    if ((role !== "admin" && role !== "agent") && userId) {
       endpoint = `${service}?user_issuer=${userId}`;
     }
-  
+
     httpClient
       .get<IncidentTableData[]>(endpoint)
       .then((res) => {
@@ -37,7 +37,7 @@ const useIncidents = () => {
       })
       .finally(() => setLoading(false));
   };
-  
+
 
   const createIncident = async (newIncident: Incident) => {
     setLoading(true);
@@ -92,7 +92,7 @@ const useIncidents = () => {
       setLoading(false);
     }
   };
-  
+
   const closeIncident = async (incidentId: string, payload: Incident) => {
     setLoading(true);
     setError("");

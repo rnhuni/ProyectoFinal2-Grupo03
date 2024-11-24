@@ -23,7 +23,7 @@ const useChannels = () => {
       return incidents.filter(incident => incident.topic_refid === topicRefId);
     };
 
-    const url = `/channel/channels/${channel_id}/sessions`;
+    const url = `/channel/sessions`;
 
     setLoading(true);
     setError('');
@@ -33,7 +33,7 @@ const useChannels = () => {
       setIncidentSession(filteredIncidents[0]);
       return filteredIncidents[0];
     } catch (err) {
-      console.error('Load session Error:', err);
+      // console.error('Load session Error:', err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
@@ -56,7 +56,7 @@ const useChannels = () => {
       setMessages(res.data);
       return res.data;
     } catch (err) {
-      console.error('Load messages Error:', err);
+      // console.error('Load messages Error:', err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
@@ -78,7 +78,7 @@ const useChannels = () => {
       setIncidentSession(res.data);
       return res.data.id;
     } catch (err) {
-      console.error('Create session Error:', err); // Registrar el error en la consola
+      // console.error('Create session Error:', err); // Registrar el error en la consola
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     } finally {
@@ -97,7 +97,7 @@ const useChannels = () => {
       const res = await api.post<Message>(url, data);
       setMessages([...messages, res.data]);
     } catch (err) {
-      console.error('Create message Error:', err); // Registrar el error en la consola
+      // console.error('Create message Error:', err); // Registrar el error en la consola
       const axiosError = err as AxiosError;
       setError(axiosError.message);
     }

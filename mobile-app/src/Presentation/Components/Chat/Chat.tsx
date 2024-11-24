@@ -99,8 +99,8 @@ const Chat: React.FC<ChatProps> = ({id}) => {
 
       // console.log('dataToSend usePublishGraphql: ', jsonData);
       await publishToChannel(jsonData, id);
-      // console.log('resp usePublishGraphql: ', resp);
-      // console.log('createIncidentMessage: ', input);
+      // // console.log('resp usePublishGraphql: ', resp);
+      // // console.log('createIncidentMessage: ', input);
       await createIncidentMessage(input);
     }
   };
@@ -140,26 +140,26 @@ const Chat: React.FC<ChatProps> = ({id}) => {
             key={index}
             style={[
               styles.messageContainer,
-              msg.source_type === 'agent'
-                ? styles.agentMessage
-                : styles.userMessage,
+              msg.source_type === 'user'
+                ? styles.userMessage
+                : styles.agentMessage,
             ]}>
             {msg.body ? (
-              msg.source_type === 'agent' ? (
+              msg.source_type === 'user' ? (
                 <>
+                  <Text style={styles.message}>{msg.body}</Text>
                   <View
                     style={[styles.circle, getCircleStyle(msg.source_type)]}>
                     <Text style={styles.initial}>{getInitial(msg)}</Text>
                   </View>
-                  <Text style={styles.message}>{msg.body}</Text>
                 </>
               ) : (
                 <>
-                  <Text style={styles.message}>{msg.body}</Text>
                   <View
                     style={[styles.circle, getCircleStyle(msg.source_type)]}>
                     <Text style={styles.initial}>{getInitial(msg)}</Text>
                   </View>
+                  <Text style={styles.message}>{msg.body}</Text>
                 </>
               )
             ) : null}

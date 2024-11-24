@@ -134,6 +134,20 @@ export const ResumeIncidentScreen = () => {
     return status === 'granted';
   }
 
+  function getFormattedDate() {
+    const now = new Date();
+    // Retorna la fecha en formato yyyymmddhhmiss
+    return `${now.getFullYear()}${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now
+      .getHours()
+      .toString()
+      .padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now
+      .getSeconds()
+      .toString()
+      .padStart(2, '0')}${now.getMilliseconds().toString().padStart(3, '0')}`;
+  }
+
   // Función para descargar el archivo CSV
   const downloadCSV = async () => {
     const csvContent = convertToCSV(allIncidents);
@@ -191,9 +205,7 @@ export const ResumeIncidentScreen = () => {
 
       // Define la ruta de descarga para Android e iOS
       const downloadPath =
-        Platform.OS === 'android'
-          ? RNFS.DownloadDirectoryPath + '/incidents.csv' // Android
-          : RNFS.DocumentDirectoryPath + '/incidents.csv'; // iOS
+        RNFS.DocumentDirectoryPath + `/incidents_${getFormattedDate()}.csv`;
 
       // console.log('downloadPath: ', downloadPath);
 
