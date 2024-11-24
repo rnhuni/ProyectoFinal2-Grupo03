@@ -1,6 +1,6 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   View,
   Text,
@@ -11,29 +11,65 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { RootStackParamList } from '../../Routes/StackNavigator';
-import { loginUser } from '../../../services/authService';
-import { setToken } from '../../../api/api';
+import {RootStackParamList} from '../../Routes/StackNavigator';
+import {loginUser} from '../../../services/authService';
+import {setToken} from '../../../api/api';
+import useProfile from '../../../hooks/user/useProfile';
+import Loading from '../../Components/Loading';
+import useChannels from '../../../hooks/channel/useChannels';
 
-interface LoginScreenProps extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
+interface LoginScreenProps
+  extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
 
-export const LoginScreen = ({ navigation }: LoginScreenProps) => {
-  const { t, i18n } = useTranslation();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export const LoginScreen = ({navigation}: LoginScreenProps) => {
+  const {t, i18n} = useTranslation();
+  const [username, setUsername] = useState('user@abcall.com');
+  const [password, setPassword] = useState('User$123');
   const [rememberMe, setRememberMe] = useState(false);
+  const {reloadProfile} = useProfile();
+  const {createIncidentSession} = useChannels();
+  const [modalLoading, setModalLoading] = useState(false);
 
   const handleLogin = async () => {
+    setModalLoading(true);
+    //let startTime=0, endTime=0
     try {
+      // console.log("inicio login |", username, "|", password, "|");
+      // startTime = Date.now();
+      // console.log(`loginUser start Time: ${startTime} ms`);
       const authResult = await loginUser(username, password);
-      console.log(authResult.IdToken);
+      // endTime = Date.now();
+      // console.log(`loginUser end   Time: ${endTime - startTime} ms`);
       setToken(authResult.IdToken);
-      console.log(authResult.IdToken);
+      console.log('IdToken |', authResult.IdToken, '|');
+      // startTime = Date.now();
+      // console.log(`reloadProfile start Time: ${startTime} ms`);
+      const res = await reloadProfile();
+      // endTime = Date.now();
+      // console.log(`reloadProfile end   Time: ${endTime - startTime} ms`);
 
-      navigation.navigate('HomeScreen');
+      const {role} = res.user;
+      const {id} = res.user;
+      if (!(role.startsWith('role-agent') || role.startsWith('role-user'))) {
+        setToken('');
+        setModalLoading(false);
+        Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidRole'));
+      } else {
+        console.log('Creando sesion: ', id);
+        await createIncidentSession(id);
+        navigation.navigate('HomeScreen');
+        setModalLoading(false);
+      }
     } catch (error) {
-      setToken("");
-      Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidCredentials'));
+      //console.log(`loginUser Error Time: ${endTime - startTime} ms`);
+      // console.log("error login |", error, "|");
+      setToken('');
+      setModalLoading(false);
+      Alert.alert(
+        t('loginScreen.loginFailed'),
+        t('loginScreen.invalidCredentials'),
+      );
+      // return;
     }
   };
 
@@ -44,12 +80,12 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
   const handleremeberMe = () => {
     setRememberMe(!rememberMe);
-  }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.languageSwitch}>
-        <TouchableOpacity onPress={toggleLanguage} testID='languaje-button'>
+        <TouchableOpacity onPress={toggleLanguage} testID="languaje-button">
           <Icon name="web" size={25} />
         </TouchableOpacity>
       </View>
@@ -77,12 +113,17 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
       </View>
 
       <View style={styles.checkboxContainer}>
-        <TouchableOpacity onPress={handleremeberMe} testID='remember-button'>
+        <TouchableOpacity onPress={handleremeberMe} testID="remember-button">
           <Text style={styles.checkbox}>{rememberMe ? '☑' : '☐'}</Text>
         </TouchableOpacity>
         <Text style={styles.checkboxLabel}>{t('loginScreen.rememberMe')}</Text>
       </View>
-      <Button title={t('loginScreen.login')} onPress={handleLogin} testID='login-button'/>
+      <Button
+        title={t('loginScreen.login')}
+        onPress={handleLogin}
+        testID="login-button"
+      />
+      {modalLoading && <Loading message={t('resumeIncidentScreen.loading')} />}
     </View>
   );
 };

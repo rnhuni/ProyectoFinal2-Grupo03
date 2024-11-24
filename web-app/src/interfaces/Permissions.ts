@@ -3,7 +3,7 @@ export interface Permission {
   name: string;
   resource: string;
   description: string;
-  createdAt?: string;
-  updatedAt?: string;
+  created_at?: string;
+  updated_at?: string;
   actions?: ("write" | "read" | "update" | "delete")[];
 }

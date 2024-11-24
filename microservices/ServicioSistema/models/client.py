@@ -12,9 +12,10 @@ class Client(Model):
     active_subscription_plan_id = Column(String, ForeignKey('subscription_plan.id'))
     active_subscription_plan = relationship('SubscriptionPlan', backref='clients')
 
-    def __init__(self, name, description, email, subscription_plan_id):
+    def __init__(self, id, name, description, email, subscription_plan_id):
         Model.__init__(self)
+        self.id = id
         self.name = name
         self.description = description
         self.email = email
-        self.subscription_plan_id = subscription_plan_id
+        self.active_subscription_plan_id = subscription_plan_id

@@ -115,7 +115,7 @@
       "client": "El cliente es requerido."
     }
   },
-  "incidentScreen": {
+  "incidents": {
     "tittle": "Crear registro de incidente",
     "tittleEdit": "Editar registro de incidente",
     "subTittle": "Complete el siguiente formulario con la información requerida.",
@@ -138,6 +138,23 @@
     "attachment": "Adjuntar archivos",
     "createIncident": "Crear incidente",
     "editIncident": "Editar incidente",
+    "title": "Gestión de Incidentes",
+    "create": "Crear Incidente",
+    "id": "ID de Incidente",
+    "status": "Estado",
+    "description": "Descripción",
+    "type": "Tipo",
+    "user": "Usuario",
+    "created_at": "Fecha de Creación",
+    "actions": "Acciones",
+    "chat": "Chat",
+    "close_chat": "Cerrar Chat",
+    "confirmation": {
+      "title": "Confirmación de Acción",
+      "message": "¿Estás seguro de que deseas realizar esta acción?",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
+    },
     "modalAttachment": {
       "tittle": "Adjunte sus archivos",
       "selectFiles": "¿Que tipo de archivo son permitidos? ",
@@ -158,5 +175,77 @@
       "attachmentFileSize": "El tamaño del archivo debe ser de 10MB o menos",
       "attachmentFileType": "Tipo de archivo no válido"
     }
+  },
+  "chat": {
+    "send": "Enviar",
+    "typeMessage": "Escribe un mensaje...",
+    "attachment": "Adjunto",
+    "me": "Yo",
+    "computer": "Computadora",
+    "welcome": "Hola, mi nombre es HoneyChat",
+    "greeting": "Hola",
+    "introduction": "Soy Ferin Patel",
+    "reply": "Encantado de conocerte. Puedes enviarme un mensaje y te responderé con el mismo mensaje.",
+    "online": "En línea",
+    "openChat": "Abrir Chat"
+  },
+  "dashboard": {
+    "openChat": "Abrir Chat",
+    "openChatTooltip": "Abrir Tooltip del Chat",
+    "chat": "Chat",
+    "close": "Cerrar"
+  },
+  "subscription": {
+    "title": "Suscripción y Detalles de Pago",
+    "current_plan": "Plan Actual",
+    "subscription_date": "Fecha de Suscripción",
+    "update_plan": "Actualizar Plan",
+    "amount_paid": "Monto Pagado",
+    "last_update": "Última Actualización",
+    "payment_history": "Historial de Pagos",
+    "automatic_notifications": "Notificaciones Automáticas",
+    "download_csv": "Descargar historial de pagos",
+    "loading": "Cargando datos de suscripción y pagos...",
+    "error_loading": "Hubo un error al cargar los datos. Por favor, inténtalo de nuevo más tarde.",
+    "no_data": "Fecha no disponible"
+  },
+  "plan_assignment": {
+    "title": "Asignación de plan",
+    "description": "Complete el siguiente formulario para el cliente {{client}}.",
+    "client_label": "Cliente:",
+    "select_placeholder": "Seleccionar un plan",
+    "select_button": "Seleccionar",
+    "selected_plan_label": "Plan seleccionado: {{plan}}",
+    "no_description": "Sin descripción disponible",
+    "features": "Características:",
+    "assignment_history": "Historial de asignaciones",
+    "plan_column": "Plan",
+    "date_column": "Fecha",
+    "status_column": "Estado",
+    "assign_button": "Asignar Plan",
+    "close_button": "Cerrar",
+    "success_title": "Plan asignado correctamente.",
+    "error_title": "Error al asignar el plan.",
+    "error_description": "Inténtalo de nuevo más tarde."
+  },
+  "incidentDetails": {
+    "title": "Detalles del Incidente",
+    "id": "ID:",
+    "description": "Descripción:",
+    "type": "Tipo:",
+    "user": "Usuario:",
+    "phone": "Teléfono:",
+    "created_at": "Fecha de Creación:",
+    "attachments": "Archivos Adjuntos:",
+    "loadingAttachments": "Cargando archivos adjuntos...",
+    "noAttachments": "No hay archivos adjuntos",
+    "errorTitle": "Error al obtener los archivos adjuntos",
+    "errorDescription": "No se pudieron cargar los archivos adjuntos.",
+    "close": "Cerrar"
+  },
+  "errorPage": {
+    "title": "Página no encontrada",
+    "message": "Lo sentimos, no pudimos encontrar la página que estás buscando.",
+    "back": "Volver"
   }
 }

@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Footer from '../../Components/Footer';
@@ -16,25 +17,52 @@ import useIncidents from '../../../hooks/incidents/useIncidents';
 import DetailModal from '../../Components/Incidents/DetailModal';
 import Loading from '../../Components/Loading';
 import {useFocusEffect} from '@react-navigation/native';
+import {Incident} from '../../../interfaces/Incidents';
+import RNFS from 'react-native-fs';
+import {PermissionsAndroid, Linking, Platform} from 'react-native';
+import useProfile from '../../../hooks/user/useProfile';
 
 export const ResumeIncidentScreen = () => {
   const {t} = useTranslation();
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [ticketNumber, setTicketNumber] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [modalLoading, setModalLoading] = useState(false);
-  const {incidents, loading, error, reloadIncidents} = useIncidents();
+  const {incidents, loading, reloadIncidents} = useIncidents();
+  const [allIncidents, setAllIncidents] = useState<Incident[]>([]);
+  const [status, setStatus] = useState('');
+  const {reloadProfile} = useProfile();
+
+  const fetchData = async () => {
+    const profile = await reloadProfile();
+    let rol = '';
+    let id = '';
+    if (profile) {
+      const parts = (profile.user.role as string).split('-');
+      rol = parts.length > 2 ? parts[1] : '';
+      id = profile.user.id;
+    }
+    let filters = '';
+    if (rol === 'agent') {
+      filters = 'assigned_to=' + id;
+    } else if (rol === 'user') {
+      filters = 'user_issuer=' + id;
+    }
+
+    // console.log('Incidents: ', incidents);
+    const res = await reloadIncidents(filters);
+    setAllIncidents(res);
+  };
 
   useFocusEffect(
     useCallback(() => {
-      console.log('Incidents: reload');
-      reloadIncidents();
+      fetchData();
     }, []),
   );
+
   const handleRowPress = async (item: any) => {
     setModalLoading(true);
+    // console.log('item: ', item);
     setSelectedIncident(item);
     setModalVisible(true);
     setTimeout(() => {
@@ -52,9 +80,151 @@ export const ResumeIncidentScreen = () => {
     </TouchableOpacity>
   );
 
-  const handledetailModalClose = () => {
-    reloadIncidents();
+  const handledetailModalClose = async () => {
     setModalVisible(false);
+    await fetchData();
+  };
+
+  const handleSearch = () => {
+    // console.log('incidents: ', incidents.length);
+    const res = incidents.filter((incident: Incident) => {
+      return (
+        incident.description
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        (incident.id ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        incident.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (incident.user_issuer_name ?? '')
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+    });
+    setAllIncidents(res);
+  };
+
+  // Función para convertir los incidentes a formato CSV manualmente
+  const convertToCSV = (incidentsData: Incident[]) => {
+    const headers = ['Ticket', 'Type', 'Description', 'Issuer']; // Cabeceras del CSV
+    const rows = incidentsData.map((incident: any) => [
+      incident.id,
+      incident.type,
+      incident.description,
+      incident.user_issuer_name,
+    ]);
+    const csvContent = [
+      headers.join(','), // Cabeceras
+      ...rows.map(row => row.join(',')), // Filas
+    ].join('\n');
+    return csvContent;
+  };
+
+  async function hasAndroidPermission() {
+    if (Number(Platform.Version) >= 33) {
+      return true;
+    }
+
+    const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+
+    const hasPermission = await PermissionsAndroid.check(permission);
+    if (hasPermission) {
+      return true;
+    }
+
+    const status = await PermissionsAndroid.request(permission);
+    return status === 'granted';
+  }
+
+  function getFormattedDate() {
+    const now = new Date();
+    // Retorna la fecha en formato yyyymmddhhmiss
+    return `${now.getFullYear()}${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now
+      .getHours()
+      .toString()
+      .padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now
+      .getSeconds()
+      .toString()
+      .padStart(2, '0')}${now.getMilliseconds().toString().padStart(3, '0')}`;
+  }
+
+  // Función para descargar el archivo CSV
+  const downloadCSV = async () => {
+    const csvContent = convertToCSV(allIncidents);
+    try {
+      const hasPermission = await hasAndroidPermission();
+      // console.log('hasPermission: ', hasPermission);
+
+      if (!hasPermission) {
+        // Si el permiso no ha sido concedido, solicitamos el permiso
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: `${t('resumeIncidentScreen.androidPermissions.title')}`,
+            message: `${t('resumeIncidentScreen.androidPermissions.message')}`,
+            buttonNeutral: `${t(
+              'resumeIncidentScreen.androidPermissions.buttonNeutral',
+            )}`,
+            buttonNegative: `${t(
+              'resumeIncidentScreen.androidPermissions.buttonNegative',
+            )}`,
+            buttonPositive: `${t(
+              'resumeIncidentScreen.androidPermissions.buttonPositive',
+            )}`,
+          },
+        );
+        // console.log('granted: ', granted);
+        if (granted === PermissionsAndroid.RESULTS.DENIED) {
+          setStatus(`${t('resumeIncidentScreen.androidPermissions.status')}`);
+          return;
+        }
+
+        if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+          // Si el permiso se ha denegado permanentemente, mostramos un mensaje al usuario
+          Alert.alert(
+            `${t('resumeIncidentScreen.androidPermissions.alert.title')}`,
+            `${t('resumeIncidentScreen.androidPermissions.alert.description')}`,
+            [
+              {
+                text: `${t(
+                  'resumeIncidentScreen.androidPermissions.alert.text',
+                )}`,
+                onPress: () => Linking.openSettings(),
+              },
+              {
+                text: `${t(
+                  'resumeIncidentScreen.androidPermissions.alert.label',
+                )}`,
+                style: 'cancel',
+              },
+            ],
+          );
+          return;
+        }
+      }
+
+      // Define la ruta de descarga para Android e iOS
+      const downloadPath =
+        RNFS.DocumentDirectoryPath + `/incidents_${getFormattedDate()}.csv`;
+
+      // console.log('downloadPath: ', downloadPath);
+
+      await RNFS.writeFile(downloadPath, csvContent, 'utf8');
+      Alert.alert(
+        `${t('resumeIncidentScreen.androidPermissions.alert.titleDownload')}`,
+        `${t(
+          'resumeIncidentScreen.androidPermissions.alert.descriptionDownload',
+        )} \n ${downloadPath}`,
+      );
+    } catch (error) {
+      // console.error('Error writing CSV file:', error);
+      Alert.alert(
+        `${t('resumeIncidentScreen.androidPermissions.alert.titleError')}`,
+        `${t(
+          'resumeIncidentScreen.androidPermissions.alert.descriptionError',
+        )}`,
+      );
+    }
   };
 
   return (
@@ -64,7 +234,7 @@ export const ResumeIncidentScreen = () => {
       <View style={styles.content}>
         {loading && <Loading message={t('resumeIncidentScreen.loading')} />}
 
-        <View style={styles.inputContainer}>
+        {/* <View style={styles.inputContainer}>
           <Text style={styles.label}>
             {t('resumeIncidentScreen.ticketNumber')}
           </Text>
@@ -74,15 +244,19 @@ export const ResumeIncidentScreen = () => {
             onChangeText={setTicketNumber}
             style={styles.input}
           />
-        </View>
+        </View> */}
         <View style={styles.searchContainer}>
           <TextInput
             placeholder={t('resumeIncidentScreen.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             style={styles.inputSearch}
+            testID="search-input"
           />
-          <TouchableOpacity style={styles.searchIcon}>
+          <TouchableOpacity
+            style={styles.searchIcon}
+            onPress={() => handleSearch()}
+            testID="search-input-button">
             <Icon name="magnify" size={20} style={styles.icon} />
           </TouchableOpacity>
         </View>
@@ -97,11 +271,13 @@ export const ResumeIncidentScreen = () => {
                 {t('resumeIncidentScreen.table.incidentType')}
               </Text>
             </View>
-            {incidents.map(renderRow)}
+            {searchQuery.length === 0
+              ? incidents.map(renderRow)
+              : allIncidents.map(renderRow)}
           </View>
         </ScrollView>
 
-        <View style={styles.pagination}>
+        {/* <View style={styles.pagination}>
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={selectedOption}
@@ -115,9 +291,12 @@ export const ResumeIncidentScreen = () => {
           <Text style={styles.pageText}>
             {t('resumeIncidentScreen.pagination.label')}
           </Text>
-        </View>
+        </View> */}
 
-        <TouchableOpacity style={styles.downloadButton}>
+        <TouchableOpacity
+          style={styles.downloadButton}
+          onPress={downloadCSV}
+          testID="download-button">
           <Text style={styles.downloadButtonText}>
             {t('resumeIncidentScreen.downloadButton')}
           </Text>
@@ -244,7 +423,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
-    marginTop: 20,
+    marginBottom: 5,
   },
   downloadButtonText: {
     color: '#fff',

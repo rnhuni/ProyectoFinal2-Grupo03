@@ -1,23 +1,64 @@
-import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Animated,
+  Easing,
+  Keyboard,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useTranslation} from 'react-i18next'; // Importar hook de traducción
+import {useTranslation} from 'react-i18next';
+import SlideUpModal from './notifications/SlideUpModal';
+import useProfile from '../../hooks/user/useProfile';
 
 const Footer = () => {
   const navigation = useNavigation<any>();
-  const {t} = useTranslation(); // Usar el hook de traducción
+  const {t} = useTranslation();
+
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  // const {reloadProfile} = useProfile();
+  const [idUser, setIdUser] = useState('');
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleIncidentReportScreen = () => {
     navigation.navigate('IncidentReportScreen');
-  }
+  };
 
   const handleResumeIncidentScreen = () => {
     navigation.navigate('ResumeIncidentScreen');
-  }
+  };
 
   const handleSettingsIncidentScreen = () => {
     navigation.navigate('SettingsIncidentScreen');
+  };
+
+  if (isKeyboardVisible) {
+    // Oculta el footer si el teclado está visible
+    return null;
   }
 
   return (
@@ -27,7 +68,7 @@ const Footer = () => {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleIncidentReportScreen}
-          testID='incident-report'>
+          testID="incident-report">
           <View style={styles.iconWrapper}>
             <Icon name="plus" style={styles.icon} />
           </View>
@@ -40,12 +81,12 @@ const Footer = () => {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleResumeIncidentScreen}
-          testID='resume-incident'>
+          testID="resume-incident">
           <View style={styles.iconWrapper}>
             <Icon name="view-dashboard" style={styles.icon} />
           </View>
         </TouchableOpacity>
-          <Text style={styles.label}>{t('footerScreen.summary')}</Text>
+        <Text style={styles.label}>{t('footerScreen.summary')}</Text>
       </View>
 
       {/* Botón para configuración */}
@@ -53,7 +94,7 @@ const Footer = () => {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleSettingsIncidentScreen}
-          testID='settings-incident'>
+          testID="settings-incident">
           <View style={styles.iconWrapper}>
             <Icon name="cog" style={styles.icon} />
           </View>
@@ -68,7 +109,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 10,
+    paddingVertical: 7,
     backgroundColor: '#3366FF',
   },
   buttonContainer: {
@@ -76,7 +117,7 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     width: 50,
-    height: 50,
+    height: 27,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
@@ -85,7 +126,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   icon: {
-    fontSize: 40,
+    fontSize: 25,
     color: '#fff',
   },
   label: {

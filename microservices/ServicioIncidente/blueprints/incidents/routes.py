@@ -1,9 +1,12 @@
 from flask import Blueprint, request, jsonify
 import json
+from datetime import datetime
 from ServicioIncidente.commands.incident_create import CreateIncident
 from ServicioIncidente.commands.incident_exists import ExistsIncident
 from ServicioIncidente.commands.incident_get_all import GetAllIncidents
 from ServicioIncidente.commands.incident_get import GetIncident
+from ServicioIncidente.commands.incident_close import CloseIncident
+from ServicioIncidente.commands.incident_claim import ClaimIncident
 from ServicioIncidente.commands.incident_update import UpdateIncident
 from ServicioIncidente.commands.attachment_exists import ExistsAttachment
 from ServicioIncidente.commands.attachment_create import CreateAttachment
@@ -12,6 +15,8 @@ from ServicioIncidente.commands.attachment_get import GetAttachment
 from ServicioIncidente.commands.feedback_exists import ExistsFeedback
 from ServicioIncidente.commands.feedback_create import CreateFeedback
 from ServicioIncidente.utils import decode_user, build_incident_id
+from ServicioIncidente.services.monitor_service import MonitorService
+from ServicioIncidente.services.report_service import ReportService
 
 incidents_bp = Blueprint('incident_bp', __name__)
 
@@ -22,20 +27,28 @@ def create_incident():
     try:
         user = decode_user(auth_header)
         data = request.get_json()
-        type = data.get('type')
+        incident_type = data.get('type')
         description = data.get('description')
         contact = data.get('contact', "")
         attachments =  data.get('attachments', [])
-        
-        if not type or not description or len(description) < 1:
+        channel_id = data.get('publication_channel_id', "chan-support-channel")
+        sla = data.get('sla', 1440)
+
+        if not incident_type or not description or len(description) < 1 or \
+           not channel_id or not sla :
             return "Invalid parameters", 400
+        
+        sla = int(sla)
         
         if contact and len(contact) > 0:
             contact = json.dumps(contact)
 
-        id = build_incident_id()
+        incident_id = build_incident_id()
         
-        data = CreateIncident(id, type, description, contact, user["id"], user["name"]).execute()
+        data = CreateIncident(incident_id, incident_type, description, contact, user["id"], user["name"], \
+                              channel_id, sla).execute()
+        MonitorService().enqueue_event(user, "CREATE-INCIDENT", f"INCIDENT_ID={str(data.id)}")
+        ReportService().enqueue_create_incident(user, data)
 
         for attachment in attachments:
             aid = attachment["id"]
@@ -53,6 +66,9 @@ def create_incident():
             "contact": json.loads(data.contact),
             "user_issuer_id": data.user_issuer_id,
             "user_issuer_name": data.user_issuer_name,
+            "publication_channel_id": data.publication_channel_id,
+            "sla": data.sla,
+            "status": data.status,
             "created_at": data.createdAt.isoformat(),
             "updated_at": data.updatedAt.isoformat()
         }), 201
@@ -83,6 +99,8 @@ def create_attachment(incident_id):
         
         data = CreateAttachment(id, incident_id, file_name, file_uri, content_type,\
                                 user["id"], user["name"]).execute()
+        
+        MonitorService().enqueue_event(user, "CREATE-ATTACHMENT", f"ATTACHMENT_ID={str(data.id)}")
 
         return jsonify({
             "id": data.id,
@@ -100,10 +118,28 @@ def create_attachment(incident_id):
 @incidents_bp.route('/incidents', methods=['GET'])
 def get_all_incidents():
     try:
-        incidents = GetAllIncidents().execute()
+        status = request.args.get('status')
+        assigned_to = request.args.get('assigned_to')
+        user_issuer = request.args.get('user_issuer')
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+        order = request.args.get('order', 'desc')
+
+        start_date = None
+        end_date = None
+        if start_date_str:
+            start_date = datetime.fromisoformat(start_date_str)
+        if end_date_str:
+            end_date = datetime.fromisoformat(end_date_str)
+
+        incidents = GetAllIncidents(status, assigned_to, user_issuer, order, start_date, end_date).execute()       
 
         result = []
         for incident in incidents:
+            resolution = ""
+            if incident.date_resolution:
+                incident.date_resolution.isoformat()
+
             incident_data = {
                 "id": incident.id,
                 "type": incident.type,
@@ -111,6 +147,17 @@ def get_all_incidents():
                 "contact": json.loads(incident.contact) if incident.contact else None,
                 "user_issuer_id": incident.user_issuer_id,
                 "user_issuer_name": incident.user_issuer_name,
+                "status": incident.status,
+                "date_resolution": resolution,
+                "resolution_time": incident.resolution_time,
+                "closed_by_id": incident.closed_by_id,
+                "closed_by_type": incident.closed_by_type,
+                "closed_by_name": incident.closed_by_name,
+                "assigned_to_id": incident.assigned_to_id,
+                "assigned_to_type": incident.assigned_to_type,
+                "assigned_to_name": incident.assigned_to_name,
+                "publication_channel_id": incident.publication_channel_id,
+                "sla": incident.sla,
                 "created_at": incident.createdAt.isoformat(),
                 "updated_at": incident.updatedAt.isoformat(),
                 "attachments": [
@@ -135,6 +182,10 @@ def get_incident(incident_id):
         
         if not incident:
             return "Incident not found", 404
+        
+        resolution = ""
+        if incident.date_resolution:
+            incident.date_resolution.isoformat()
 
         return jsonify({
             "id": incident.id,
@@ -143,6 +194,16 @@ def get_incident(incident_id):
             "contact": json.loads(incident.contact) if incident.contact else None,
             "user_issuer_id": incident.user_issuer_id,
             "user_issuer_name": incident.user_issuer_name,
+            "date_resolution": resolution,
+            "resolution_time": incident.resolution_time,
+            "closed_by_id": incident.closed_by_id,
+            "closed_by_type": incident.closed_by_type,
+            "closed_by_name": incident.closed_by_name,
+            "assigned_to_id": incident.assigned_to_id,
+            "assigned_to_type": incident.assigned_to_type,
+            "assigned_to_name": incident.assigned_to_name,
+            "publication_channel_id": incident.publication_channel_id,
+            "sla": incident.sla,
             "created_at": incident.createdAt.isoformat(),
             "updated_at": incident.updatedAt.isoformat(),
             "attachments": [
@@ -179,6 +240,7 @@ def update_incident(incident_id):
             contact = json.dumps(contact)
 
         updated_incident = UpdateIncident(incident_id, type=type, description=description, contact=contact).execute()
+        MonitorService().enqueue_event(user, "UPDATE-INCIDENT", f"INCIDENT_ID={str(updated_incident.id)};USER-ID={user['id']}")
 
         return jsonify({
             "id": updated_incident.id,
@@ -198,7 +260,79 @@ def update_incident(incident_id):
         
     except Exception as e:
         return jsonify({'error': f'Update incident failed. Details: {str(e)}'}), 500
+    
+@incidents_bp.route('/incidents/<incident_id>/close', methods=['PUT'])
+def close_incident(incident_id):
+    auth_header = request.headers.get('Authorization')
 
+    try:
+        user = decode_user(auth_header)
+        
+        data = CloseIncident(incident_id, user["id"], user["name"], user["role_type"]).execute()
+        MonitorService().enqueue_event(user, "CLOSE-INCIDENT", f"INCIDENT_ID={str(data.id)}")
+        ReportService().enqueue_close_incident(user, data)
+
+        return jsonify({
+            "id": data.id,
+            "type": data.type,
+            "description": data.description,
+            "contact": json.loads(data.contact) if data.contact else None,
+            "user_issuer_id": data.user_issuer_id,
+            "user_issuer_name": data.user_issuer_name,
+            "status": data.status,
+            "closed_by_id": data.closed_by_id,
+            "closed_by_type": data.closed_by_type,
+            "closed_by_name": data.closed_by_name,
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
+        }), 200
+
+    except ValueError as e:
+        if str(e) == "Incident not found":
+            return jsonify({"error": "Incident not found"}), 404
+        return jsonify({"error": f"Update incident failed. Details: {str(e)}"}), 400
+        
+    except Exception as e:
+        return jsonify({'error': f'Update incident failed. Details: {str(e)}'}), 500
+
+@incidents_bp.route('/incidents/<incident_id>/claim', methods=['PUT'])
+def claim_incident(incident_id):
+    auth_header = request.headers.get('Authorization')
+
+    try:
+        user = decode_user(auth_header)
+        
+        user_id = user["id"]
+        
+        data = ClaimIncident(incident_id, user_id, user["name"], user["role_type"]).execute()
+        MonitorService().enqueue_event(user, "CLAIM-INCIDENT", f"INCIDENT_ID={str(data.id)}")
+        ReportService().enqueue_claim_incident(user, data)
+
+        return jsonify({
+            "id": data.id,
+            "type": data.type,
+            "description": data.description,
+            "contact": json.loads(data.contact),
+            "user_issuer_id": data.user_issuer_id,
+            "user_issuer_name": data.user_issuer_name,
+            "publication_channel_id": data.publication_channel_id,
+            "assigned_to_id": data.assigned_to_id,
+            "assigned_to_name": data.assigned_to_name,
+            "assigned_to_type": data.assigned_to_type,
+            "sla": data.sla,
+            "status": data.status,
+            "created_at": data.createdAt.isoformat(),
+            "updated_at": data.updatedAt.isoformat()
+        }), 200
+
+    except ValueError as e:
+        if str(e) == "Incident not found":
+            return jsonify({"error": "Incident not found"}), 404
+        return jsonify({"error": f"Update incident failed. Details: {str(e)}"}), 400
+        
+    except Exception as e:
+        return jsonify({'error': f'Update incident failed. Details: {str(e)}'}), 500
+    
 @incidents_bp.route('/incidents/<incident_id>/attachments', methods=['GET'])
 def get_all_attachments(incident_id):
     auth_header = request.headers.get('Authorization')
@@ -311,6 +445,9 @@ def create_feedback(incident_id):
 
         feedback = CreateFeedback(user["id"], incident_id, support_rating, ease_of_contact, \
                                           resolution_time, support_staff_attitude, additional_comments).execute()
+        
+        MonitorService().enqueue_event(user, "CREATE-FEEDBACK", f"FEEDBACK_ID={str(feedback.id)}")
+        ReportService().enqueue_create_feedback(user, feedback)
 
         return jsonify(
             {

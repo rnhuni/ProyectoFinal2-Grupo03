@@ -1,79 +1,67 @@
 import React from 'react';
-import {StyleSheet, View, Text, Button, Alert} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, FlatList} from 'react-native';
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
 import {useTranslation} from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
 
 export const HomeScreen = () => {
+  const navigation = useNavigation<any>();
   const {t} = useTranslation();
+
+  const features = [
+    {
+      id: '1',
+      title: t('homeScreen.features.viewTickets'),
+      action: () => navigation.navigate('ResumeIncidentScreen'),
+      testID: 'viewTicketsButton',
+    },
+    {
+      id: '2',
+      title: t('homeScreen.features.createTicket'),
+      action: () => navigation.navigate('IncidentReportScreen'),
+      testID: 'createTicketButton',
+    },
+    {
+      id: '3',
+      title: t('homeScreen.features.chatSupport'),
+      action: () => navigation.navigate('ResumeIncidentScreen'),
+      testID: 'chatSupportButton',
+    },
+    {
+      id: '4',
+      title: t('homeScreen.features.downloadReport'),
+      action: () => navigation.navigate('ResumeIncidentScreen'),
+      testID: 'downloadReportButton',
+    },
+    {
+      id: '5',
+      title: t('homeScreen.features.configureNotifications'),
+      action: () => navigation.navigate('SettingsIncidentScreen'),
+      testID: 'configureNotificationsButton',
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <Header />
-      {/* Contenido */}
       <View style={styles.content}>
-        <Text style={styles.sectionTitle}>{t('homeScreen.sectionTitle')}</Text>
+        <Text style={styles.title}>{t('homeScreen.title')}</Text>
+        <Text style={styles.subtitle}>{t('homeScreen.subtitle')}</Text>
 
-        <View style={styles.tableContainer}>
-          {/* Cabecera de la tabla */}
-          <View style={styles.tableHeader}>
-            <Text style={styles.headerText}>
-              {t('homeScreen.tableHeaders.id')}
-            </Text>
-            <Text style={styles.headerText}>
-              {t('homeScreen.tableHeaders.template')}
-            </Text>
-            <Text style={styles.headerText}>
-              {t('homeScreen.tableHeaders.status')}
-            </Text>
-          </View>
-
-          {/* Filas de la tabla */}
-          {[
-            {
-              id: 1,
-              template: t('homeScreen.rows.welcome'),
-              status: t('homeScreen.status.active'),
-            },
-            {
-              id: 2,
-              template: t('homeScreen.rows.additionalInfo'),
-              status: t('homeScreen.status.active'),
-            },
-            {
-              id: 3,
-              template: t('homeScreen.rows.satisfactionSurvey'),
-              status: t('homeScreen.status.active'),
-            },
-            {
-              id: 4,
-              template: t('homeScreen.rows.chatEnd'),
-              status: t('homeScreen.status.active'),
-            },
-          ].map(row => (
-            <View key={row.id} style={styles.tableRow}>
-              <Text>{row.id}</Text>
-              <Text>{row.template}</Text>
-              <View style={styles.statusContainer}>
-                <View style={styles.statusDot} />
-                <Text style={styles.activeStatus}>{row.status}</Text>
-              </View>
-            </View>
-          ))}
-
-          {/* Paginación */}
-          <View style={styles.pagination}>
-            <Text>{t('homeScreen.pagination.show')}</Text>
-            <View style={styles.pageControls}>
-              <Button
-                title="1"
-                onPress={() => {
-                  Alert.alert(t('homeScreen.alert'));
-                }}
-              />
-              <Text>{t('homeScreen.pagination.page')}</Text>
-            </View>
-          </View>
-        </View>
+        <FlatList
+          data={features}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => (
+            <TouchableOpacity
+              style={styles.featureCard}
+              onPress={item.action}
+              testID={item.testID}>
+              <Text style={styles.featureText}>{item.title}</Text>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.featureList}
+        />
       </View>
       <Footer />
     </View>
@@ -89,60 +77,45 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-  subtitle: {
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    marginBottom: 20,
-    fontSize: 20,
-  },
-  tableContainer: {
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-  },
-  tableHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  headerText: {
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
   },
-  tableRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: '#E0E0E0',
+  subtitle: {
+    fontSize: 16,
+    color: '#6c757d',
+    textAlign: 'center',
+    marginBottom: 16,
   },
-  statusContainer: {
-    flexDirection: 'row',
+  featureList: {
+    marginTop: 16,
+  },
+  featureCard: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  featureText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  createButton: {
+    marginTop: 16,
+    backgroundColor: '#007bff',
+    padding: 16,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: 'green',
-    marginRight: 5,
-  },
-  activeStatus: {
-    color: 'green',
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  pageControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  createButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

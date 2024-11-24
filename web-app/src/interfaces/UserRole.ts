@@ -3,6 +3,6 @@ export interface UserRole {
     userId: number;
     role: string;
     status: 'Active' | 'Completed' | 'Inactive';
-    createdAt?: string;
+    created_at?: string;
     email?: string;
 }
