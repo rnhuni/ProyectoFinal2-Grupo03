@@ -36,6 +36,7 @@ Amplify.configure(awsConfig);
 export const subscribeChannelFunc = async (id: string) => {
 
   try {
+    // console.log("subscribeChannelFunc id: ", id);
     const obj = await (API.graphql(graphqlOperation(subscribeChannel, { id })) as Observable<object>);
     // console.log("subscribeChannelFunc: ", obj);
     return obj;

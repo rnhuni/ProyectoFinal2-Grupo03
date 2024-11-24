@@ -1,77 +1,81 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-  Easing,
-} from 'react-native';
+import {Modal, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import useSuscribeGraphql from '../../../hooks/user/useSuscribeGraphql';
+import {Message} from '../../../interfaces/Messages';
+import useProfile from '../../../hooks/user/useProfile';
 
 interface SlideUpModalProps {
-  isVisible: boolean;
-  text: string;
-  onClose?: () => void;
+  visible: boolean;
+  onClose: () => void;
 }
 
-const SlideUpModal: React.FC<SlideUpModalProps> = ({
-  isVisible,
-  text,
-  onClose,
-}) => {
-  const [slideAnim] = useState(new Animated.Value(500)); // Inicia fuera de la pantalla (abajo)
+const SlideUpModal: React.FC<SlideUpModalProps> = ({visible, onClose}) => {
+  const {received, setIdSubscriptionFunc} = useSuscribeGraphql();
+  const [textModal, setTextModal] = useState('Initial Text');
+  const [isModalVisible, setIsModalVisible] = useState(visible);
+  const {reloadProfile} = useProfile();
 
   useEffect(() => {
-    if (isVisible) {
-      // Animar el modal hacia arriba
-      Animated.timing(slideAnim, {
-        toValue: 0, // Posición final (visible)
-        duration: 300,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
+    const fetchProfile = async () => {
+      const profile = await reloadProfile();
+      if (profile) {
+        //console.log('profile.user.id: ', profile.user.id);
+        setIdSubscriptionFunc(profile.user.id);
+      }
+    };
+    fetchProfile();
+  }, []);
 
-      // Configura el cierre automático después de 2 segundos
+  useEffect(() => {
+    //console.log('useEffect received: ', received);
+    if (received) {
+      // Agregar la notificación recibida al chat como un mensaje del agente
+      // console.log('received: ', received);
+      const message: Message = JSON.parse(received).data;
+      // console.log('message received: ', message);
+
+      setTextModal(message.body);
+      setIsModalVisible(true);
+
       const timer = setTimeout(() => {
         handleClose();
-      }, 2000);
-
-      return () => clearTimeout(timer);
+      }, 3000);
     }
-  }, [isVisible]);
+  }, [received]);
 
   const handleClose = () => {
     if (onClose) {
       onClose(); // Llama directamente a `onClose` antes de la animación.
     }
-
-    Animated.timing(slideAnim, {
-      toValue: 500, // Posición inicial (fuera de la pantalla)
-      duration: 300,
-      easing: Easing.in(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    setIsModalVisible(false);
+    // Animated.timing(slideAnim, {
+    //   toValue: 500, // Posición inicial (fuera de la pantalla)
+    //   duration: 300,
+    //   easing: Easing.in(Easing.ease),
+    //   useNativeDriver: true,
+    // }).start();
   };
 
-  if (!isVisible) return null;
+  if (!isModalVisible) return null;
 
   return (
-    <Modal visible={isVisible} transparent animationType="none">
+    <Modal visible={isModalVisible} transparent={true} animationType="fade">
       <View style={styles.modalOverlay}>
-        <Animated.View
+        <View style={styles.modalContainer}>
+          {/* <Animated.View
           style={[
             styles.modalContainer,
             {transform: [{translateY: slideAnim}]},
-          ]}>
+          ]}> */}
           <TouchableOpacity
             style={styles.closeButton}
             onPress={handleClose}
             testID="close-modal">
             <Text style={styles.closeButtonText}>✕</Text>
           </TouchableOpacity>
-          <Text style={styles.modalText}>{text}</Text>
-        </Animated.View>
+          <Text style={styles.modalText}>{textModal}</Text>
+        </View>
+        {/* </Animated.View> */}
       </View>
     </Modal>
   );

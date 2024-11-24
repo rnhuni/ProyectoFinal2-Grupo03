@@ -16,6 +16,7 @@ import {loginUser} from '../../../services/authService';
 import {setToken} from '../../../api/api';
 import useProfile from '../../../hooks/user/useProfile';
 import Loading from '../../Components/Loading';
+import useChannels from '../../../hooks/channel/useChannels';
 
 interface LoginScreenProps
   extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
@@ -26,6 +27,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
   const [password, setPassword] = useState('User$123');
   const [rememberMe, setRememberMe] = useState(false);
   const {reloadProfile} = useProfile();
+  const {createIncidentSession} = useChannels();
   const [modalLoading, setModalLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -47,11 +49,14 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
       // console.log(`reloadProfile end   Time: ${endTime - startTime} ms`);
 
       const {role} = res.user;
+      const {id} = res.user;
       if (!(role.startsWith('role-agent') || role.startsWith('role-user'))) {
         setToken('');
         setModalLoading(false);
         Alert.alert(t('loginScreen.loginFailed'), t('loginScreen.invalidRole'));
       } else {
+        // console.log('Creando sesion: ', id);
+        await createIncidentSession(id);
         navigation.navigate('HomeScreen');
         setModalLoading(false);
       }

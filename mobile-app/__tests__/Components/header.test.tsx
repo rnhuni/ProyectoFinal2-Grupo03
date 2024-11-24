@@ -15,6 +15,16 @@ jest.mock('aws-amplify', () => ({
   graphqlOperation: jest.fn(),
 }));
 
+jest.mock('react-native-config', () => ({
+  API_URL: 'https://mock-api.example.com',
+  OTHER_CONFIG: 'mock-value',
+
+  AWS_APPSYNC_GRAPHQLENDPOINT: 'https://mock-api.example.com',
+  AWS_APPSYNC_REGION: 'pepe',
+  AWS_APPSYNC_AUTHENTICATIONTYPE: 'API_KEY',
+  AWS_APPSYNC_APIKEY: 'da2-key',
+}));
+
 const renderWithI18n = (component: React.ReactNode) => {
   return render(
     <I18nextProvider i18n={i18n}>

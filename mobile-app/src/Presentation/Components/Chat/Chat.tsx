@@ -112,7 +112,7 @@ const Chat: React.FC<ChatProps> = ({id}) => {
         message.source_type.charAt(0).toUpperCase()
       );
     } else {
-      console.log('message error: ', message);
+      // console.log('message error: ', message);
       return '';
     }
   };
