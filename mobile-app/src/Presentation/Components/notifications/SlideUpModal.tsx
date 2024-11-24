@@ -3,6 +3,8 @@ import {Modal, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import useSuscribeGraphql from '../../../hooks/user/useSuscribeGraphql';
 import {Message} from '../../../interfaces/Messages';
 import useProfile from '../../../hooks/user/useProfile';
+import useNotificationConfig from '../../../hooks/user/useNotificationsConfig';
+import {NotificationConfig} from '../../../interfaces/NotificationConfig';
 
 interface SlideUpModalProps {
   visible: boolean;
@@ -14,13 +16,18 @@ const SlideUpModal: React.FC<SlideUpModalProps> = ({visible, onClose}) => {
   const [textModal, setTextModal] = useState('Initial Text');
   const [isModalVisible, setIsModalVisible] = useState(visible);
   const {reloadProfile} = useProfile();
+  const {reloadNotificationConfig} = useNotificationConfig();
+  const [notifications, setNotifications] = useState<NotificationConfig[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       const profile = await reloadProfile();
-      if (profile) {
-        //console.log('profile.user.id: ', profile.user.id);
+      const notifications: NotificationConfig[] =
+        await reloadNotificationConfig();
+      if (profile && notifications) {
+        console.log('profile.user.id: ', profile.user.id);
         setIdSubscriptionFunc(profile.user.id);
+        setNotifications(notifications);
       }
     };
     fetchProfile();
@@ -31,10 +38,24 @@ const SlideUpModal: React.FC<SlideUpModalProps> = ({visible, onClose}) => {
     if (received) {
       // Agregar la notificación recibida al chat como un mensaje del agente
       // console.log('received: ', received);
-      const message: Message = JSON.parse(received).data;
+      const message: NotificationMessage = JSON.parse(received);
+
+      // console.log('notifications: ', notifications);
       // console.log('message received: ', message);
 
-      setTextModal(message.body);
+      const filteredNotifications = notifications.filter(
+        notification =>
+          notification.id === message.payload.id &&
+          notification.show_by_default,
+      );
+
+      // console.log('filteredNotifications: ', filteredNotifications);
+
+      if (filteredNotifications.length == 0) {
+        return;
+      }
+
+      setTextModal(message.payload.message);
       setIsModalVisible(true);
 
       const timer = setTimeout(() => {
