@@ -136,16 +136,16 @@ export const ResumeIncidentScreen = () => {
 
   function getFormattedDate() {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Los meses empiezan desde 0, así que sumamos 1
-    const day = now.getDate().toString().padStart(2, '0');
-    const hour = now.getHours().toString().padStart(2, '0');
-    const minute = now.getMinutes().toString().padStart(2, '0');
-    const second = now.getSeconds().toString().padStart(2, '0');
-    const millisecond = now.getMilliseconds().toString().padStart(3, '0');
-
     // Retorna la fecha en formato yyyymmddhhmiss
-    return `${year}${month}${day}${hour}${minute}${second}${millisecond}`;
+    return `${now.getFullYear()}${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now
+      .getHours()
+      .toString()
+      .padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now
+      .getSeconds()
+      .toString()
+      .padStart(2, '0')}${now.getMilliseconds().toString().padStart(3, '0')}`;
   }
 
   // Función para descargar el archivo CSV
@@ -205,9 +205,7 @@ export const ResumeIncidentScreen = () => {
 
       // Define la ruta de descarga para Android e iOS
       const downloadPath =
-        Platform.OS === 'android'
-          ? RNFS.DownloadDirectoryPath + `/incidents_${getFormattedDate()}.csv` // Android
-          : RNFS.DocumentDirectoryPath + `/incidents_${getFormattedDate()}.csv`; // iOS
+        RNFS.DocumentDirectoryPath + `/incidents_${getFormattedDate()}.csv`;
 
       // console.log('downloadPath: ', downloadPath);
 

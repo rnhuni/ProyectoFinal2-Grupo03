@@ -49,6 +49,8 @@ describe('Header Component', () => {
 
     fireEvent.press(getByTestId('toggle-languaje'));
 
-    fireEvent.press(getByTestId('toggle-languaje'));
+    fireEvent.press(getByTestId('toggle-magnify'));
+
+    fireEvent.press(getByTestId('toggle-magnify'));
   });
 });

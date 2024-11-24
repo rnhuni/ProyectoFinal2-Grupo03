@@ -64,10 +64,6 @@ export const IncidentReportScreen = () => {
               content_type: attachment.content_type,
               file_uri: attachment.file_uri,
             });
-          } else {
-            throw new Error(
-              `Error al cargar el archivo: ${attachment.file_name}`,
-            );
           }
         }
       }
