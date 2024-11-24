@@ -36,10 +36,17 @@ import {
 import { useProfileContext } from "../../contexts/ProfileContext";
 
 interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  created_at: string;
+  type: string;
+  payload:
+    | {
+        id: string;
+        message: string;
+      }
+    | {
+        id: string;
+        action: string;
+      };
+  arrived_at: string;
 }
 
 interface NavBarProps {
@@ -49,17 +56,16 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ name, notifications }) => {
   const { i18n } = useTranslation();
-  const { language, setLanguage } = useProfileContext(); // Usa el contexto
+  const { language, setLanguage } = useProfileContext();
   const color = useColorModeValue("black", "white");
   const { toggleColorMode } = useColorMode();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
-    setLanguage(lng); // Actualiza el idioma en el contexto
+    setLanguage(lng);
   };
 
-  // Contador de notificaciones no leídas
   const unreadCount = notifications.length;
 
   return (
@@ -171,7 +177,6 @@ const NavBar: React.FC<NavBarProps> = ({ name, notifications }) => {
         </Stack>
       </Flex>
 
-      {/* Modal de notificaciones */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
@@ -184,17 +189,21 @@ const NavBar: React.FC<NavBarProps> = ({ name, notifications }) => {
               <VStack spacing={4} align="stretch">
                 {notifications.map((notif) => (
                   <Box
-                    key={notif.id}
+                    key={notif?.payload?.id}
                     p={3}
                     border="1px solid"
                     borderColor="gray.300"
                     borderRadius="md"
                     boxShadow="sm"
                   >
-                    <Text fontWeight="bold">{notif.title}</Text>
-                    <Text>{notif.message}</Text>
+                    <Text fontWeight="bold">{notif.type}</Text>
+                    <Text>
+                      {"message" in notif.payload
+                        ? notif.payload.message
+                        : notif.payload.action}
+                    </Text>
                     <Text fontSize="sm" color="gray.500">
-                      {new Date(notif.created_at).toLocaleString()}
+                      {new Date(notif.arrived_at).toLocaleString()}
                     </Text>
                   </Box>
                 ))}

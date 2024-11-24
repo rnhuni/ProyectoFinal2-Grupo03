@@ -7,17 +7,26 @@ import { Outlet } from "react-router-dom";
 import { useProfileContext } from "../contexts/ProfileContext";
 
 interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  created_at: string;
+  type: string;
+  payload:
+    | {
+        id: string;
+        message: string;
+      }
+    | {
+        id: string;
+        action: string;
+      };
+  arrived_at: string;
 }
 
 const Dashboard: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { profile } = useProfileContext();
   const userId = profile?.user?.id || "";
+  const client = profile?.user?.client || "";
   const role = profile?.user?.role?.split("-")[1] || "";
+  const currentUserId = role === "client" ? client : userId;
 
   const bg = useColorModeValue("white", "gray.800");
   const color = useColorModeValue("black", "white");
@@ -29,12 +38,17 @@ const Dashboard: React.FC = () => {
 
     const subscribe = async () => {
       try {
-        const observable = await subscribeNotificationsFunc(userId);
+        const observable = await subscribeNotificationsFunc(currentUserId);
         if (observable) {
           subscription = observable.subscribe({
             next: ({ value }: any) => {
               console.log("Notificación recibida:", value);
-              const notification = JSON.parse(value.data.subscribe.data);
+              const notificationData = JSON.parse(value.data.subscribe.data);
+
+              const notification = {
+                ...notificationData,
+                arrived_at: new Date().toISOString(),
+              };
               setNotifications((prev) => [...prev, notification]);
             },
             error: (error) => {
