@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTranslation} from 'react-i18next'; // Importamos el hook para la traducción
+import SlideUpModal from './notifications/SlideUpModal';
 
 const Header = () => {
   const navigation = useNavigation();
-  const {i18n} = useTranslation(); // Hook para usar la función de cambio de idioma
+  const {i18n} = useTranslation();
+  const [isVisibleSlideUp, setIsVisibleSlideUp] = useState(false);
 
   const handleResumeIncidentScreen = () => {
     navigation.navigate('ResumeIncidentScreen' as never);
@@ -20,6 +22,11 @@ const Header = () => {
 
   const handleGoBack = () => {
     navigation.goBack();
+  };
+
+  const handleOnCloseSlideUp = () => {
+    //console.log('handleOnCloseSlideUp CLOSE');
+    setIsVisibleSlideUp(false);
   };
 
   return (
@@ -42,6 +49,11 @@ const Header = () => {
           <Icon name="web" style={styles.icon} />
         </TouchableOpacity>
       </View>
+      {
+        //isVisibleSlideUp && (
+        <SlideUpModal visible={false} onClose={handleOnCloseSlideUp} />
+        // )
+      }
     </View>
   );
 };

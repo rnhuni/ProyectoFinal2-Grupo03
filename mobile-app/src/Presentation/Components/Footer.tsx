@@ -13,15 +13,15 @@ import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTranslation} from 'react-i18next';
 import SlideUpModal from './notifications/SlideUpModal';
+import useProfile from '../../hooks/user/useProfile';
 
 const Footer = () => {
   const navigation = useNavigation<any>();
   const {t} = useTranslation();
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [modalText, setModalText] = useState(
-    'Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento. Esto es un modal con animación de deslizamiento.',
-  );
+
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  // const {reloadProfile} = useProfile();
+  const [idUser, setIdUser] = useState('');
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -101,11 +101,6 @@ const Footer = () => {
         </TouchableOpacity>
         <Text style={styles.label}>{t('footerScreen.settings')}</Text>
       </View>
-      <SlideUpModal
-        isVisible={isModalVisible}
-        text={modalText}
-        onClose={() => setModalVisible(false)}
-      />
     </View>
   );
 };

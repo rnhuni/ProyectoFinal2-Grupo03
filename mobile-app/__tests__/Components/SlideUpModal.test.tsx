@@ -2,45 +2,50 @@ import React from 'react';
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import SlideUpModal from '../../src/Presentation/Components/notifications/SlideUpModal';
 
+jest.mock('aws-amplify', () => ({
+  Amplify: {
+    configure: jest.fn(),
+  },
+  API: {
+    graphql: jest.fn(),
+  },
+  graphqlOperation: jest.fn(),
+}));
+
+jest.mock('react-native-config', () => ({
+  API_URL: 'https://mock-api.example.com',
+  OTHER_CONFIG: 'mock-value',
+
+  AWS_APPSYNC_GRAPHQLENDPOINT: 'https://mock-api.example.com',
+  AWS_APPSYNC_REGION: 'pepe',
+  AWS_APPSYNC_AUTHENTICATIONTYPE: 'API_KEY',
+  AWS_APPSYNC_APIKEY: 'da2-key',
+}));
+
 jest.useFakeTimers(); // Necesario para manejar los temporizadores de manera controlada.
 
 describe('SlideUpModal', () => {
   it('renders correctly when visible', () => {
     const {getByText} = render(
-      <SlideUpModal isVisible={true} text="Test Modal" onClose={jest.fn()} />,
+      <SlideUpModal visible={true} onClose={jest.fn()} />,
     );
 
-    expect(getByText('Test Modal')).toBeTruthy();
+    expect(getByText('✕')).toBeTruthy();
   });
 
   it('does not render when not visible', () => {
     const {queryByText} = render(
-      <SlideUpModal isVisible={false} text="Test Modal" onClose={jest.fn()} />,
+      <SlideUpModal visible={false} onClose={jest.fn()} />,
     );
 
-    expect(queryByText('Test Modal')).toBeNull();
-  });
-
-  it('calls onClose after 2 seconds', async () => {
-    const mockOnClose = jest.fn();
-
-    render(
-      <SlideUpModal isVisible={true} text="Test Modal" onClose={mockOnClose} />,
-    );
-
-    // Avanza el temporizador de Jest 2 segundos.
-    jest.advanceTimersByTime(2000);
-
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalled();
-    });
+    expect(queryByText('✕')).toBeNull();
   });
 
   it('closes the modal when the X button is pressed', () => {
     const mockOnClose = jest.fn();
 
     const {getByTestId} = render(
-      <SlideUpModal isVisible={true} text="Test Modal" onClose={mockOnClose} />,
+      <SlideUpModal visible={true} onClose={mockOnClose} />,
     );
 
     const closeButton = getByTestId('close-modal');
@@ -50,8 +55,9 @@ describe('SlideUpModal', () => {
   });
 
   it('animates correctly on open', () => {
+    const mockOnClose = jest.fn();
     const {getByTestId} = render(
-      <SlideUpModal isVisible={true} text="Test Modal" />,
+      <SlideUpModal visible={true} onClose={mockOnClose} />,
     );
 
     const modal = getByTestId('close-modal');

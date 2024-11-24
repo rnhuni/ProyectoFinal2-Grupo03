@@ -26,7 +26,7 @@ export const setToken = (token: string) => {
 // Interceptor para las solicitudes
 api.interceptors.request.use(
     (config) => {
-        console.log('Request URL:', config.url); // Imprime la URL de la solicitud
+        // console.log('Request URL:', config.url); // Imprime la URL de la solicitud
         return config;
     },
     (error) => {
