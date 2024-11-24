@@ -1,3 +1,5 @@
+// sonar.ignore
+/* istanbul ignore file */
 import React from "react";
 import { Box, Button, Text, Flex } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";

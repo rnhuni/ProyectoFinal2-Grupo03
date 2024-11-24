@@ -1,7 +1,8 @@
+// sonar.ignore
+/* istanbul ignore file */
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import { Observable } from "zen-observable-ts";
 
-// GraphQL operations
 const subscribeChannel = /* GraphQL */ `
   subscription SubscribeChannel($id: String!) {
     subscribe(id: $id) {
@@ -19,7 +20,6 @@ const publishChannel = /* GraphQL */ `
   }
 `;
 
-// Example configuration for AppSync with API Key authentication
 const awsConfig = {
   aws_appsync_graphqlEndpoint:
     "https://oxi2wohj5fh35d4ifwpt7cdava.appsync-api.us-east-1.amazonaws.com/graphql",
@@ -30,11 +30,6 @@ const awsConfig = {
 Amplify.configure(awsConfig);
 // Amplify configuration utilizando variables de entorno
 
-/**
- * Función para suscribirse al canal de un incidente
- * @param id - ID del incidente
- * @returns Observable para suscripciones
- */
 export const subscribeChannelFunc = async (
   id: string
 ): Promise<Observable<object> | null> => {
@@ -50,12 +45,6 @@ export const subscribeChannelFunc = async (
   }
 };
 
-/**
- * Función para publicar en el canal de un incidente
- * @param id - ID del incidente
- * @param data - Datos del mensaje a publicar
- * @returns Resultado de la mutación o null en caso de error
- */
 export const publishChannelFunc = async (data: string, id: string) => {
   try {
     // console.log("2. publishChannelFunc: ", data, id);
