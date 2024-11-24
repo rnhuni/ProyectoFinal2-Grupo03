@@ -27,7 +27,7 @@ const useFileUpload = () => {
       //console.log("Response", response.data);
       return response.data; // Devuelve la respuesta completa
     } catch (err) {
-      console.error("Get upload URL error:", err);
+      // console.error("Get upload URL error:", err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
       return null;
@@ -49,7 +49,7 @@ const useFileUpload = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const bodyForm:any = {
+      const bodyForm: any = {
         method: "PUT",
         body: file,
         headers: {
@@ -58,7 +58,7 @@ const useFileUpload = () => {
       }
       //console.log("url", url);
       //console.log("bodyForm", bodyForm);
-      
+
       //console.log("Response antes");
       const response = await fetch(url, bodyForm);
       //console.log("Response", response);
@@ -67,7 +67,7 @@ const useFileUpload = () => {
       }
       return true;
     } catch (err) {
-      console.error("Upload file error:", err);
+      // console.error("Upload file error:", err);
       const axiosError = err as AxiosError;
       setError(axiosError.message);
       return false;

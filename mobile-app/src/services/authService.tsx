@@ -14,10 +14,13 @@ interface AuthResult {
 }
 
 // Función de inicio de sesión
-export const loginUser = async (username: string, password: string): Promise<AuthResult> => {
+export const loginUser = async (
+  username: string,
+  password: string,
+): Promise<AuthResult> => {
   const params = {
     AuthFlow: 'USER_PASSWORD_AUTH',
-    ClientId: '7evjfjtvscn0qsok8la2kf1ja', 
+    ClientId: '7evjfjtvscn0qsok8la2kf1ja',
     AuthParameters: {
       USERNAME: username,
       PASSWORD: password,
@@ -28,7 +31,7 @@ export const loginUser = async (username: string, password: string): Promise<Aut
     const response = await cognito.initiateAuth(params).promise();
     return response.AuthenticationResult as AuthResult;
   } catch (error) {
-    console.error('Error en login:', error);
+    // console.error('Error en login:', error);
     throw error;
   }
 };

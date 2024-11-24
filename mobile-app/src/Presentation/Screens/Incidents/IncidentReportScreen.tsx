@@ -93,7 +93,7 @@ export const IncidentReportScreen = () => {
       alert('Incidente registrado con éxito');
       navigation.navigate('ResumeIncidentScreen');
     } catch (error) {
-      console.error('Error al registrar el incidente:', error); // Registrar el error en la consola
+      // console.error('Error al registrar el incidente:', error); // Registrar el error en la consola
       alert('Error al registrar el incidente');
     }
   };

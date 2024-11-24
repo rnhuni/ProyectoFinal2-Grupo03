@@ -39,7 +39,7 @@ const useNotificationConfig = () => {
       );
       return res.data;
     } catch (err) {
-      console.error('Update notificationConfig Error:', err); // Registrar el error en la consola
+      // console.error('Update notificationConfig Error:', err); // Registrar el error en la consola
       if (err instanceof CanceledError) {
         return;
       }

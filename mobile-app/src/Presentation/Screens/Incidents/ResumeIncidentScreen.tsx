@@ -134,12 +134,26 @@ export const ResumeIncidentScreen = () => {
     return status === 'granted';
   }
 
+  function getFormattedDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Los meses empiezan desde 0, así que sumamos 1
+    const day = now.getDate().toString().padStart(2, '0');
+    const hour = now.getHours().toString().padStart(2, '0');
+    const minute = now.getMinutes().toString().padStart(2, '0');
+    const second = now.getSeconds().toString().padStart(2, '0');
+    const millisecond = now.getMilliseconds().toString().padStart(3, '0');
+
+    // Retorna la fecha en formato yyyymmddhhmiss
+    return `${year}${month}${day}${hour}${minute}${second}${millisecond}`;
+  }
+
   // Función para descargar el archivo CSV
   const downloadCSV = async () => {
     const csvContent = convertToCSV(allIncidents);
     try {
       const hasPermission = await hasAndroidPermission();
-      // console.log('hasPermission: ', hasPermission);
+      console.log('hasPermission: ', hasPermission);
 
       if (!hasPermission) {
         // Si el permiso no ha sido concedido, solicitamos el permiso
@@ -192,10 +206,10 @@ export const ResumeIncidentScreen = () => {
       // Define la ruta de descarga para Android e iOS
       const downloadPath =
         Platform.OS === 'android'
-          ? RNFS.DownloadDirectoryPath + '/incidents.csv' // Android
-          : RNFS.DocumentDirectoryPath + '/incidents.csv'; // iOS
+          ? RNFS.DownloadDirectoryPath + `/incidents_${getFormattedDate()}.csv` // Android
+          : RNFS.DocumentDirectoryPath + `/incidents_${getFormattedDate()}.csv`; // iOS
 
-      // console.log('downloadPath: ', downloadPath);
+      console.log('downloadPath: ', downloadPath);
 
       await RNFS.writeFile(downloadPath, csvContent, 'utf8');
       Alert.alert(

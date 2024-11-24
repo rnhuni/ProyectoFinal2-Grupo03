@@ -45,7 +45,7 @@ const useIncidents = () => {
       const res = await api.post<Incident>(service, newIncident);
       return res.data;
     } catch (err) {
-      console.error('Create Incident Error:', err); // Registrar el error en la consola
+      // console.error('Create Incident Error:', err); // Registrar el error en la consola
       if (err instanceof CanceledError) {
         return;
       }
@@ -66,7 +66,7 @@ const useIncidents = () => {
       );
       return res.data;
     } catch (err) {
-      console.error('Update Incident Error:', err); // Registrar el error en la consola
+      // console.error('Update Incident Error:', err); // Registrar el error en la consola
       if (err instanceof CanceledError) {
         return;
       }

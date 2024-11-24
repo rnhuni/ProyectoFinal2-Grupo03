@@ -69,7 +69,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
         t('loginScreen.loginFailed'),
         t('loginScreen.invalidCredentials'),
       );
-      return;
+      // return;
     }
   };
 
