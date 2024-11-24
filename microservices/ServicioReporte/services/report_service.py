@@ -9,6 +9,7 @@ from ServicioReporte.commands.incident_create import CreateIncident
 from ServicioReporte.commands.incident_update import UpdateIncident
 from ServicioReporte.models.model import session
 from ServicioReporte.services.notification_service import NotificationService
+from ServicioReporte.services.cognito_service import CognitoService
 
 class ReportService:
     def __init__(self):
@@ -38,6 +39,15 @@ class ReportService:
                            sla).execute()
             NotificationService().publish_action_refresh(source_id)
             NotificationService().publish_action_refresh(source_client)
+            agents = CognitoService().get_all_agents()
+            for agent in agents:
+                NotificationService().publish_action_refresh(agent["id"])
+            time.sleep(2)
+            for agent in agents:
+                NotificationService().publish_notification_new_incident(agent["id"], incident_id, source_name)
+            
+            NotificationService().publish_notification_new_incident_user(source_id, incident_id)
+
 
     def to_claim_incident(self, source_id, source_name, payload):
             incident_id = payload["incident_id"]
@@ -47,8 +57,10 @@ class ReportService:
                            incident_assigned_to_name=source_name,
                            status='ASSIGNED').execute()
             NotificationService().publish_action_refresh(source_id)
-            NotificationService().publish_action_refresh(data.incident_user_issuer_id)
             NotificationService().publish_action_refresh(data.client_id)
+            NotificationService().publish_action_refresh(data.incident_user_issuer_id)            
+            time.sleep(2)
+            NotificationService().publish_notification_claim_incident(data.incident_user_issuer_id, data.incident_id, source_name)
 
     def to_close_incident(self, source_id, source_name, payload):
             incident_id = payload["incident_id"]
@@ -62,8 +74,10 @@ class ReportService:
                            resolution_time=resolution_time,
                            status='CLOSED').execute()
             NotificationService().publish_action_refresh(source_id)
-            NotificationService().publish_action_refresh(data.incident_user_issuer_id)
             NotificationService().publish_action_refresh(data.client_id)
+            NotificationService().publish_action_refresh(data.incident_user_issuer_id)
+            time.sleep(2)
+            NotificationService().publish_notification_close_incident(data.incident_user_issuer_id, data.incident_id, source_name)
             
     def create_feedback(self, payload):
             incident_id = payload["incident_id"]
@@ -80,8 +94,11 @@ class ReportService:
                            feedback_support_staff_attitude=feedback_support_staff_attitude,
                            feedback_resolution_time=feedback_resolution_time).execute()
             NotificationService().publish_action_refresh(data.incident_user_issuer_id)
-            NotificationService().publish_action_refresh(data.incident_assigned_to_id)
             NotificationService().publish_action_refresh(data.client_id)
+            NotificationService().publish_action_refresh(data.incident_assigned_to_id)
+            time.sleep(2)
+            NotificationService().publish_notification_new_feedback_user(data.incident_user_issuer_id, data.incident_id)
+            NotificationService().publish_notification_new_feedback(data.incident_assigned_to_id, data.incident_id, data.incident_user_issuer_name)
 
     def process_message(self, message):
         try:
