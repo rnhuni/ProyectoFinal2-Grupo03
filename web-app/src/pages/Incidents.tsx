@@ -228,7 +228,7 @@ const Incidents = () => {
               <Th>{t("incidents.type", "Tipo")}</Th>
               <Th>{t("incidents.user", "Usuario")}</Th>
               <Th>{t("incidents.phone", "Teléfono")}</Th>
-              <Th>{t("incidents.createdAt", "Fecha de Creación")}</Th>
+              <Th>{t("incidents.created_at", "Fecha de Creación")}</Th>
               <Th>{t("incidents.actions", "Acciones")}</Th>
             </Tr>
           </Thead>
@@ -256,8 +256,8 @@ const Incidents = () => {
                 <Td>{incident.description}</Td>
                 <Td>{incident.type}</Td>
                 <Td>{incident.user_issuer_name}</Td>
-                <Td>{incident.contact.phone}</Td>
-                <Td>{new Date(incident.createdAt).toLocaleString()}</Td>
+                <Td>{incident?.contact?.phone}</Td>
+                <Td>{new Date(incident.created_at).toLocaleString()}</Td>
                 <Td>
                   <Stack direction="row" spacing={2}>
                     <Tooltip label="Ver detalles">

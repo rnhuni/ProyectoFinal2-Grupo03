@@ -12,7 +12,6 @@ import {
   Th,
   Td,
   Tag,
-  Switch,
   Icon,
   Select,
   Wrap,

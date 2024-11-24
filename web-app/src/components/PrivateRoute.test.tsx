@@ -24,7 +24,7 @@ describe("PrivateRoute Component", () => {
         <Route
           path="/"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={[]}>
               <div>Protected Content</div>
             </PrivateRoute>
           }

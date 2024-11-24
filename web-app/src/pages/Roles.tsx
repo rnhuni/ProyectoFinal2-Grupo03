@@ -36,8 +36,8 @@ const Roles = () => {
       id: rol.id,
       name: rol.name,
       permissions: rol.permissions,
-      createdAt: rol.createdAt,
-      updatedAt: rol.updatedAt,
+      created_at: rol.created_at,
+      updated_at: rol.updated_at,
     };
 
     setSelectedRole(role);
@@ -95,8 +95,8 @@ const Roles = () => {
                     .map((permission: { id: string }) => permission.id)
                     .join(", ")}
                 </Td>
-                <Td>{rol.createdAt || ""}</Td>
-                <Td>{rol.updatedAt || ""}</Td>
+                <Td>{rol.created_at || ""}</Td>
+                <Td>{rol.updated_at || ""}</Td>
                 <Td>
                   <Menu>
                     <MenuButton as={IconButton} icon={<HamburgerIcon />} />

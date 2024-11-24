@@ -70,8 +70,8 @@ const Users = () => {
         ...userData,
         id: (filteredUsers.length + 1).toString(),
         status: "DESCONOCIDO",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       await createUser(userData);
       setFilteredUsers((prevFilteredUsers) => [...prevFilteredUsers, newUser]);
@@ -192,7 +192,7 @@ const Users = () => {
                   </Badge>
                 </Td>
                 <Td>{user.client_id}</Td>
-                <Td>{new Date(user.createdAt).toLocaleDateString()}</Td>
+                <Td>{new Date(user.created_at).toLocaleDateString()}</Td>
                 <Td>
                   <IconButton
                     aria-label={t("users.edit", "Editar Usuario")}
