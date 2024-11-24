@@ -16,6 +16,7 @@ import useChannels from "../../hooks/channels/useChannels";
 import useSuscribeGraphql from "../../hooks/user/useSuscribeGraphql";
 import { Message } from "../../interfaces/Messages";
 import publishToChannel from "../../hooks/user/usePublishGraphql";
+import { useProfileContext } from "../../contexts/ProfileContext";
 
 interface ChatProps {
   incidentId: string;
@@ -32,6 +33,7 @@ const Chat: React.FC<ChatProps> = ({ incidentId }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
   const [localMessages, setLocalMessages] = useState<Message[]>([]); // Define el estado local para los mensajes
   const { received } = useSuscribeGraphql(incidentId);
+  const { profile } = useProfileContext();
 
   useEffect(() => {
     console.log("Id del incidente:", incidentId);
@@ -64,8 +66,8 @@ const Chat: React.FC<ChatProps> = ({ incidentId }) => {
       // enviarlo a graphql
       const dataToSend = {
         body: inputMessage,
-        source_name: "nameUser",
-        source_type: "agent",
+        source_name: profile?.user?.name || "",
+        source_type: profile?.user?.role?.split("-")[1] || "",
       };
       setInputMessage("");
       const jsonData = JSON.stringify({ data: dataToSend });
@@ -130,7 +132,7 @@ const Chat: React.FC<ChatProps> = ({ incidentId }) => {
                   p="3"
                   flexDirection="column"
                 >
-                  {item.source_type === "agent" && (
+                  {item.source_type !== "user" && (
                     <Text fontWeight="bold">{item.source_name}</Text>
                   )}
                   <Text>{item.body}</Text>

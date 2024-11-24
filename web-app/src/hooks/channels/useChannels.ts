@@ -9,7 +9,7 @@ import { LoadSession } from "../../interfaces/LoadSessions";
 import { CreateSession } from "../../interfaces/CreateSession";
 
 const useChannels = () => {
-  const channel_id = "chan-support-channel";
+  const channel_id = "chan-web-app";
   const [messages, setMessages] = useState<Message[]>([]);
   const [incidentSession, setIncidentSession] = useState<
     LoadSession | CreateSession | null
@@ -29,7 +29,7 @@ const useChannels = () => {
       );
     };
 
-    const url = `/channel/channels/${channel_id}/sessions`;
+    const url = `/channel/sessions`;
 
     setLoading(true);
     setError("");
