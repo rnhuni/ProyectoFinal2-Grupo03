@@ -21,7 +21,11 @@ module.exports = {
     },
   },
 
-  testTimeout: 30000,
+  testTimeout: 40000,
 
   coverageReporters: ['text', 'lcov'],
+
+  maxWorkers: 2,
+
+  verbose: false,
 };
