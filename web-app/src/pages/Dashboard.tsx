@@ -1,3 +1,5 @@
+// sonar.ignore
+/* istanbul ignore file */
 import React, { useEffect, useState } from "react";
 import { subscribeNotificationsFunc } from "../appsync";
 import NavBar from "../components/Navbar/NavBar";

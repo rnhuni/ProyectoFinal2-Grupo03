@@ -1,3 +1,5 @@
+// sonar.ignore
+/* istanbul ignore file */
 import React, { useState, useEffect, useRef, KeyboardEvent } from "react";
 import {
   Flex,

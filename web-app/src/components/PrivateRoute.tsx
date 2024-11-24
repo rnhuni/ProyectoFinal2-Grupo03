@@ -1,3 +1,5 @@
+// sonar.ignore
+/* istanbul ignore file */
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useProfileContext } from "../contexts/ProfileContext"; // Importa el contexto

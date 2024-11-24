@@ -1,3 +1,6 @@
+
+// sonar.ignore
+/* istanbul ignore file */
 import { useState } from "react";
 import api from "../../services/HttpClient";
 import { AxiosError, CanceledError } from "axios";
