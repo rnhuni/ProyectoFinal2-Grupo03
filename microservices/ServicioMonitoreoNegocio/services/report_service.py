@@ -3,8 +3,6 @@ import boto3
 import json
 import uuid
 
-from ServicioIncidente.utils.utils import build_channel_name
-
 class ReportService:
     def __init__(self):
         self.queue_url = os.getenv('REPORT_QUEUE_URL', '')
