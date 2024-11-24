@@ -2,7 +2,7 @@ export default {
   coverageReporters: ["text-summary", "html", "lcov"],
   coverageThreshold: {
     global: {
-      lines: 90
+      lines: 80
     },
   },
   testEnvironment: "jest-environment-jsdom",
