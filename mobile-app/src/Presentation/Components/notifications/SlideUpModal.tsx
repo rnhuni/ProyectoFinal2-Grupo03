@@ -5,6 +5,8 @@ import {Message} from '../../../interfaces/Messages';
 import useProfile from '../../../hooks/user/useProfile';
 import useNotificationConfig from '../../../hooks/user/useNotificationsConfig';
 import {NotificationConfig} from '../../../interfaces/NotificationConfig';
+import eventEmitter from '../../../events/eventEmitter';
+import {use} from 'i18next';
 
 interface SlideUpModalProps {
   visible: boolean;
@@ -25,7 +27,7 @@ const SlideUpModal: React.FC<SlideUpModalProps> = ({visible, onClose}) => {
       const notifications: NotificationConfig[] =
         await reloadNotificationConfig();
       if (profile && notifications) {
-        console.log('profile.user.id: ', profile.user.id);
+        // console.log('profile.user.id: ', profile.user.id);
         setIdSubscriptionFunc(profile.user.id);
         setNotifications(notifications);
       }
@@ -34,7 +36,7 @@ const SlideUpModal: React.FC<SlideUpModalProps> = ({visible, onClose}) => {
   }, []);
 
   useEffect(() => {
-    //console.log('useEffect received: ', received);
+    // console.log('useEffect received: ', received);
     if (received) {
       // Agregar la notificación recibida al chat como un mensaje del agente
       // console.log('received: ', received);
@@ -76,6 +78,27 @@ const SlideUpModal: React.FC<SlideUpModalProps> = ({visible, onClose}) => {
     //   useNativeDriver: true,
     // }).start();
   };
+
+  useEffect(() => {
+    const handleNotificationsUpdate = (
+      updatedNotifications: NotificationConfig[],
+    ) => {
+      setNotifications(updatedNotifications);
+      // console.log('Notifications updated:', updatedNotifications);
+    };
+
+    // Escucha el evento
+    eventEmitter.on('notificationsUpdated', handleNotificationsUpdate);
+
+    // Limpia la suscripción al desmontar
+    return () => {
+      eventEmitter.off('notificationsUpdated', handleNotificationsUpdate);
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   console.log('notifications SlideUp: ', notifications);
+  // }, [notifications]);
 
   if (!isModalVisible) return null;
 

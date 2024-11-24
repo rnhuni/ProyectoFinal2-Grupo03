@@ -60,16 +60,11 @@ describe('useIncidents', () => {
                 headers: new axios.AxiosHeaders({ 'Content-Type': 'application/json' })
             },
         });
-
-
-        const mockReloadIncidents = jest.fn();
-
-
         const { result } = renderHook(() => useIncidents());
-
         await act(async () => {
             await result.current.reloadIncidents();
         });
+        expect(result.current.incidents).toEqual(mockIncidents);
     });
 
     it('mockGet manejar correctamente errores de API', async () => {
