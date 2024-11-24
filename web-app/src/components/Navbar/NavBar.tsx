@@ -23,13 +23,12 @@ import {
   MenuList,
   MenuItem,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerCloseButton,
+  DrawerBody,
   VStack,
   Badge,
 } from "@chakra-ui/react";
@@ -59,7 +58,7 @@ const NavBar: React.FC<NavBarProps> = ({ name, notifications }) => {
   const { language, setLanguage } = useProfileContext();
   const color = useColorModeValue("black", "white");
   const { toggleColorMode } = useColorMode();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -117,7 +116,7 @@ const NavBar: React.FC<NavBarProps> = ({ name, notifications }) => {
             <IconButton
               aria-label="Bell Notification"
               icon={<FaRegBell />}
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsDrawerOpen(true)}
               variant="ghost"
               size="sm"
             />
@@ -177,12 +176,19 @@ const NavBar: React.FC<NavBarProps> = ({ name, notifications }) => {
         </Stack>
       </Flex>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Notificaciones</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      {/* Drawer de notificaciones */}
+      <Drawer
+        isOpen={isDrawerOpen}
+        placement="right"
+        onClose={() => setIsDrawerOpen(false)}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader>
+            Notificaciones
+            <DrawerCloseButton />
+          </DrawerHeader>
+          <DrawerBody>
             {notifications.length === 0 ? (
               <Text>No hay notificaciones nuevas</Text>
             ) : (
@@ -209,12 +215,9 @@ const NavBar: React.FC<NavBarProps> = ({ name, notifications }) => {
                 ))}
               </VStack>
             )}
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={() => setIsModalOpen(false)}>Cerrar</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
