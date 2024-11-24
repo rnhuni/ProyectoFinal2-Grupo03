@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {act} from 'react';
 import {
   render,
   fireEvent,
@@ -138,8 +138,11 @@ describe('Chat Component', () => {
 
     // Espera a que el componente cargue
     await waitFor(() => {
-      expect(screen.getByText('Hola')).toBeTruthy();
-      expect(screen.getByText('¿Cómo estás?')).toBeTruthy();
+      act(() => {
+        // act para esperar a que se resuelva la promesa
+        expect(screen.getByText('Hola')).toBeTruthy();
+        expect(screen.getByText('¿Cómo estás?')).toBeTruthy();
+      });
     });
     // }, 30000); // el timeout si necesita más tiempo
   });
