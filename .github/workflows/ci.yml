@@ -13,6 +13,7 @@ on:
       - 'microservices/ServicioFacturacion/**'
       - 'microservices/ServicioCanal/**'
       - 'microservices/ServicioMonitoreoNegocio/**'
+      - 'microservices/ServicioReporte/**'
   push:
     branches:
       - main
@@ -25,6 +26,7 @@ on:
       - 'microservices/ServicioFacturacion/**'
       - 'microservices/ServicioCanal/**'
       - 'microservices/ServicioMonitoreoNegocio/**'
+      - 'microservices/ServicioReporte/**'
       
 jobs:
   determine-changes:
@@ -38,6 +40,7 @@ jobs:
       servicio_facturacion_changed: ${{ steps.filter.outputs.servicio_facturacion }}
       servicio_canal_changed: ${{ steps.filter.outputs.servicio_canal }}
       servicio_monitoreo_negocio_changed: ${{ steps.filter.outputs.servicio_monitoreo_negocio }}
+      servicio_reporte_changed: ${{ steps.filter.outputs.servicio_reporte }}
       
     steps:
       - name: Checkout code
@@ -64,6 +67,8 @@ jobs:
               - 'microservices/ServicioCanal/**'
             servicio_monitoreo_negocio:
               - 'microservices/ServicioMonitoreoNegocio/**'
+            servicio_reporte:
+              - 'microservices/ServicioReporte/**'
             
   test-web-app:
     if: needs.determine-changes.outputs.web_app_changed == 'true'
@@ -564,5 +569,67 @@ jobs:
         with:
           task-definition: ${{ steps.render-servicio-monitoreo-negocio.outputs.task-definition }}
           service: ServicioMonitoreoNegocio
+          cluster: ClusterABCall
+          wait-for-service-stability: false 
+
+  test-and-deploy-servicio-reporte:
+    if: needs.determine-changes.outputs.servicio_reporte_changed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [determine-changes]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Testing for ServicioReporte
+      - name: Install dependencies for ServicioReporte
+        working-directory: ./microservices/ServicioReporte
+        run: pip install -r requirements.txt
+
+      # Configure AWS deploy
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Build and push Docker
+      - name: Build, tag, and push ServicioReporte image to ECR
+        id: build-servicio-reporte
+        working-directory: ./microservices/ServicioReporte
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: servicio-reporte
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # Build ECS task definition
+      - name: Render ECS task definition for ServicioReporte
+        id: render-servicio-reporte
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./microservices/ecs/servicio-reporte-task-def.json
+          container-name: servicio-reporte
+          image: ${{ steps.build-servicio-reporte.outputs.image }}
+
+      # ECS deploy
+      - name: Deploy to ECS ServicioReporte
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-servicio-reporte.outputs.task-definition }}
+          service: ServicioReporte
           cluster: ClusterABCall
           wait-for-service-stability: false 

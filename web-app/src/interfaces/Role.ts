@@ -7,8 +7,8 @@ export interface Role {
   id: string;
   name: string;
   permissions: RolePermissions[] | undefined;
-  createdAt?: string;
-  updatedAt?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface RolePlan {

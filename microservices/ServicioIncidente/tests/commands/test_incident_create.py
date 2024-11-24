@@ -20,7 +20,7 @@ class TestCreateIncident:
         test_user_id = "user-1"
         test_user_name = "Test User"
 
-        command = CreateIncident(test_id, test_type, test_description, test_contact, test_user_id, test_user_name)
+        command = CreateIncident(test_id, test_type, test_description, test_contact, test_user_id, test_user_name, "test channel", 123)
         incident_created = command.execute()
 
         self.mock_add.assert_called_once_with(incident_created)
@@ -36,7 +36,7 @@ class TestCreateIncident:
 
     def test_create_incident_invalid_data(self):
         with pytest.raises(ValueError, match="Invalid data provided"):
-            CreateIncident(None, "Network Issue", "Description", "contact@example.com", "user-1", "Test User").execute()
+            CreateIncident(None, "Network Issue", "Description", "contact@example.com", "user-1", "Test User", "test channel", 123).execute()
 
         self.mock_add.assert_not_called()
         self.mock_commit.assert_not_called()
@@ -52,7 +52,7 @@ class TestCreateIncident:
         self.mock_add.side_effect = Exception("Database error")
 
         with pytest.raises(Exception, match="Database error"):
-            CreateIncident(test_id, test_type, test_description, test_contact, test_user_id, test_user_name).execute()
+            CreateIncident(test_id, test_type, test_description, test_contact, test_user_id, test_user_name, "test channel", 123).execute()
 
         self.mock_add.assert_called_once()
         self.mock_commit.assert_not_called()

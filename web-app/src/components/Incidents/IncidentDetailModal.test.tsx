@@ -25,9 +25,10 @@ const mockIncident: IncidentTableData = {
   description: "Problema técnico",
   attachments: [],
   contact: { phone: "123456789" },
-  createdAt: "2024-11-08T21:02:00.000Z",
-  updatedAt: "2024-11-08T21:02:00.000Z",
+  created_at: "2024-11-08T21:02:00.000Z",
+  updated_at: "2024-11-08T21:02:00.000Z",
   user_issuer_name: "Juan Pérez",
+  user_issuer_id: "",
 };
 
 const renderWithProviders = (ui: React.ReactNode) => {

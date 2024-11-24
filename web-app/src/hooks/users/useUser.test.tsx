@@ -27,8 +27,8 @@ describe("useUsers", () => {
         role_id: "1",
         client_id: "client1",
         status: "active",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
       {
         id: "2",
@@ -37,8 +37,8 @@ describe("useUsers", () => {
         role_id: "2",
         client_id: "client2",
         status: "inactive",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
     ];
 
@@ -171,8 +171,8 @@ describe("useUsers - updateUser", () => {
       role_id: "1",
       client_id: "client1",
       status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     (httpClient.put as jest.Mock).mockResolvedValueOnce({ data: mockUser });
@@ -203,8 +203,8 @@ describe("useUsers - updateUser", () => {
       role_id: "1",
       client_id: "client1",
       status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const { result } = renderHook(() => useUsers());
@@ -229,8 +229,8 @@ describe("useUsers - updateUser", () => {
       role_id: "1",
       client_id: "client1",
       status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const { result } = renderHook(() => useUsers());

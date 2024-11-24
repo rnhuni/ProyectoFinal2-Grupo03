@@ -6,6 +6,29 @@ from jwt import PyJWKClient
 COGNITO_SIGN_URL=os.getenv('COGNITO_SIGN_URL')
 COGNITO_AUDIENCE=os.getenv('COGNITO_AUDIENCE')
 
+USER_DASHBOARD_URL=os.getenv('USER_DASHBOARD_URL', '')
+AGENT_DASHBOARD_URL=os.getenv('AGENT_DASHBOARD_URL', '')
+CLIENT_DASHBOARD_URL=os.getenv('CLIENT_DASHBOARD_URL', '')
+
+USER_DASHBOARD_URL_ES=os.getenv('USER_DASHBOARD_URL_ES', '')
+AGENT_DASHBOARD_URL_ES=os.getenv('AGENT_DASHBOARD_URL_ES', '')
+CLIENT_DASHBOARD_URL_ES=os.getenv('CLIENT_DASHBOARD_URL_ES', '')
+
+def build_dashboard_url(user_id, role, client_id, lang):
+    dashboard_url = USER_DASHBOARD_URL
+    if lang == 'es':
+        dashboard_url = USER_DASHBOARD_URL_ES        
+    if role == "agent":
+        dashboard_url = AGENT_DASHBOARD_URL
+        if lang == 'es':
+            dashboard_url = AGENT_DASHBOARD_URL_ES        
+    elif role == "client":
+        dashboard_url = CLIENT_DASHBOARD_URL
+        if lang == 'es':
+            dashboard_url = CLIENT_DASHBOARD_URL_ES
+    
+    return dashboard_url.replace("CLIENT_ID", client_id).replace("USER_ID", user_id)
+
 def decode_user(auth_header):
     if not auth_header or len(auth_header.split(" ")) < 2:
         raise Exception("Invalid token")

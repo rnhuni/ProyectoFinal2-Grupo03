@@ -1,54 +1,42 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
-import Summary from "./pages/Summary";
-import Users from "./pages/Users";
-import Incidents from "./pages/Incidents";
-import Plans from "./pages/Plans";
-import Roles from "./pages/Roles";
-import Activity from "./pages/Activity";
-import Create from "./pages/Create";
-import Admin from "./pages/Admin";
-import Permissions from "./pages/Permissions";
-import "./internalization/i18n";
-import SuscriptionSummary from "./pages/SuscriptionSummary";
-import SubscriptionPage from "./pages/SuscriptionPage";
 import LoginCognito from "./pages/LoginCognito";
-import SubscriptionsBase from "./pages/SubscriptionsBase";
+import Dashboard from "./pages/Dashboard";
+import "./internalization/i18n";
+import { ProfileProvider } from "./contexts/ProfileContext";
+import { routesConfig } from "./routesConfig";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="" element={<LoginCognito />} />
         <Route path="/" element={<LoginCognito />} />
-        <Route path="/signin" element={<Dashboard />} />
-        <Route path="/signup" element={<Dashboard />} />
+        <Route path="/signin" element={<LoginCognito />} />
+        <Route path="/signup" element={<LoginCognito />} />
         <Route path="/callback" element={<LoginCognito />} />
-
-        {/* Private Routes inside Dashboard */}
         <Route
           path="/dashboard"
           element={
-            <PrivateRoute>
+            <ProfileProvider>
               <Dashboard />
-            </PrivateRoute>
+            </ProfileProvider>
           }
         >
-          <Route path="summary" element={<Summary />} />
-          <Route path="users" element={<Users />} />
-          <Route path="incidents" element={<Incidents />} />
-          <Route path="plans" element={<Plans />} />
-          <Route path="roles" element={<Roles />} />
-          <Route path="activity" element={<Activity />} />
-          <Route path="create" element={<Create />} />
-          <Route path="admin" element={<Admin />} />
-          <Route path="permissions" element={<Permissions />} />
-          <Route path="user-plan" element={<SubscriptionPage />} />
-          <Route path="manage-plan" element={<SuscriptionSummary />} />
-          <Route path="suscriptions" element={<SubscriptionsBase />} />
+          {routesConfig.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path.replace("/dashboard/", "")}
+              element={
+                <PrivateRoute allowedRoles={route.roles}>
+                  <route.component />
+                </PrivateRoute>
+              }
+            />
+          ))}
         </Route>
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </Router>
   );

@@ -13,6 +13,6 @@ export interface UserTableData {
   role_id: string;
   status: string;
   client_id: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }

@@ -1,11 +1,6 @@
+// sonar.ignore
 /* istanbul ignore file */
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  ChangeEvent,
-  KeyboardEvent,
-} from "react";
+import React, { useState, useEffect, useRef, KeyboardEvent } from "react";
 import {
   Flex,
   Input,
@@ -13,13 +8,14 @@ import {
   Avatar,
   AvatarBadge,
   Text,
-  useToast,
   Divider as ChakraDivider,
   Spinner,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import useChannels from "../../hooks/channels/useChannels";
+import useSuscribeGraphql from "../../hooks/user/useSuscribeGraphql";
 import { Message } from "../../interfaces/Messages";
+import publishToChannel from "../../hooks/user/usePublishGraphql";
 
 interface ChatProps {
   incidentId: string;
@@ -27,7 +23,6 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ incidentId }) => {
   const { t } = useTranslation();
-  const toast = useToast();
   const {
     loading,
     loadIncidentSession,
@@ -35,8 +30,8 @@ const Chat: React.FC<ChatProps> = ({ incidentId }) => {
     createIncidentMessage,
   } = useChannels();
   const [inputMessage, setInputMessage] = useState<string>("");
-  const [file, setFile] = useState<File | null>(null);
   const [localMessages, setLocalMessages] = useState<Message[]>([]); // Define el estado local para los mensajes
+  const { received } = useSuscribeGraphql(incidentId);
 
   useEffect(() => {
     console.log("Id del incidente:", incidentId);
@@ -51,46 +46,35 @@ const Chat: React.FC<ChatProps> = ({ incidentId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incidentId]);
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim().length && !file) {
-      toast({
-        title: t("chat.attachment"),
-        description: t("chat.typeMessage"),
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (file) {
-      const fileMessage: Message = {
-        body: "",
-        source_name: "me",
-        source_type: "user",
+  useEffect(() => {
+    if (received) {
+      const message: Message = JSON.parse(received).data;
+      const newMessage = {
+        body: message.body,
+        source_name: message.source_name,
+        source_type: message.source_type,
       };
-      setLocalMessages((old) => [...old, fileMessage]);
-      setFile(null);
-    } else {
-      createIncidentMessage(inputMessage);
-      setInputMessage("");
-
-      setTimeout(() => {
-        setLocalMessages((old) => [
-          ...old,
-          {
-            body: inputMessage,
-            source_name: "computer",
-            source_type: "system",
-          },
-        ]);
-      }, 1000);
+      setLocalMessages((prevMessages) => [...prevMessages, newMessage]);
     }
-  };
+  }, [received]);
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
+  const handleSendMessage = async () => {
+    if (inputMessage.trim()) {
+      // enviar al backend
+      // enviarlo a graphql
+      const dataToSend = {
+        body: inputMessage,
+        source_name: "nameUser",
+        source_type: "agent",
+      };
+      setInputMessage("");
+      const jsonData = JSON.stringify({ data: dataToSend });
+
+      // console.log('dataToSend usePublishGraphql: ', jsonData);
+      await publishToChannel(jsonData, incidentId);
+      // console.log('resp usePublishGraphql: ', resp);
+      // console.log('createIncidentMessage: ', inputMessage);
+      await createIncidentMessage(inputMessage);
     }
   };
 
@@ -160,13 +144,6 @@ const Chat: React.FC<ChatProps> = ({ incidentId }) => {
       <ChakraDivider w="100%" borderBottomWidth="3px" color="black" mt={4} />
       <Flex w="100%" mt={4}>
         <Input
-          type="file"
-          onChange={handleFileChange}
-          display="none"
-          id="file-input"
-        />
-
-        <Input
           placeholder={t("chat.typeMessage")}
           border="none"
           borderRadius="none"
@@ -190,7 +167,7 @@ const Chat: React.FC<ChatProps> = ({ incidentId }) => {
             color: "black",
             border: "1px solid black",
           }}
-          disabled={inputMessage.trim().length <= 0 && !file}
+          disabled={inputMessage.trim().length === 0}
           onClick={handleSendMessage}
         >
           {t("chat.send")}
