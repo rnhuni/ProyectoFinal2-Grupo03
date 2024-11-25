@@ -12,6 +12,14 @@ def build_incident_id():
     time_str = current_time.strftime("%H%M%S") + f"{current_time.microsecond // 1000:03d}"
     return f"TKT-{date_str}-{time_str}"
 
+def build_channel_name(slug):
+    if slug.startswith("chan-"):
+        slug = slug[len("chan-"):]
+    
+    slug = slug.replace("-", " ")
+    
+    return " ".join(word.capitalize() for word in slug.split(" "))
+
 def decode_user(auth_header):
     if not auth_header or len(auth_header.split(" ")) < 2:
         raise Exception("Invalid token")
@@ -24,5 +32,10 @@ def decode_user(auth_header):
     return {
         "id": token_payload["sub"], 
         "name": token_payload["name"], 
-        "email": token_payload["email"]
+        "email": token_payload["email"],
+        "permissions": token_payload["custom:permissions"],
+        "client": token_payload["custom:client"],
+        "role": token_payload["custom:role"],
+        "features": token_payload["custom:features"],
+        "role_type": token_payload["custom:role"].split("-")[1]
     }

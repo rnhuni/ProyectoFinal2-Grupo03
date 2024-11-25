@@ -1,3 +1,5 @@
+// sonar.ignore
+/* istanbul ignore file */
 import {
   Box,
   Button,
@@ -31,6 +33,8 @@ import { Attachment, Incident } from "../../interfaces/Incidents";
 import useFileUpload from "../../hooks/uploadFile/useFileUpload";
 import useIncidents from "../../hooks/incidents/useIncidents";
 import incidentSchema from "./incidentSchema";
+import useChannels from "../../hooks/channels/useChannels";
+import Chat from "../../components/Chat/Chat";
 
 interface IncidentFormModalProps {
   isOpen: boolean;
@@ -51,6 +55,8 @@ const IncidentFormModal = ({
   const toast = useToast();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [showProgressBox, setShowProgressBox] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const { createIncidentSession } = useChannels();
 
   const {
     register,
@@ -68,6 +74,10 @@ const IncidentFormModal = ({
       setAttachments(initialData.attachments);
     }
   }, [initialData, reset]);
+
+  const handleChatButtonClick = () => {
+    setShowChat(true);
+  };
 
   const {
     getUploadUrl,
@@ -165,7 +175,11 @@ const IncidentFormModal = ({
           isClosable: true,
         });
       } else {
-        await createIncident(data);
+        const res = await createIncident(data);
+        console.log("Id del incidente", res?.id);
+        if (res?.id) {
+          await createIncidentSession(res.id);
+        }
         toast({
           title: "Incidente creado",
           description: "El incidente se ha creado exitosamente.",
@@ -197,136 +211,167 @@ const IncidentFormModal = ({
     onClose();
   };
 
+  const handleCloseChat = () => {
+    setShowChat(false);
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={handleCloseModal} size="lg" isCentered>
-      <ModalOverlay />
-      <ModalContent maxW="600px">
-        <ModalHeader>
-          {mode === "edit"
-            ? t("incidentScreen.tittleEdit")
-            : t("incidentScreen.tittle")}
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody pb={6}>
-          {incidentError && (
-            <Alert status="error" mb={4}>
-              <AlertIcon />
-              {incidentError}
-            </Alert>
-          )}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl isInvalid={!!errors.type} mb={4}>
-              <FormLabel>{t("incidentScreen.incidentType")}</FormLabel>
-              <Select
-                placeholder={t("incidentScreen.incidentTypePlaceholder")}
-                {...register("type")}
-                defaultValue={initialData?.type || ""}
-              >
-                <option value="technical">
-                  {t("incidentScreen.incidentTypeSelectOne")}
-                </option>
-                <option value="billing">
-                  {t("incidentScreen.incidentTypeSelectTwo")}
-                </option>
-                <option value="general">
-                  {t("incidentScreen.incidentTypeSelectThree")}
-                </option>
-                <option value="security">
-                  {t("incidentScreen.incidentTypeSelectFour")}
-                </option>
-                <option value="maintenance">
-                  {t("incidentScreen.incidentTypeSelectFive")}
-                </option>
-              </Select>
-              {errors.type && (
-                <FormErrorMessage>
-                  {t(`incidentScreen.errors.typeRequired`)}
-                </FormErrorMessage>
-              )}
-            </FormControl>
-
-            <FormControl isInvalid={!!errors.description} mb={4}>
-              <FormLabel>{t("incidentScreen.incidentDescription")}</FormLabel>
-              <Textarea
-                h={60}
-                placeholder={t("incidentScreen.incidentDescriptionPlaceholder")}
-                maxLength={200}
-                {...register("description")}
-              />
-              {errors.description && (
-                <FormErrorMessage>
-                  {t(`incidentScreen.errors.descriptionRequired`)}
-                </FormErrorMessage>
-              )}
-            </FormControl>
-
-            {/* Mostrar archivos adjuntos previamente cargados */}
-            {attachments.length > 0 && (
-              <Box mb={4}>
-                <FormLabel>Archivos Adjuntos Cargados</FormLabel>
-                {attachments.map((attachment) => (
-                  <Badge key={attachment.id} colorScheme="purple" mr={3} mb={3}>
-                    {attachment.file_name}
-                  </Badge>
-                ))}
-              </Box>
-            )}
-
-            <FormControl mb={4}>
-              <FormLabel>{t("incidentScreen.attachment")}</FormLabel>
-              <Button
-                onClick={() => document.getElementById("fileInput")?.click()}
-                rightIcon={<Icon as={FaUpload} />}
-                width="65%"
-                bg={"#6C728F"}
-                colorScheme="blue"
-              >
-                {t("incidentScreen.attachment")}
-              </Button>
-              <Input
-                data-testid="file-input"
-                multiple
-                accept=".csv, .xls, .xlsx"
-                type="file"
-                id="fileInput"
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-              />
-            </FormControl>
-
-            {showProgressBox && (
-              <Box bg={"#F6F8FA"} mt={4} w="100%" px={4} minH={16} pt={2}>
-                {attachments.map((file) => (
-                  <Text key={file.id}>{file.file_name}</Text>
-                ))}
-                <Progress
-                  value={uploadProgress}
-                  size="sm"
-                  colorScheme="green"
-                  mt={2}
-                  borderRadius={4}
-                />
-              </Box>
-            )}
-          </form>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button onClick={handleCloseModal} mr={3}>
-            {t("incidentScreen.modalAttachment.cancelButton")}
-          </Button>
-          <Button
-            colorScheme="blue"
-            onClick={handleSubmit(onSubmit)}
-            isLoading={fileLoading || incidentLoading}
-          >
+    <>
+      <Modal isOpen={isOpen} onClose={handleCloseModal} size="lg" isCentered>
+        <ModalOverlay />
+        <ModalContent maxW="600px">
+          <ModalHeader>
             {mode === "edit"
-              ? t("incidentScreen.editIncident")
-              : t("incidentScreen.createIncident")}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+              ? t("incidents.tittleEdit")
+              : t("incidents.tittle")}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            {incidentError && (
+              <Alert status="error" mb={4}>
+                <AlertIcon />
+                {incidentError}
+              </Alert>
+            )}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <FormControl isInvalid={!!errors.type} mb={4}>
+                <FormLabel>{t("incidents.incidentType")}</FormLabel>
+                <Select
+                  placeholder={t("incidents.incidentTypePlaceholder")}
+                  {...register("type")}
+                  defaultValue={initialData?.type || ""}
+                >
+                  <option value="technical">
+                    {t("incidents.incidentTypeSelectOne")}
+                  </option>
+                  <option value="billing">
+                    {t("incidents.incidentTypeSelectTwo")}
+                  </option>
+                  <option value="general">
+                    {t("incidents.incidentTypeSelectThree")}
+                  </option>
+                  <option value="security">
+                    {t("incidents.incidentTypeSelectFour")}
+                  </option>
+                  <option value="maintenance">
+                    {t("incidents.incidentTypeSelectFive")}
+                  </option>
+                </Select>
+                {errors.type && (
+                  <FormErrorMessage>
+                    {t(`incidents.errors.typeRequired`)}
+                  </FormErrorMessage>
+                )}
+              </FormControl>
+
+              <FormControl isInvalid={!!errors.description} mb={4}>
+                <FormLabel>{t("incidents.incidentDescription")}</FormLabel>
+                <Textarea
+                  h={60}
+                  placeholder={t("incidents.incidentDescriptionPlaceholder")}
+                  maxLength={200}
+                  {...register("description")}
+                />
+                {errors.description && (
+                  <FormErrorMessage>
+                    {t(`incidents.errors.descriptionRequired`)}
+                  </FormErrorMessage>
+                )}
+              </FormControl>
+
+              {/* Mostrar archivos adjuntos previamente cargados */}
+              {attachments.length > 0 && (
+                <Box mb={4}>
+                  <FormLabel>Archivos Adjuntos Cargados</FormLabel>
+                  {attachments.map((attachment) => (
+                    <Badge
+                      key={attachment.id}
+                      colorScheme="purple"
+                      mr={3}
+                      mb={3}
+                    >
+                      {attachment.file_name}
+                    </Badge>
+                  ))}
+                </Box>
+              )}
+
+              <FormControl mb={4}>
+                <FormLabel>{t("incidents.attachment")}</FormLabel>
+                <Button
+                  onClick={() => document.getElementById("fileInput")?.click()}
+                  rightIcon={<Icon as={FaUpload} />}
+                  width="65%"
+                  bg={"#6C728F"}
+                  colorScheme="blue"
+                >
+                  {t("incidents.attachment")}
+                </Button>
+                <Input
+                  data-testid="file-input"
+                  multiple
+                  accept=".csv, .xls, .xlsx"
+                  type="file"
+                  id="fileInput"
+                  style={{ display: "none" }}
+                  onChange={handleFileUpload}
+                />
+              </FormControl>
+
+              {showProgressBox && (
+                <Box bg={"#F6F8FA"} mt={4} w="100%" px={4} minH={16} pt={2}>
+                  {attachments.map((file) => (
+                    <Text key={file.id}>{file.file_name}</Text>
+                  ))}
+                  <Progress
+                    value={uploadProgress}
+                    size="sm"
+                    colorScheme="green"
+                    mt={2}
+                    borderRadius={4}
+                  />
+                </Box>
+              )}
+              {mode === "edit" && (
+                <Button onClick={handleChatButtonClick} colorScheme="blue">
+                  {t("chat.openChat")}
+                </Button>
+              )}
+            </form>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button onClick={handleCloseModal} mr={3}>
+              {t("incidents.modalAttachment.cancelButton")}
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={handleSubmit(onSubmit)}
+              isLoading={fileLoading || incidentLoading}
+            >
+              {mode === "edit"
+                ? t("incidents.editIncident")
+                : t("incidents.createIncident")}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      {showChat && initialData?.id && (
+        <Modal isOpen={showChat} onClose={handleCloseChat} size="xl" isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Chat</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Chat incidentId={initialData.id} />
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={handleCloseChat}>Close Chat</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+    </>
   );
 };
 

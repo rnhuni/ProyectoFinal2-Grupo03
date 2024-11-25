@@ -1,5 +1,7 @@
 import os
 import sys
+import threading
+
 sys.stdout.flush()
 from flask import Flask
 from flask_cors import CORS
@@ -15,6 +17,8 @@ SecretService(secret_name, region).load_secret_to_env()
 
 from .blueprints import register_blueprints
 from .models.model import initdb, session
+from ServicioIncidente.services.email_service import EmailService
+from ServicioIncidente.services.voice_service import VoiceService
 
 register_blueprints(app)
 initdb()
@@ -45,6 +49,17 @@ CORS(app, resources={r"/*": {
     "allow_headers": ["Content-Type", "Authorization"],
     "supports_credentials": True
 }})
+
+def start_email_polling():
+    with app.app_context():
+        EmailService().poll_email()
+
+def start_voice_polling():
+    with app.app_context():
+        VoiceService().poll_queue()
+
+threading.Thread(target=start_email_polling, daemon=True).start()
+threading.Thread(target=start_voice_polling, daemon=True).start()
 
 if __name__ == '__main__':
     print("ServicioIncidente is running on 5000")

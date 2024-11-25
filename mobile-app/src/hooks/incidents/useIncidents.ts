@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import api, { setToken } from '../../api/api';
+import api from '../../api/api';
 import { AxiosError, CanceledError } from 'axios';
-import { Incident } from '../../interfaces/Indicents';
+import { Incident } from '../../interfaces/Incidents';
+import { Feedback } from '../../interfaces/Feedback';
 
 const useIncidents = () => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -9,21 +10,32 @@ const useIncidents = () => {
   const [loading, setLoading] = useState(false);
   const service = '/incident/incidents';
 
-  const reloadIncidents = () => {
+
+  const reloadIncidents = async (filters?: string): Promise<Incident[]> => {
     setLoading(true);
     setError('');
-    api
-      .get<Incident[]>(service)
-      .then(res => {
-        setIncidents(res.data);
-      })
-      .catch(err => {
-        if (err instanceof CanceledError) {
-          return;
-        }
-        setError(err.message);
-      })
-      .finally(() => setLoading(false));
+    if (filters) {
+      filters = "?" + filters;
+    }
+    const res = await api.get<Incident[]>(service + filters)
+
+
+    const sortedIncidents = res.data.sort((a: Incident, b: Incident) => {
+      // console.log("Incident A", a.created_at);
+      // console.log("Incident B", b.created_at);
+      const dateA = new Date(a.created_at || '').getTime();
+      const dateB = new Date(b.created_at || '').getTime();
+      // console.log("Date A", dateA);
+      // console.log("Date B", dateB);
+
+      return dateB - dateA; // Orden ascendente
+      // Para orden descendente usa `dateB - dateA`
+    });
+    // console.log("Sorted Incidents", sortedIncidents);
+    setIncidents(sortedIncidents);
+
+    setLoading(false);
+    return sortedIncidents;
   };
 
   const createIncident = async (newIncident: Incident) => {
@@ -33,7 +45,7 @@ const useIncidents = () => {
       const res = await api.post<Incident>(service, newIncident);
       return res.data;
     } catch (err) {
-      console.error('Create Incident Error:', err); // Registrar el error en la consola
+      // console.error('Create Incident Error:', err); // Registrar el error en la consola
       if (err instanceof CanceledError) {
         return;
       }
@@ -54,7 +66,7 @@ const useIncidents = () => {
       );
       return res.data;
     } catch (err) {
-      console.error('Update Incident Error:', err); // Registrar el error en la consola
+      // console.error('Update Incident Error:', err); // Registrar el error en la consola
       if (err instanceof CanceledError) {
         return;
       }
@@ -65,6 +77,29 @@ const useIncidents = () => {
     }
   };
 
+  const createFeedback = async (id: string, feedback: Feedback) => {
+    const feedbackService = '/incident/incidents/' + id + '/feedback';
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.post(feedbackService, feedback);
+      return true;
+    } catch (err) {
+      // sconsole.error('Create Incident feedback Error:', err); // Registrar el error en la consola
+      if (err instanceof CanceledError) {
+        return false;
+      }
+      const axiosError = err as AxiosError;
+      setError(axiosError.message);
+    } finally {
+      setLoading(false);
+    }
+    return false;
+  };
+
+  // cada que se crea lee los incidentes
+  // reloadIncidents();
+
   return {
     incidents,
     loading,
@@ -72,6 +107,7 @@ const useIncidents = () => {
     reloadIncidents,
     createIncident,
     updateIncident,
+    createFeedback,
   };
 };
 

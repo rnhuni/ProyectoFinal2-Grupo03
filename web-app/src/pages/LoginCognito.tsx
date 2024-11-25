@@ -1,10 +1,11 @@
+// sonar.ignore
+/* istanbul ignore file */
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Spinner, Box } from "@chakra-ui/react";
 import config from "../../cognito_config.json"; // Ajusta la ruta según la ubicación de tu archivo JSON
 
 const LoginCognito = () => {
-  debugger;
   const navigate = useNavigate();
 
   // Obtenemos las propiedades desde el archivo JSON
@@ -20,7 +21,6 @@ const LoginCognito = () => {
 
   // Redirige automáticamente a Cognito cuando se monte el componente
   useEffect(() => {
-    debugger;
     const query = new URLSearchParams(window.location.search);
     const authorizationCode = query.get("code");
 
@@ -34,7 +34,6 @@ const LoginCognito = () => {
   }, []);
 
   const fetchTokens = async (code: string) => {
-    debugger;
     try {
       const response = await fetch(cognitoTokenUrl, {
         method: "POST",

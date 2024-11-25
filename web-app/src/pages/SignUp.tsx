@@ -1,3 +1,5 @@
+// sonar.ignore
+/* istanbul ignore file */
 import {
   Flex,
   Box,

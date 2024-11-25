@@ -17,8 +17,8 @@ describe("useRoles", () => {
 
   it("debe cargar roles al inicializar", async () => {
     const mockRoles: Role[] = [
-      { id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: "2", name: "User", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+      { id: "2", name: "User", permissions: [{ id: "1", actions: ["read", "write"] }], created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
     ];
 
     (httpClient.get as jest.Mock).mockResolvedValueOnce({ data: mockRoles });
@@ -75,8 +75,8 @@ describe("create", () => {
       id: "1",
       name: "Admin",
       permissions: [{ id: "1", actions: ["read", "write"] }],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     (httpClient.post as jest.Mock).mockResolvedValueOnce({ data: mockRole });
@@ -103,7 +103,7 @@ describe("create", () => {
     const { result } = renderHook(() => useRoles());
 
     await act(async () => {
-      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
     });
 
     await waitFor(() => {
@@ -118,7 +118,7 @@ describe("create", () => {
     const { result } = renderHook(() => useRoles());
 
     await act(async () => {
-      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      await result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
     });
 
     await waitFor(() => {
@@ -135,7 +135,7 @@ describe("create", () => {
     const { result } = renderHook(() => useRoles());
 
     act(() => {
-      result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      result.current.createRole({ id: "1", name: "Admin", permissions: [{ id: "1", actions: ["read", "write"] }], created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
     });
 
     expect(result.current.loading).toBe(true);
@@ -152,8 +152,8 @@ describe("useRoles - updateRole", () => {
       id: "1",
       name: "Admin",
       permissions: [{ id: "1", actions: ["read", "write"] }],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     (httpClient.put as jest.Mock).mockResolvedValueOnce({ data: mockRole });
@@ -181,8 +181,8 @@ describe("useRoles - updateRole", () => {
       id: "1",
       name: "Admin",
       permissions: [{ id: "1", actions: ["read", "write"] }],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const { result } = renderHook(() => useRoles());
@@ -204,8 +204,8 @@ describe("useRoles - updateRole", () => {
       id: "1",
       name: "Admin",
       permissions: [{ id: "1", actions: ["read", "write"] }],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const { result } = renderHook(() => useRoles());
@@ -229,8 +229,8 @@ describe("useRoles - updateRole", () => {
       id: "1",
       name: "Admin",
       permissions: [{ id: "1", actions: ["read", "write"] }],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const { result } = renderHook(() => useRoles());

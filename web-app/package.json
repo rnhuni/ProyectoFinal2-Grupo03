@@ -8,8 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test": "jest --coverage",
+    "test:win": "jest --coverage 2>null",
+    "test:coverage": "jest --coverage 2>/dev/null"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
@@ -17,9 +18,12 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@hookform/resolvers": "^3.9.0",
+    "aws-amplify": "^5.3.26",
+    "aws-sdk": "^2.1691.0",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "framer-motion": "^11.11.0",
+    "graphql-tag": "^2.12.6",
     "i18next": "^23.16.0",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.6.2",
@@ -30,6 +34,8 @@
     "react-i18next": "^15.0.3",
     "react-icons": "^5.3.0",
     "react-router-dom": "^6.27.0",
+    "rxjs": "^7.8.1",
+    "zen-observable-ts": "^1.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

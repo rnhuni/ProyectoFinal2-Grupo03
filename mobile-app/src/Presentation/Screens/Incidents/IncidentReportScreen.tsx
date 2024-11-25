@@ -6,26 +6,68 @@ import {
   TextInput,
   TouchableOpacity,
   Button,
+  Alert,
+  ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTranslation} from 'react-i18next';
+import DocumentPicker, {
+  DocumentPickerResponse,
+} from 'react-native-document-picker';
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
-import {Contact, Incident} from '../../../interfaces/Indicents';
+import {Contact, Incident, Attachment} from '../../../interfaces/Incidents';
 import useIncidents from '../../../hooks/incidents/useIncidents';
+import useFileUpload from '../../../hooks/uploadFile/useFileUpload';
+import {useNavigation} from '@react-navigation/native';
+import useChannels from '../../../hooks/channel/useChannels';
 
 export const IncidentReportScreen = () => {
-  const {t} = useTranslation(); // Usamos el hook para acceder a las traducciones
+  const {t} = useTranslation();
   const [incidentType, setIncidentType] = useState<string>(
-    t('incidentReportScreen.incidentType.placeholder'),
+    "t('incidentReportScreen.incidentType.placeholder')",
   );
   const [phoneNumber, setPhoneNumber] = useState('');
   const [description, setDescription] = useState('');
-  const {incidents, loading, error, createIncident} = useIncidents();
+  const {createIncident} = useIncidents();
+  const {createIncidentSession} = useChannels();
+
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [showProgressBox, setShowProgressBox] = useState(false);
+  const navigation = useNavigation<any>();
+
+  const {
+    getUploadUrl,
+    uploadFile,
+    uploadProgress,
+    loading: fileLoading,
+  } = useFileUpload();
 
   const handleRegisterIncident = async () => {
+    const uploadedAttachments = [];
+
     try {
+      for (const attachment of attachments) {
+        if (attachment.fileObject && attachment.file_uri) {
+          //console.log("5. enviando de veritas");
+          const file = new File([attachment.file_uri], attachment.file_name, {
+            type: attachment.content_type,
+          });
+
+          //console.log("5.1. el archivo en file", file );
+          const success = await uploadFile(file, attachment.file_uri);
+          //console.log("6. a ver q paso >", success);
+          if (success) {
+            uploadedAttachments.push({
+              id: attachment.id,
+              file_name: attachment.file_name,
+              content_type: attachment.content_type,
+              file_uri: attachment.file_uri,
+            });
+          }
+        }
+      }
+
       const incidentContact: Contact = {
         phone: phoneNumber,
       };
@@ -34,14 +76,73 @@ export const IncidentReportScreen = () => {
         description: description,
         contact: incidentContact,
       };
-      console.log(incidentData);
+      incidentData.attachments = uploadedAttachments;
+      //console.log(incidentData);
       const result = await createIncident(incidentData);
-      console.log(result);
-      // Maneja la respuesta exitosa aquí
+      //console.log(result);
+      // crer la suscripcion
+      const id = result?.id;
+      if (id) {
+        // console.log('creando la sesion para el chat !!!!!!!!!!!!!!!!');
+        await createIncidentSession(id);
+      }
       alert('Incidente registrado con éxito');
+      navigation.navigate('ResumeIncidentScreen');
     } catch (error) {
-      // Maneja el error aquí
+      // console.error('Error al registrar el incidente:', error); // Registrar el error en la consola
       alert('Error al registrar el incidente');
+    }
+  };
+
+  const handleFilePick = async () => {
+    //console.log("1. cargando archivo");
+    try {
+      const result = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+      handleFileUpload(result); // Procesa el archivo cargado
+    } catch (err) {
+      // console.error(err);
+    }
+  };
+
+  const handleFileUpload = async (result: DocumentPickerResponse[]) => {
+    //console.log("2. procesando el archivo");
+    if (result && result.length > 0) {
+      const newAttachments: Attachment[] = [];
+      for (const file of Array.from(result)) {
+        // const isAcceptedType = [
+        //   "text/csv",
+        //   "application/vnd.ms-excel",
+        //   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        // ].includes(file.type ?? '');
+
+        // if (!isAcceptedType) {
+        //   Alert.alert("Formato de archivo incorrecto");
+
+        //   continue;
+        // }
+        //console.log("3. archivo aceptado archivo");
+        //console.log(file.name);
+        //console.log(file.type);
+        if (file.name && file.type) {
+          const uploadData = await getUploadUrl(file.name, file.type);
+          if (uploadData) {
+            newAttachments.push({
+              id: uploadData.media_id,
+              file_name: uploadData.media_name,
+              content_type: uploadData.content_type,
+              file_uri: uploadData.upload_url,
+              fileObject: file,
+            });
+          } // Guarda el archivo seleccionado en el estado
+          //console.log("4. digamos que esta en cache, hay que darle guardar para enviarlo de veritas");
+          // Alert.alert("Archivo cargado", `Archivo: ${file.name}`); // Mostrar una alerta con el nombre del archivo
+        }
+      }
+
+      setAttachments(prev => [...prev, ...newAttachments]);
+      setShowProgressBox(true);
     }
   };
 
@@ -51,18 +152,9 @@ export const IncidentReportScreen = () => {
       {/* Contenido */}
       <View style={styles.content}>
         {/* Pestañas */}
-        <View style={styles.tabs}>
-          {/* <TouchableOpacity>
-            <Text style={styles.activeTab}>
-              {t('incidentReportScreen.tabs.summary')}
-            </Text>
-          </TouchableOpacity> */}
-          <TouchableOpacity>
-            <Text testID="register-text" style={styles.tab}>
-              {t('incidentReportScreen.tabs.register')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Text testID="register-text" style={styles.title}>
+          {t('incidentReportScreen.tabs.register')}
+        </Text>
 
         {/* Tipo de incidente usando Picker */}
         <View style={styles.inputContainer}>
@@ -83,23 +175,34 @@ export const IncidentReportScreen = () => {
                 label={t(
                   'incidentReportScreen.incidentType.incidents.incident1',
                 )}
-                value="Incidente 1"
+                value="technical"
               />
               <Picker.Item
                 label={t(
                   'incidentReportScreen.incidentType.incidents.incident2',
                 )}
-                value="Incidente 2"
+                value="billing"
               />
               <Picker.Item
                 label={t(
                   'incidentReportScreen.incidentType.incidents.incident3',
                 )}
-                value="Incidente 3"
+                value="general"
+              />
+              <Picker.Item
+                label={t(
+                  'incidentReportScreen.incidentType.incidents.incident4',
+                )}
+                value="security"
+              />
+              <Picker.Item
+                label={t(
+                  'incidentReportScreen.incidentType.incidents.incident5',
+                )}
+                value="maintenance"
               />
             </Picker>
           </View>
-          <Text testID="selected-incident-type">{incidentType}</Text>
         </View>
 
         {/* Número de teléfono */}
@@ -133,17 +236,30 @@ export const IncidentReportScreen = () => {
           />
         </View>
 
-        {/* Subir archivo */}
-        <View style={styles.fileUpload}>
-          <TouchableOpacity style={styles.uploadButton}>
-            <Icon name="file-upload" size={20} style={styles.uploadIcon} />
-            <Text style={styles.uploadText}>
-              {t('incidentReportScreen.fileUpload.buttonText')}
-            </Text>
-          </TouchableOpacity>
+        {attachments.length > 0 && (
+          <View style={styles.attach_container}>
+            <Text style={styles.attach_label}>Archivos Adjuntos Cargados</Text>
+            <ScrollView horizontal style={styles.attach_scrollView}>
+              {attachments.map(attachment => (
+                <View key={attachment.id} style={styles.attach_badge}>
+                  <Text style={styles.attach_badgeText}>
+                    {attachment.file_name}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        <View style={styles.attach_container}>
+          <Text style={styles.attach_label}>
+            {t('incidentReportScreen.fileUpload.buttonText')}
+          </Text>
           <Button
+            onPress={handleFilePick}
             title={t('incidentReportScreen.fileUpload.addFileButton')}
-            onPress={() => {}}
+            color="#6C728F"
+            testID="file-upload-button"
           />
         </View>
 
@@ -243,5 +359,37 @@ const styles = StyleSheet.create({
   registerButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  attach_container: {
+    marginBottom: 16,
+  },
+  attach_label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  attach_scrollView: {
+    flexDirection: 'row',
+  },
+  attach_badge: {
+    backgroundColor: '#purple', // Cambia por el color que prefieras
+    borderRadius: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginRight: 8,
+  },
+  attach_badgeText: {
+    color: '#000',
+  },
+  attach_button: {
+    width: '65%',
+    alignSelf: 'center',
+  },
+  title: {
+    width: '100%',
+    textAlign: 'center',
+    fontSize: 20,
+    paddingTop: 20,
+    fontWeight: 'bold',
   },
 });

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 const api: AxiosInstance = axios.create({
-    baseURL: 'https://api.abcallg03.com/v2',
+    baseURL: 'https://api.abcallg03.com/v3',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -24,19 +24,15 @@ export const setToken = (token: string) => {
 
 
 // Interceptor para las solicitudes
-// api.interceptors.request.use(
-//     (config) => {
-//         // console.log('Request URL:', config.url); // Imprime la URL de la solicitud
-//         // console.log(`token>[${token}]`);
-//         if (token) {
-//             config.headers.Authorization = `Bearer ${token}`;
-//         }
-//         return config;
-//     },
-//     (error) => {
-//         return Promise.reject(error);
-//     }
-// );
+api.interceptors.request.use(
+    (config) => {
+        // console.log('Request URL:', config.url); // Imprime la URL de la solicitud
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 // Interceptor para las respuestas
 // api.interceptors.response.use(

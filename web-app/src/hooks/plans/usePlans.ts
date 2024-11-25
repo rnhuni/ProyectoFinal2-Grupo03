@@ -5,6 +5,7 @@ import { Plan } from "../../interfaces/Plan"; // Asegúrate de importar la inter
 
 const usePlans = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [plan, setPlan] = useState<Plan | null>(null); // Estado para almacenar un solo plan
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -75,14 +76,57 @@ const usePlans = () => {
     }
   };
 
+  const assignPlanToClient = async (
+    clientId: string,
+    subscriptionId: string
+  ) => {
+    setLoading(true);
+
+    const serviceClients = "/system/clients";
+
+    try {
+      const res = await httpClient.put(`${serviceClients}/${clientId}`, {
+        subscription_id: subscriptionId,
+      });
+      return res.data;
+    } catch (err) {
+      if (err instanceof CanceledError) return;
+      const axiosError = err as AxiosError;
+      setError(axiosError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Método para obtener un plan específico por su ID
+  const getPlanById = (planId: string) => {
+    setLoading(true);
+    setError(""); // Limpiar errores previos
+
+    httpClient
+      .get<Plan>(`${service}/${planId}`) // Llamada al endpoint con el ID del plan
+      .then((res) => {
+        setPlan(res.data); // Guardar el plan obtenido en el estado `plan`
+      })
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        const axiosError = err as AxiosError;
+        setError(axiosError.message); // Guardar el mensaje de error en caso de fallo
+      })
+      .finally(() => setLoading(false));
+  };
+
   return {
     plans,
+    plan, // Agregar `plan` en el retorno para poder usarlo fuera del hook
     loading,
     error,
     reloadPlans,
     createPlan,
     updatePlan,
     deletePlan,
+    assignPlanToClient,
+    getPlanById,
   };
 };
 
