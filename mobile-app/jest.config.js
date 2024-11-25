@@ -16,11 +16,7 @@ module.exports = {
 
   testPathIgnorePatterns: ['/node_modules/', '/build/'],
 
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/hooks/',         
-    'Schema\\.ts$',    
-  ],
+  coveragePathIgnorePatterns: ['/node_modules/', '/hooks/', 'Schema\\.ts$'],
 
   coverageThreshold: {
     global: {

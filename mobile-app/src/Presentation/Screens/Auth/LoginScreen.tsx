@@ -62,7 +62,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
       }
     } catch (error) {
       //console.log(`loginUser Error Time: ${endTime - startTime} ms`);
-      // console.log("error login |", error, "|");
+      console.log('error login |', error, '|');
       setToken('');
       setModalLoading(false);
       Alert.alert(
