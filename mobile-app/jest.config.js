@@ -31,8 +31,4 @@ module.exports = {
   maxWorkers: 2,
 
   verbose: false,
-
-  cache: false,
-
-  silent: true,
 };
