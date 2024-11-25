@@ -7,3 +7,4 @@ omit =
     *.py_
     tests/*
     */app.py
+    services/*
