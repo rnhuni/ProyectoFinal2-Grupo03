@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 const api: AxiosInstance = axios.create({
-    baseURL: 'https://api.abcallg03.com/v2',
+    baseURL: 'https://api.abcallg03.com/v3',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
