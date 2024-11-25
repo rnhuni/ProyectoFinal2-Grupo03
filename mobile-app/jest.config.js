@@ -13,7 +13,7 @@ module.exports = {
   transform: {
     '^.+\\.(js|ts|tsx)$': 'babel-jest',
   },
-  testPathIgnorePatterns: ['/node_modules/', '/build/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/hooks/', 'Schema\\.ts$'],
 
   coverageThreshold: {
     global: {
